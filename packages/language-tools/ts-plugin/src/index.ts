@@ -40,7 +40,7 @@ export type TypeScriptPluginModule = {
   create(info: ts.server.PluginCreateInfo): ts.LanguageService;
 };
 
-export const RUNE_DECLARATIONS = [
+export const RUNE_DECLARATIONS: string = [
   "",
   "export {};",
   "type __SlateSerializable = null | boolean | number | string | __SlateSerializable[] | { [key: string]: __SlateSerializable };",
