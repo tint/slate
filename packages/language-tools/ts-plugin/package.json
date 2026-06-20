@@ -1,6 +1,6 @@
 {
   "name": "@slate/ts-plugin",
-  "version": "0.0.1-alpha.1",
+  "version": "0.0.1-alpha.2",
   "type": "module",
   "private": true,
   "main": "./dist/index.mjs",
@@ -13,7 +13,7 @@
   },
   "types": "./dist/index.d.mts",
   "dependencies": {
-    "@slate/compiler": "^0.0.1-alpha.1"
+    "@slate/compiler": "^0.0.1-alpha.2"
   },
   "devDependencies": {
     "typescript": "^5.8.0"

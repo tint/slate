@@ -1,6 +1,6 @@
 {
   "name": "@slate/cli",
-  "version": "0.0.1-alpha.1",
+  "version": "0.0.1-alpha.2",
   "type": "module",
   "private": true,
   "bin": {
@@ -20,10 +20,10 @@
   },
   "types": "./dist/index.d.mts",
   "dependencies": {
-    "@slate/check": "^0.0.1-alpha.1",
-    "@slate/compiler": "^0.0.1-alpha.1",
-    "@slate/kit": "^0.0.1-alpha.1",
-    "@slate/vite": "^0.0.1-alpha.1",
+    "@slate/check": "^0.0.1-alpha.2",
+    "@slate/compiler": "^0.0.1-alpha.2",
+    "@slate/kit": "^0.0.1-alpha.2",
+    "@slate/vite": "^0.0.1-alpha.2",
     "cac": "^7.0.0",
     "tsx": "^4.20.0"
   },

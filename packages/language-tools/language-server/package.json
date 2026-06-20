@@ -1,6 +1,6 @@
 {
   "name": "@slate/language-server",
-  "version": "0.0.1-alpha.1",
+  "version": "0.0.1-alpha.2",
   "type": "module",
   "private": true,
   "bin": {
@@ -15,9 +15,9 @@
   },
   "types": "./dist/index.d.mts",
   "dependencies": {
-    "@slate/check": "^0.0.1-alpha.1",
-    "@slate/compiler": "^0.0.1-alpha.1",
-    "@slate/ts-plugin": "^0.0.1-alpha.1",
+    "@slate/check": "^0.0.1-alpha.2",
+    "@slate/compiler": "^0.0.1-alpha.2",
+    "@slate/ts-plugin": "^0.0.1-alpha.2",
     "typescript": "^5.8.0",
     "vscode-languageserver": "^9.0.1",
     "vscode-languageserver-textdocument": "^1.0.12",
