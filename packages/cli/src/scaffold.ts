@@ -1,5 +1,6 @@
+import { homedir } from "node:os";
 import { mkdir, readdir, rm, writeFile } from "node:fs/promises";
-import { basename, resolve } from "node:path";
+import { basename, parse, resolve } from "node:path";
 import { readCliPackageJson, resolveCliVersion, type CliPackageJson } from "./package-info";
 
 export type InitOptions = {
@@ -9,6 +10,8 @@ export type InitOptions = {
 /** Scaffold a minimal Slate project. */
 export async function runInit(targetArg: string, options: InitOptions = {}): Promise<void> {
   const targetDir = resolve(targetArg);
+  assertSafeTargetDir(targetDir);
+
   await createProject(targetDir, {
     force: options.force ?? false,
   });
@@ -190,4 +193,17 @@ function normalizePackageName(value: string): string {
     .replace(/^-+|-+$/g, "");
 
   return normalized || "slate-app";
+}
+
+function assertSafeTargetDir(targetDir: string): void {
+  const parsed = parse(targetDir);
+  const forbidden = new Set([
+    parsed.root,
+    resolve(homedir()),
+    process.cwd(),
+  ]);
+
+  if (forbidden.has(targetDir)) {
+    throw new Error(`Refusing to scaffold into unsafe target directory: ${targetDir}`);
+  }
 }

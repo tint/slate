@@ -1,16 +1,21 @@
 {
   "name": "@slate/cli",
-  "version": "0.0.1-alpha.2",
+  "version": "0.0.1-alpha.3",
   "license": "MIT",
   "exports": {
-    ".": "./src/index.ts",
-    "./config": "./src/config.ts"
+    ".": "./dist/index.mjs",
+    "./config": "./dist/config.mjs"
   },
   "publish": {
     "include": [
       "README.md",
       "package.json",
-      "src/**/*.ts"
+      "dist/**/*.mjs",
+      "dist/**/*.d.mts"
+    ],
+    "exclude": [
+      "!dist/**/*.mjs",
+      "!dist/**/*.d.mts"
     ]
   }
 }

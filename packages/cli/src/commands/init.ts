@@ -21,9 +21,9 @@ export async function runInitCommand(options: InitCommandOptions): Promise<void>
   console.log("");
   console.log("Next steps:");
   console.log(`  cd ${targetArg}`);
-  console.log("  bun install");
-  console.log("  bun run dev");
-  console.log("  bun run check");
-  console.log("  bun run build");
-  console.log("  bun run preview");
+  console.log("  npm install");
+  console.log("  npm run dev");
+  console.log("  npm run check");
+  console.log("  npm run build");
+  console.log("  npm run preview");
 }
