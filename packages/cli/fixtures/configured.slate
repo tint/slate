@@ -1,0 +1,11 @@
+<script slate>
+declare const __SLATE_CONFIG_DEFINE__: string;
+declare const __SLATE_PLUGIN_TEXT__: string;
+const defined = __SLATE_CONFIG_DEFINE__;
+const transformed = __SLATE_PLUGIN_TEXT__;
+</script>
+
+<main>
+  <p>{defined}</p>
+  <p>{transformed}</p>
+</main>

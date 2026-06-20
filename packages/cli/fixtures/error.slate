@@ -1,0 +1,5 @@
+<script slate>
+  export const invalid = true;
+</script>
+
+<h1>Invalid</h1>

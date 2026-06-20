@@ -1,0 +1,10 @@
+<script slate>
+  const title = $prop<string>("title", "Untitled");
+  const subtitle = $prop<string>("subtitle", "");
+</script>
+
+<section>
+  <h1>{title}</h1>
+  <h2>{subtitle}</h2>
+  <slot />
+</section>

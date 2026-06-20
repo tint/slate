@@ -1,0 +1,16 @@
+{
+  "name": "@slate/cli",
+  "version": "0.0.0",
+  "license": "MIT",
+  "exports": {
+    ".": "./dist/index.mjs",
+    "./config": "./dist/config.mjs"
+  },
+  "publish": {
+    "include": [
+      "README.md",
+      "dist/**/*.mjs",
+      "dist/**/*.d.mts"
+    ]
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "name": "@slate/cli",
+  "version": "0.0.1-alpha.1",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "slate": "./dist/index.mjs"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
+    },
+    "./config": {
+      "types": "./dist/config.d.mts",
+      "import": "./dist/config.mjs",
+      "default": "./dist/config.mjs"
+    }
+  },
+  "types": "./dist/index.d.mts",
+  "dependencies": {
+    "@slate/check": "workspace:*",
+    "@slate/compiler": "workspace:*",
+    "@slate/kit": "workspace:*",
+    "@slate/vite": "workspace:*",
+    "cac": "^7.0.0",
+    "tsx": "catalog:"
+  },
+  "scripts": {
+    "build": "tsdown src/index.ts src/commands.ts src/config.ts --format esm --dts --out-dir dist --clean",
+    "check": "tsc --noEmit",
+    "test": "tsx scripts/run-fixtures.ts"
+  }
+}

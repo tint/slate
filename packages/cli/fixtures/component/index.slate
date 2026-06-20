@@ -1,0 +1,7 @@
+<script slate>
+  import Card from "./Card.slate";
+</script>
+
+<Card title="Hello">
+  <p>Body</p>
+</Card>
