@@ -1,0 +1,18 @@
+<script slate>
+import logoUrl from "./logo.svg";
+
+const title = "Slate Vite";
+const items = ["plugin", "dev", "reload"];
+const configured = __SLATE_VITE_FIXTURE__;
+</script>
+
+<main>
+  <h1>{title}</h1>
+  <img src={logoUrl} alt="Slate logo" />
+  <p>{configured}</p>
+  <ul>
+    {#each items as item}
+      <li>{item}</li>
+    {/each}
+  </ul>
+</main>
