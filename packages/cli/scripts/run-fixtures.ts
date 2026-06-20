@@ -1,9 +1,9 @@
-import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { mkdir, readFile, rm } from "node:fs/promises";
 import { get } from "node:http";
 import { dirname, join } from "node:path";
-import { fileURLToPath, pathToFileURL } from "node:url";
+import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
-import { runBuild, runCheck, runInit } from "../src/index";
+import { runBuild, runCheck } from "../src/index";
 
 const root = dirname(fileURLToPath(import.meta.url));
 const packageRoot = join(root, "..");
@@ -25,7 +25,6 @@ await assertBuild("component", join(packageRoot, "fixtures/component/index.slate
 await assertRuntimeError();
 await assertDev();
 await assertConfig();
-await assertInit();
 await assertProgrammaticApi();
 
 async function assertBuild(name: string, input: string): Promise<void> {
@@ -207,54 +206,17 @@ async function assertConfig(): Promise<void> {
   }
 }
 
-async function assertInit(): Promise<void> {
-  const targetDir = join(tmpDir, "init-app");
-  await runCli(["init", targetDir], 0);
-
-  const packageJson = await readFile(join(targetDir, "package.json"), "utf8");
-  const config = await readFile(join(targetDir, "slate.config.ts"), "utf8");
-  const app = await readFile(join(targetDir, "src/App.slate"), "utf8");
-  const card = await readFile(join(targetDir, "src/components/Card.slate"), "utf8");
-  const favicon = await readFile(join(targetDir, "public/favicon.svg"), "utf8");
-
-  if (!packageJson.includes("\"name\": \"init-app\"") || !packageJson.includes("\"dev\": \"slate dev\"")) {
-    throw new Error(`Unexpected init package.json.\n${packageJson}`);
-  }
-
-  if (!config.includes("import { defineConfig } from \"@slate/cli\"")) {
-    throw new Error(`Unexpected init slate.config.ts.\n${config}`);
-  }
-
-  if (!app.includes("import Card from \"./components/Card.slate\"") || !card.includes("<slot />") || !favicon.includes("<svg")) {
-    throw new Error("Unexpected init scaffold files.");
-  }
-
-  const occupiedDir = join(tmpDir, "occupied-app");
-  await mkdir(occupiedDir, {
-    recursive: true,
-  });
-  await writeFile(join(occupiedDir, "existing.txt"), "occupied", "utf8");
-  const occupiedResult = await runCli(["init", occupiedDir], 1);
-
-  if (!occupiedResult.stderr.includes("Target directory is not empty")) {
-    throw new Error(`Unexpected occupied init error.\n${occupiedResult.stderr}`);
-  }
-
-  await runCli(["init", occupiedDir, "--force"], 0);
-  await readFile(join(occupiedDir, "src/App.slate"), "utf8");
-}
-
 async function assertProgrammaticApi(): Promise<void> {
-  const targetDir = join(tmpDir, "programmatic-app");
   const output = join(tmpDir, "programmatic.html");
   const previousCwd = process.cwd();
-  await runInit(targetDir);
-  await linkWorkspacePackages(targetDir);
 
   try {
-    process.chdir(targetDir);
-    await runCheck();
+    process.chdir(packageRoot);
+    await runCheck({
+      input: join(packageRoot, "fixtures/basic.slate"),
+    });
     await runBuild({
+      input: join(packageRoot, "fixtures/basic.slate"),
       out: output,
       tmpDir: join(tmpDir, "programmatic-modules"),
     });
@@ -267,34 +229,6 @@ async function assertProgrammaticApi(): Promise<void> {
   if (!html.includes("<h1>Slate</h1>")) {
     throw new Error(`Unexpected programmatic build output.\n${html}`);
   }
-}
-
-async function linkWorkspacePackages(targetDir: string): Promise<void> {
-  const scopeDir = join(targetDir, "node_modules/@slate");
-  await mkdir(scopeDir, {
-    recursive: true,
-  });
-  await mkdir(join(scopeDir, "cli"), {
-    recursive: true,
-  });
-  await writeFile(join(scopeDir, "cli/package.json"), JSON.stringify({
-    name: "@slate/cli",
-    type: "module",
-    exports: {
-      ".": "./index.mjs",
-      "./config": "./config.mjs",
-    },
-  }), "utf8");
-  await writeFile(
-    join(scopeDir, "cli/index.mjs"),
-    `export { defineConfig } from ${JSON.stringify(pathToFileURL(join(packageRoot, "dist/index.mjs")).href)};\n`,
-    "utf8",
-  );
-  await writeFile(
-    join(scopeDir, "cli/config.mjs"),
-    `export { defineConfig } from ${JSON.stringify(pathToFileURL(join(packageRoot, "dist/config.mjs")).href)};\n`,
-    "utf8",
-  );
 }
 
 function stripReloadScript(html: string): string {

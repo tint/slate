@@ -11,9 +11,7 @@ export { runDev } from "./commands/dev.ts";
 export type { DevOptions } from "./commands/dev.ts";
 export { runPreview } from "./commands/preview.ts";
 export type { PreviewOptions } from "./commands/preview.ts";
-export { runInit } from "./scaffold.ts";
 export { run } from "./commands.ts";
-export type { InitOptions } from "./scaffold.ts";
 export { defineConfig } from "./config.ts";
 export type {
   ResolvedSlateConfig,

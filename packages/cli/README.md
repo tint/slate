@@ -1,19 +1,44 @@
 # @slate/cli
 
-Slate command-line interface.
+Command-line tools for developing, checking, building, and previewing Slate projects.
 
-## Responsibility
+Project scaffolding is owned by `create-slate`.
 
-- Provide the `slate` binary.
-- Implement project commands such as `slate init`, `slate build`, and `slate check`.
-- Load project config.
-- Coordinate `@slate/compiler`, `@slate/kit`, and `@slate/check`.
+## Requirements
 
-## Status
+`@slate/cli` is published as TypeScript source and requires a modern Node.js runtime that can execute `.ts` files.
 
-Implemented with `init`, `dev`, `build`, `preview`, and `check` command entry points.
+## Initialize a project
 
-## Install
+There are two ways to start using Slate:
+
+- Use `create-slate` for a new project.
+- Add `@slate/cli` manually to an existing project.
+
+### Using `create-slate`
+
+For a new project, prefer `create-slate`:
+
+```sh
+npm create slate@latest my-app
+cd my-app
+npm install
+npm run dev
+```
+
+The generated project includes:
+
+- `package.json`
+- `deno.json`
+- `slate.config.ts`
+- `src/App.slate`
+- `src/components/Card.slate`
+- `scripts/slate.mjs`
+- package scripts for dev, check, build, and preview
+
+### Manual setup
+
+Install the CLI and runtime package:
 
 Using JSR:
 
@@ -22,41 +47,7 @@ npx jsr add -D @slate/cli
 npx jsr add @slate/kit
 ```
 
-The published CLI package provides the `slate` binary from TypeScript source and requires a modern Node.js runtime.
-
-## Commands
-
-```sh
-slate init <directory> [--force]
-slate dev [input.slate] [--port 5173] [--host 127.0.0.1] [--publicDir public] [--reload] [--no-reload] [--kit @slate/kit]
-slate build [input.slate] [--output dist/index.html] [--tmpDir node_modules/.slate-tmp] [--publicDir public] [--kit @slate/kit]
-slate preview [--dir dist] [--port 4173] [--host 127.0.0.1]
-slate check <input.slate>
-```
-
-`slate init` scaffolds a minimal Slate project with `slate.config.ts`, `src/App.slate`, a sample component, public assets, and package scripts.
-
-`--out` remains accepted as a compatibility alias for `--output`.
-
-`slate dev` is powered by `@slate/vite`. It serves `/` by rendering the configured Slate input through Vite middleware.
-
-By default, `slate dev` injects Vite's browser client. `.slate` changes currently trigger a full page reload through Vite.
-
-`slate preview` is powered by `@slate/vite`. It serves built files only and does not compile, watch, or inject the reload client.
-
-## Programmatic API
-
-```ts
-import { defineConfig, runBuild, runCheck, runDev, runInit, runPreview } from "@slate/cli";
-
-await runInit("my-app");
-await runCheck({ config: "slate.config.ts" });
-await runBuild({ config: "slate.config.ts" });
-```
-
-## Configuration
-
-The CLI loads `slate.config.ts`, `slate.config.mjs`, or `slate.config.js` from the current working directory. Use `--config` to choose a specific file.
+Create `slate.config.ts`:
 
 ```ts
 import { defineConfig } from "@slate/cli";
@@ -64,10 +55,127 @@ import { defineConfig } from "@slate/cli";
 export default defineConfig({
   input: "src/App.slate",
   plugins: [],
-  vite: {
-    define: {},
-    resolve: {},
+  publicDir: "public",
+  build: {
+    output: "dist/index.html",
   },
+});
+```
+
+Create `src/App.slate`:
+
+```slate
+<script slate>
+const title = "Slate";
+</script>
+
+<main>
+  <h1>{title}</h1>
+</main>
+```
+
+Because JSR's npm compatibility layer does not currently expose package `bin` entries, use a small local bridge script.
+
+Create `scripts/slate.mjs`:
+
+```js
+import { run } from "@slate/cli";
+
+await run(process.argv.slice(2));
+```
+
+Then add scripts to `package.json`:
+
+```json
+{
+  "scripts": {
+    "dev": "node scripts/slate.mjs dev",
+    "check": "node scripts/slate.mjs check",
+    "build": "node scripts/slate.mjs build",
+    "preview": "node scripts/slate.mjs preview"
+  }
+}
+```
+
+Now run:
+
+```sh
+npm run dev
+```
+
+`plugins` accepts Vite-compatible plugins that should participate in Slate dev/build orchestration. Put project plugins here instead of relying on a separate `vite.config.ts`.
+
+## Commands
+
+Inside a generated or manually configured project, the local bridge forwards to these CLI commands:
+
+```sh
+slate dev
+slate check
+slate build
+slate preview
+```
+
+### `slate dev`
+
+Starts the development server.
+
+```sh
+slate dev
+slate dev src/App.slate --port 5173 --host 127.0.0.1
+```
+
+By default, `.slate` changes trigger a full page reload through Vite.
+
+### `slate check`
+
+Checks Slate files and prints diagnostics.
+
+```sh
+slate check
+slate check src/App.slate
+```
+
+### `slate build`
+
+Builds Slate input files to static HTML.
+
+```sh
+slate build
+slate build src/App.slate --output dist/index.html
+```
+
+`--out` is also accepted as an alias for `--output`.
+
+### `slate preview`
+
+Serves the built output directory.
+
+```sh
+slate preview
+slate preview --dir dist --port 4173
+```
+
+Preview serves existing files only. It does not compile, watch, or inject the development reload client.
+
+## Configuration
+
+The CLI loads `slate.config.ts`, `slate.config.mjs`, or `slate.config.js` from the current working directory.
+
+Use `--config` to choose a specific config file:
+
+```sh
+slate dev --config ./slate.config.ts
+```
+
+Basic config:
+
+```ts
+import { defineConfig } from "@slate/cli";
+
+export default defineConfig({
+  input: "src/App.slate",
+  plugins: [],
   publicDir: "public",
   dev: {
     host: "127.0.0.1",
@@ -76,19 +184,82 @@ export default defineConfig({
   },
   build: {
     output: "dist/index.html",
-    tmpDir: "node_modules/.slate-tmp",
   },
   preview: {
     host: "127.0.0.1",
     port: 4173,
   },
-  kit: {
-    specifier: "@slate/kit",
+});
+```
+
+Top-level options:
+
+- `input`: Slate entry file or a named input map.
+- `plugins`: Vite-compatible plugins used by Slate dev/build.
+- `publicDir`: Static assets directory.
+- `dev`: Development server options.
+- `build`: Static build options.
+- `preview`: Preview server options.
+- `vite`: Additional non-plugin Vite options.
+
+Config values are resolved in this order:
+
+```txt
+CLI flags > slate.config.* > defaults
+```
+
+Relative paths in config are resolved from the config file directory.
+
+## Multiple inputs
+
+Use an object for `input` to build multiple pages:
+
+```ts
+import { defineConfig } from "@slate/cli";
+
+export default defineConfig({
+  input: {
+    index: "src/pages/Home.slate",
+    about: "src/pages/About.slate",
+  },
+  build: {
+    output: "dist",
   },
 });
 ```
 
-Config files can also export a promise or a function:
+Multi-input build writes one HTML file per input name.
+
+Multi-input dev maps `/` to the first input and `/<name>` to each named input.
+
+## Vite integration
+
+Slate uses Vite internally for development, build, preview, public assets, and plugin integration.
+
+Use top-level `plugins` for Vite-compatible Slate plugins and `vite` for non-plugin Vite options:
+
+```ts
+import { defineConfig } from "@slate/cli";
+
+export default defineConfig({
+  input: "src/App.slate",
+  plugins: [],
+  vite: {
+    define: {
+      __APP_VERSION__: JSON.stringify("0.0.0"),
+    },
+    resolve: {
+      alias: {},
+    },
+  },
+});
+```
+
+`slate dev` and `slate build` do not load `vite.config.ts` directly. `slate.config.*` is the project configuration entry.
+
+## Dynamic config
+
+Config files can export a config object, a promise, or a function.
 
 ```ts
 import { defineConfig } from "@slate/cli";
@@ -106,7 +277,7 @@ export default defineConfig(({ command, mode, phase }) => ({
 }));
 ```
 
-`command` and `mode` follow Vite's config context model. `phase` keeps the exact Slate CLI phase:
+`command` and `mode` follow Vite's config context model. `phase` is the exact Slate CLI phase:
 
 ```txt
 slate dev     -> { command: "serve", mode: "development", phase: "dev" }
@@ -115,37 +286,24 @@ slate preview -> { command: "serve", mode: "production", phase: "preview" }
 slate check   -> { command: "serve", mode: "development", phase: "check" }
 ```
 
-Files in `publicDir` are served by `slate dev` from `/` and copied by `slate build` into the build output directory. Missing public directories are ignored.
+## Public assets
 
-Slate config is the CLI configuration entry. `slate dev` and `slate build` do not load `vite.config.ts` directly. Use top-level `plugins` for Vite-compatible Slate plugins and `vite` for non-plugin Vite options.
+Files in `publicDir` are served by `slate dev` from `/` and copied by `slate build` into the build output directory.
 
-For multiple inputs:
+Missing public directories are ignored.
+
+## Programmatic API
 
 ```ts
-export default defineConfig({
-  input: {
-    index: "src/pages/Home.slate",
-    about: "src/pages/About.slate",
-  },
-  build: {
-    output: "dist",
-  },
-});
+import { defineConfig, runBuild, runCheck, runDev, runPreview } from "@slate/cli";
+
+await runCheck({ config: "slate.config.ts" });
+await runBuild({ config: "slate.config.ts" });
 ```
-
-Multi-input build treats `build.output` as a directory and writes one HTML file per input name. Multi-input dev maps `/` to the first input and `/<name>` to each named input.
-
-Resolution priority:
-
-```txt
-CLI flags > slate.config.* > defaults
-```
-
-Relative paths in config are resolved from the config file directory. `.ts` config files are loaded through `tsx` in the published Node CLI, while Bun can import them natively during workspace development.
 
 ## Diagnostics
 
-`slate check` prints compiler/check diagnostics with source snippets when source text is available:
+`slate check` prints compiler and type diagnostics with source snippets when source text is available:
 
 ```txt
 entry.slate:2:3: error: Only TypeScript type exports are allowed in <script slate>.
@@ -159,18 +317,4 @@ entry.slate:2:3: error: Only TypeScript type exports are allowed in <script slat
 entry.slate:5:5: error: null is not an object (evaluating 'user.name')
   <p>{user.name}</p>
       ^^^^^^^^^
-```
-
-## Boundary
-
-The CLI should stay thin. Core behavior should live in reusable packages.
-
-## Publishing note
-
-`@slate/cli` publishes TypeScript source to JSR like the other runtime packages. The `slate` binary points at `src/index.ts`, so the package requires a Node.js version that can execute TypeScript files.
-
-Before publishing a new CLI version:
-
-```sh
-npx jsr publish --dry-run
 ```

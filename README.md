@@ -116,18 +116,18 @@ The helper updates:
 Create a project:
 
 ```sh
-slate init my-app
+npm create slate@latest my-app
 cd my-app
-bun install
-bun run dev
+npm install
+npm run dev
 ```
 
 Project commands:
 
 ```sh
-bun run check
-bun run build
-bun run preview
+npm run check
+npm run build
+npm run preview
 ```
 
 ## Configuration
@@ -149,7 +149,6 @@ export default defineConfig({
     host: "127.0.0.1",
     port: 5173,
     reload: true,
-    tmpDir: "node_modules/.slate-dev",
   },
   build: {
     output: "dist/index.html",
@@ -194,9 +193,8 @@ Relative paths in config are resolved from the config file directory. TypeScript
 ## Programmatic API
 
 ```ts
-import { defineConfig, runBuild, runCheck, runDev, runInit, runPreview } from "@slate/cli";
+import { defineConfig, runBuild, runCheck, runDev, runPreview } from "@slate/cli";
 
-await runInit("my-app");
 await runCheck({ config: "slate.config.ts" });
 await runBuild({ config: "slate.config.ts" });
 ```

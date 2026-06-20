@@ -2,31 +2,20 @@ import { cac } from "cac";
 import { runBuild } from "./commands/build.ts";
 import { runCheck } from "./commands/check.ts";
 import { runDev } from "./commands/dev.ts";
-import { runInitCommand } from "./commands/init.ts";
 import { runPreview } from "./commands/preview.ts";
 import { readCliPackageJson, resolveCliVersion } from "./package-info.ts";
 
 /**
  * Run the Slate CLI dispatcher.
  *
- * Programmatic consumers should import from `@slate/cli` and call `runInit`,
- * `runBuild`, `runDev`, `runPreview`, or `runCheck` directly.
+ * Programmatic consumers should import from `@slate/cli` and call `runBuild`,
+ * `runDev`, `runPreview`, or `runCheck` directly.
  */
 export async function run(argv: string[] = process.argv.slice(2)): Promise<void> {
   let task: (() => Promise<void>) | undefined;
   const packageJson = await readCliPackageJson();
   const cli = cac("slate");
-  const knownCommands = new Set(["build", "check", "dev", "help", "init", "preview"]);
-
-  cli
-    .command("init <directory>", "Scaffold a minimal Slate project")
-    .option("--force", "Overwrite the target directory")
-    .action((directory: string, options: { force?: boolean }) => {
-      task = () => runInitCommand({
-        directory,
-        force: options.force,
-      });
-    });
+  const knownCommands = new Set(["build", "check", "dev", "help", "preview"]);
 
   cli
     .command("dev [input]", "Start the Slate development server")
