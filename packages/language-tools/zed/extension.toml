@@ -1,0 +1,11 @@
+id = "slate"
+name = "Slate"
+description = "Slate language support for Zed."
+version = "0.0.0"
+schema_version = 1
+authors = ["Slate contributors"]
+repository = "https://example.com/slate"
+
+[language_servers.slate-language-server]
+name = "Slate Language Server"
+languages = ["Slate"]

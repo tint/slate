@@ -1,0 +1,21 @@
+{
+  "name": "slate-zed",
+  "version": "0.0.1-alpha.1",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "types": "./dist/index.d.mts",
+  "dependencies": {
+    "@slate/language-server": "workspace:*"
+  },
+  "scripts": {
+    "build": "tsdown src/index.ts --format esm --dts --out-dir dist --clean",
+    "check": "tsc --noEmit"
+  }
+}
