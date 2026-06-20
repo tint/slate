@@ -1,0 +1,107 @@
+{
+  "kind": "SlateFile",
+  "range": {
+    "start": 0,
+    "end": 58
+  },
+  "children": [
+    {
+      "kind": "Element",
+      "range": {
+        "start": 0,
+        "end": 57
+      },
+      "tagName": "article",
+      "rawTagName": "article",
+      "openTag": {
+        "kind": "Tag",
+        "range": {
+          "start": 0,
+          "end": 9
+        },
+        "tagName": "article",
+        "rawTagName": "article",
+        "attributes": [],
+        "selfClosing": false,
+        "closing": false
+      },
+      "children": [
+        {
+          "kind": "Text",
+          "range": {
+            "start": 9,
+            "end": 12
+          },
+          "text": "\n  "
+        },
+        {
+          "kind": "HtmlDirective",
+          "range": {
+            "start": 12,
+            "end": 27
+          },
+          "expression": {
+            "range": {
+              "start": 18,
+              "end": 26
+            },
+            "text": "content"
+          },
+          "closed": true
+        },
+        {
+          "kind": "Text",
+          "range": {
+            "start": 27,
+            "end": 30
+          },
+          "text": "\n  "
+        },
+        {
+          "kind": "DebugDirective",
+          "range": {
+            "start": 30,
+            "end": 46
+          },
+          "expression": {
+            "range": {
+              "start": 37,
+              "end": 45
+            },
+            "text": "content"
+          },
+          "closed": true
+        },
+        {
+          "kind": "Text",
+          "range": {
+            "start": 46,
+            "end": 47
+          },
+          "text": "\n"
+        }
+      ],
+      "closeTag": {
+        "kind": "Tag",
+        "range": {
+          "start": 47,
+          "end": 57
+        },
+        "tagName": "article",
+        "rawTagName": "article",
+        "attributes": [],
+        "selfClosing": false,
+        "closing": true
+      },
+      "selfClosing": false
+    },
+    {
+      "kind": "Text",
+      "range": {
+        "start": 57,
+        "end": 58
+      },
+      "text": "\n"
+    }
+  ]
+}

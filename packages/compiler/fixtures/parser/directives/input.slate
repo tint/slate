@@ -1,0 +1,4 @@
+<article>
+  {@html content}
+  {@debug content}
+</article>

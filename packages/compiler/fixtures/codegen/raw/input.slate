@@ -1,0 +1,9 @@
+<script>
+  console.log("{not slate}");
+</script>
+
+<style>
+  .card::before {
+    content: "{";
+  }
+</style>

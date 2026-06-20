@@ -1,0 +1,18 @@
+[
+  {
+    "message": "Only TypeScript type exports are allowed in <script slate>.",
+    "severity": "error",
+    "range": {
+      "start": 163,
+      "end": 193
+    }
+  },
+  {
+    "message": "Only TypeScript type exports are allowed in <script slate>.",
+    "severity": "error",
+    "range": {
+      "start": 196,
+      "end": 223
+    }
+  }
+]

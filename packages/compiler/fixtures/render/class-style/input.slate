@@ -1,0 +1,6 @@
+<script slate>
+  const active: boolean = true;
+  const visible: boolean = false;
+</script>
+
+<div class={["card", active && "active", { hidden: !visible }]} style={[{ marginTop: "8px" }]}>Content</div>

@@ -1,0 +1,5 @@
+<script slate is:inline>
+  const name: string = "Slate";
+</script>
+
+<h1>{name}</h1>

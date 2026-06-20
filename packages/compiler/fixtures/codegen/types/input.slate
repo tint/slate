@@ -1,0 +1,11 @@
+<script slate>
+  export type Variant = "default" | "featured";
+
+  export interface CardProps {
+    title?: string;
+  }
+
+  const title: string = "Hello";
+</script>
+
+<h1>{title}</h1>

@@ -1,0 +1,136 @@
+{
+  "kind": "SlateFile",
+  "range": {
+    "start": 0,
+    "end": 169
+  },
+  "children": [
+    {
+      "kind": "Element",
+      "range": {
+        "start": 0,
+        "end": 168
+      },
+      "tagName": "div",
+      "rawTagName": "div",
+      "openTag": {
+        "kind": "Tag",
+        "range": {
+          "start": 0,
+          "end": 151
+        },
+        "tagName": "div",
+        "rawTagName": "div",
+        "attributes": [
+          {
+            "range": {
+              "start": 7,
+              "end": 43
+            },
+            "name": "class",
+            "rawName": "class",
+            "kind": "ExpressionAttribute",
+            "expression": {
+              "range": {
+                "start": 14,
+                "end": 42
+              },
+              "text": "[\"card\", active && \"active\"]"
+            },
+            "closed": true
+          },
+          {
+            "range": {
+              "start": 46,
+              "end": 88
+            },
+            "name": "style",
+            "rawName": "style",
+            "kind": "ExpressionAttribute",
+            "expression": {
+              "range": {
+                "start": 53,
+                "end": 87
+              },
+              "text": "{ color: \"red\", marginTop: \"8px\" }"
+            },
+            "closed": true
+          },
+          {
+            "range": {
+              "start": 91,
+              "end": 126
+            },
+            "name": "slot:header",
+            "rawName": "slot:header",
+            "kind": "DirectiveAttribute",
+            "namespace": "slot",
+            "directiveName": "header",
+            "value": {
+              "range": {
+                "start": 104,
+                "end": 125
+              },
+              "text": "{ title, icon, tail }"
+            },
+            "valueKind": "expression",
+            "closed": true
+          },
+          {
+            "range": {
+              "start": 129,
+              "end": 141
+            },
+            "name": "is:inline",
+            "rawName": "is:inline",
+            "kind": "DirectiveAttribute",
+            "namespace": "is",
+            "directiveName": "inline"
+          },
+          {
+            "range": {
+              "start": 141,
+              "end": 150
+            },
+            "name": "disabled",
+            "rawName": "disabled",
+            "kind": "BooleanAttribute"
+          }
+        ],
+        "selfClosing": false,
+        "closing": false
+      },
+      "children": [
+        {
+          "kind": "Text",
+          "range": {
+            "start": 151,
+            "end": 162
+          },
+          "text": "\n  Content\n"
+        }
+      ],
+      "closeTag": {
+        "kind": "Tag",
+        "range": {
+          "start": 162,
+          "end": 168
+        },
+        "tagName": "div",
+        "rawTagName": "div",
+        "attributes": [],
+        "selfClosing": false,
+        "closing": true
+      },
+      "selfClosing": false
+    },
+    {
+      "kind": "Text",
+      "range": {
+        "start": 168,
+        "end": 169
+      },
+      "text": "\n"
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+<script slate>
+  import Card from "./Card.slate";
+
+  const title: string = "Hello";
+</script>
+
+<Card title={title} featured>
+  <h1 slot:title>{title}</h1>
+  <p>Hello {title}</p>
+</Card>

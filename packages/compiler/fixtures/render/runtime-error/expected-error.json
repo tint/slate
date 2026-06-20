@@ -1,0 +1,8 @@
+{
+  "name": "SlateRenderError",
+  "messageIncludes": "Cannot read properties of null",
+  "filenameIncludes": "runtime-error/input.slate",
+  "rangeText": "user.name",
+  "kind": "template",
+  "causeName": "TypeError"
+}

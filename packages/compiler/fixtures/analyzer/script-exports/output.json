@@ -1,0 +1,70 @@
+{
+  "script": {
+    "kind": "SlateScriptElement",
+    "range": {
+      "start": 0,
+      "end": 233
+    },
+    "openTag": {
+      "kind": "Tag",
+      "range": {
+        "start": 0,
+        "end": 14
+      },
+      "tagName": "script",
+      "rawTagName": "script",
+      "attributes": [
+        {
+          "range": {
+            "start": 8,
+            "end": 13
+          },
+          "name": "slate",
+          "rawName": "slate",
+          "kind": "BooleanAttribute"
+        }
+      ],
+      "selfClosing": false,
+      "closing": false
+    },
+    "body": {
+      "kind": "RawText",
+      "range": {
+        "start": 14,
+        "end": 224
+      },
+      "text": "\n  export type Variant = \"default\" | \"featured\";\n\n  export interface CardProps {\n    title?: string;\n  }\n\n  export type { Theme } from \"./theme\";\n\n  export const prerender = true;\n  export function helper() {}\n"
+    },
+    "closeTag": {
+      "kind": "Tag",
+      "range": {
+        "start": 224,
+        "end": 233
+      },
+      "tagName": "script",
+      "rawTagName": "script",
+      "attributes": [],
+      "selfClosing": false,
+      "closing": true
+    }
+  },
+  "components": [],
+  "diagnostics": [
+    {
+      "message": "Only TypeScript type exports are allowed in <script slate>.",
+      "severity": "error",
+      "range": {
+        "start": 163,
+        "end": 193
+      }
+    },
+    {
+      "message": "Only TypeScript type exports are allowed in <script slate>.",
+      "severity": "error",
+      "range": {
+        "start": 196,
+        "end": 223
+      }
+    }
+  ]
+}

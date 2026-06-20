@@ -1,0 +1,9 @@
+<script slate>
+  const user: { name: string } | null = { name: "Slate" };
+</script>
+
+{#if user}
+  <p>Hello {user.name}</p>
+{:else}
+  <p>Hello guest</p>
+{/if}

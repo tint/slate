@@ -1,0 +1,15 @@
+<script slate>
+  $provide("theme", {
+    color: "red",
+    spacing: 8,
+  });
+
+  const theme = $inject<{
+    color: string;
+    spacing: number;
+  }>("theme");
+</script>
+
+<div style={{ color: theme.color }}>
+  <slot />
+</div>

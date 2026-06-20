@@ -1,0 +1,10 @@
+[
+  {
+    "message": "Expected closing </script>.",
+    "severity": "error",
+    "range": {
+      "start": 0,
+      "end": 62
+    }
+  }
+]

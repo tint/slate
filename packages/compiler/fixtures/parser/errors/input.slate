@@ -1,0 +1,5 @@
+<script slate>
+  const name = "Slate";
+
+<h1>{name</h1>
+</div>

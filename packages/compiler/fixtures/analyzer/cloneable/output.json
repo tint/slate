@@ -1,0 +1,118 @@
+{
+  "script": {
+    "kind": "SlateScriptElement",
+    "range": {
+      "start": 0,
+      "end": 488
+    },
+    "openTag": {
+      "kind": "Tag",
+      "range": {
+        "start": 0,
+        "end": 14
+      },
+      "tagName": "script",
+      "rawTagName": "script",
+      "attributes": [
+        {
+          "range": {
+            "start": 8,
+            "end": 13
+          },
+          "name": "slate",
+          "rawName": "slate",
+          "kind": "BooleanAttribute"
+        }
+      ],
+      "selfClosing": false,
+      "closing": false
+    },
+    "body": {
+      "kind": "RawText",
+      "range": {
+        "start": 14,
+        "end": 479
+      },
+      "text": "\n  const plain = {\n    color: \"red\",\n    spacing: 8,\n  };\n  const handler = () => {};\n  function makeValue() {\n    return {};\n  }\n  class Model {}\n  const instance = new Model();\n  const fallback = {\n    callback: () => {},\n  };\n\n  $provide(\"plain\", plain);\n  $provide(\"handler\", handler);\n  $provide(\"factory\", makeValue);\n  $provide(\"model\", Model);\n  $provide(\"instance\", instance);\n  $provide(\"call\", makeValue());\n\n  const injected = $inject(\"bad\", fallback);\n"
+    },
+    "closeTag": {
+      "kind": "Tag",
+      "range": {
+        "start": 479,
+        "end": 488
+      },
+      "tagName": "script",
+      "rawTagName": "script",
+      "attributes": [],
+      "selfClosing": false,
+      "closing": true
+    }
+  },
+  "components": [],
+  "diagnostics": [
+    {
+      "message": "`$provide` value must be cloneable data.",
+      "severity": "error",
+      "range": {
+        "start": 294,
+        "end": 301
+      }
+    },
+    {
+      "message": "`$provide` value must be cloneable data.",
+      "severity": "error",
+      "range": {
+        "start": 326,
+        "end": 335
+      }
+    },
+    {
+      "message": "`$provide` value must be cloneable data.",
+      "severity": "error",
+      "range": {
+        "start": 358,
+        "end": 363
+      }
+    },
+    {
+      "message": "`$provide` value must be cloneable data.",
+      "severity": "error",
+      "range": {
+        "start": 389,
+        "end": 397
+      }
+    },
+    {
+      "message": "`$provide` value must be cloneable data.",
+      "severity": "error",
+      "range": {
+        "start": 419,
+        "end": 430
+      }
+    },
+    {
+      "message": "`$inject` fallback must be cloneable data.",
+      "severity": "error",
+      "range": {
+        "start": 468,
+        "end": 476
+      }
+    },
+    {
+      "message": "`<slot>` data must be cloneable data.",
+      "severity": "error",
+      "range": {
+        "start": 587,
+        "end": 594
+      }
+    },
+    {
+      "message": "`<slot>` data must be cloneable data.",
+      "severity": "error",
+      "range": {
+        "start": 629,
+        "end": 640
+      }
+    }
+  ]
+}

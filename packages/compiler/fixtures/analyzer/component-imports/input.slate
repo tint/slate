@@ -1,0 +1,8 @@
+<script slate>
+  import Card from "./Card.slate";
+  import Button from "../Button.slate";
+  import { helper } from "./helper";
+</script>
+
+<Card />
+<Button />

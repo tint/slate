@@ -1,0 +1,5 @@
+<script slate>
+  const content: string = "<strong>Raw</strong>";
+</script>
+
+<div>{@html content}</div>

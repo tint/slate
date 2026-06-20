@@ -1,0 +1,73 @@
+{
+  "script": {
+    "kind": "SlateScriptElement",
+    "range": {
+      "start": 0,
+      "end": 66
+    },
+    "openTag": {
+      "kind": "Tag",
+      "range": {
+        "start": 0,
+        "end": 24
+      },
+      "tagName": "script",
+      "rawTagName": "script",
+      "attributes": [
+        {
+          "range": {
+            "start": 8,
+            "end": 14
+          },
+          "name": "slate",
+          "rawName": "slate",
+          "kind": "BooleanAttribute"
+        },
+        {
+          "range": {
+            "start": 14,
+            "end": 23
+          },
+          "name": "is:inline",
+          "rawName": "is:inline",
+          "kind": "DirectiveAttribute",
+          "namespace": "is",
+          "directiveName": "inline"
+        }
+      ],
+      "selfClosing": false,
+      "closing": false
+    },
+    "body": {
+      "kind": "RawText",
+      "range": {
+        "start": 24,
+        "end": 57
+      },
+      "text": "\n  const name: string = \"Slate\";\n"
+    },
+    "closeTag": {
+      "kind": "Tag",
+      "range": {
+        "start": 57,
+        "end": 66
+      },
+      "tagName": "script",
+      "rawTagName": "script",
+      "attributes": [],
+      "selfClosing": false,
+      "closing": true
+    }
+  },
+  "components": [],
+  "diagnostics": [
+    {
+      "message": "`is:*` directives are not allowed on <script slate>.",
+      "severity": "error",
+      "range": {
+        "start": 14,
+        "end": 23
+      }
+    }
+  ]
+}

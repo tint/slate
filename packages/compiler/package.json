@@ -1,0 +1,26 @@
+{
+  "name": "@slate/compiler",
+  "version": "0.0.1-alpha.1",
+  "type": "module",
+  "private": true,
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "types": "./dist/index.d.mts",
+  "dependencies": {
+    "typescript": "catalog:"
+  },
+  "scripts": {
+    "build": "tsdown src/index.ts --format esm --dts --out-dir dist --clean",
+    "check": "tsc --noEmit",
+    "snapshot:parser": "tsx scripts/snapshot-parser.ts",
+    "snapshot:analyzer": "tsx scripts/snapshot-analyzer.ts",
+    "snapshot:codegen": "tsx scripts/snapshot-codegen.ts",
+    "test": "bun run snapshot:parser && bun run snapshot:analyzer && bun run snapshot:codegen && bun run test:render",
+    "test:render": "tsx scripts/run-render-fixtures.ts"
+  }
+}

@@ -1,0 +1,11 @@
+<script slate>
+  const items: string[] = ["a", "b"];
+</script>
+
+<ul>
+  {#each items as item, index}
+    <li>{index}: {item}</li>
+  {:else}
+    <li>No items</li>
+  {/each}
+</ul>

@@ -1,0 +1,7 @@
+<script slate>
+  const title = $prop<string>("title", "Untitled");
+</script>
+
+<section>
+  <slot name="header" data={{ title, icon: "!", tail: "?" }} />
+</section>

@@ -1,0 +1,11 @@
+<script slate>
+  import Card from "./Card.slate";
+</script>
+
+<Card>
+  <header slot:header={{ title, icon, tail }}>
+    {icon}
+    <h1>{title}</h1>
+    {tail}
+  </header>
+</Card>

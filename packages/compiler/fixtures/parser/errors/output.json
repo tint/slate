@@ -1,0 +1,46 @@
+{
+  "kind": "SlateFile",
+  "range": {
+    "start": 0,
+    "end": 62
+  },
+  "children": [
+    {
+      "kind": "SlateScriptElement",
+      "range": {
+        "start": 0,
+        "end": 62
+      },
+      "openTag": {
+        "kind": "Tag",
+        "range": {
+          "start": 0,
+          "end": 14
+        },
+        "tagName": "script",
+        "rawTagName": "script",
+        "attributes": [
+          {
+            "range": {
+              "start": 8,
+              "end": 13
+            },
+            "name": "slate",
+            "rawName": "slate",
+            "kind": "BooleanAttribute"
+          }
+        ],
+        "selfClosing": false,
+        "closing": false
+      },
+      "body": {
+        "kind": "RawText",
+        "range": {
+          "start": 14,
+          "end": 62
+        },
+        "text": "\n  const name = \"Slate\";\n\n<h1>{name</h1>\n</div>\n"
+      }
+    }
+  ]
+}

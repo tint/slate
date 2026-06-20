@@ -1,0 +1,70 @@
+{
+  "script": {
+    "kind": "SlateScriptElement",
+    "range": {
+      "start": 0,
+      "end": 136
+    },
+    "openTag": {
+      "kind": "Tag",
+      "range": {
+        "start": 0,
+        "end": 14
+      },
+      "tagName": "script",
+      "rawTagName": "script",
+      "attributes": [
+        {
+          "range": {
+            "start": 8,
+            "end": 13
+          },
+          "name": "slate",
+          "rawName": "slate",
+          "kind": "BooleanAttribute"
+        }
+      ],
+      "selfClosing": false,
+      "closing": false
+    },
+    "body": {
+      "kind": "RawText",
+      "range": {
+        "start": 14,
+        "end": 127
+      },
+      "text": "\n  import Card from \"./Card.slate\";\n  import Button from \"../Button.slate\";\n  import { helper } from \"./helper\";\n"
+    },
+    "closeTag": {
+      "kind": "Tag",
+      "range": {
+        "start": 127,
+        "end": 136
+      },
+      "tagName": "script",
+      "rawTagName": "script",
+      "attributes": [],
+      "selfClosing": false,
+      "closing": true
+    }
+  },
+  "components": [
+    {
+      "localName": "Card",
+      "source": "./Card.slate",
+      "range": {
+        "start": 17,
+        "end": 49
+      }
+    },
+    {
+      "localName": "Button",
+      "source": "../Button.slate",
+      "range": {
+        "start": 52,
+        "end": 89
+      }
+    }
+  ],
+  "diagnostics": []
+}

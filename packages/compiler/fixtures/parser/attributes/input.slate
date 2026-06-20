@@ -1,0 +1,9 @@
+<div
+  class={["card", active && "active"]}
+  style={{ color: "red", marginTop: "8px" }}
+  slot:header={{ title, icon, tail }}
+  is:inline
+  disabled
+>
+  Content
+</div>

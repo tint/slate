@@ -1,0 +1,9 @@
+<script slate>
+  import Consumer from "./Consumer.slate";
+
+  $provide("theme", {
+    color: "red",
+  });
+</script>
+
+<Consumer />

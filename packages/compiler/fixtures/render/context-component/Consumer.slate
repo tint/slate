@@ -1,0 +1,9 @@
+<script slate>
+  const theme = $inject<{
+    color: string;
+  }>("theme", {
+    color: "black",
+  });
+</script>
+
+<p style={{ color: theme.color }}>Theme</p>

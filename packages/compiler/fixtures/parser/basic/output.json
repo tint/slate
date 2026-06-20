@@ -1,0 +1,133 @@
+{
+  "kind": "SlateFile",
+  "range": {
+    "start": 0,
+    "end": 80
+  },
+  "children": [
+    {
+      "kind": "SlateScriptElement",
+      "range": {
+        "start": 0,
+        "end": 56
+      },
+      "openTag": {
+        "kind": "Tag",
+        "range": {
+          "start": 0,
+          "end": 14
+        },
+        "tagName": "script",
+        "rawTagName": "script",
+        "attributes": [
+          {
+            "range": {
+              "start": 8,
+              "end": 13
+            },
+            "name": "slate",
+            "rawName": "slate",
+            "kind": "BooleanAttribute"
+          }
+        ],
+        "selfClosing": false,
+        "closing": false
+      },
+      "body": {
+        "kind": "RawText",
+        "range": {
+          "start": 14,
+          "end": 47
+        },
+        "text": "\n  const name: string = \"Slate\";\n"
+      },
+      "closeTag": {
+        "kind": "Tag",
+        "range": {
+          "start": 47,
+          "end": 56
+        },
+        "tagName": "script",
+        "rawTagName": "script",
+        "attributes": [],
+        "selfClosing": false,
+        "closing": true
+      }
+    },
+    {
+      "kind": "Text",
+      "range": {
+        "start": 56,
+        "end": 58
+      },
+      "text": "\n\n"
+    },
+    {
+      "kind": "Element",
+      "range": {
+        "start": 58,
+        "end": 79
+      },
+      "tagName": "h1",
+      "rawTagName": "h1",
+      "openTag": {
+        "kind": "Tag",
+        "range": {
+          "start": 58,
+          "end": 62
+        },
+        "tagName": "h1",
+        "rawTagName": "h1",
+        "attributes": [],
+        "selfClosing": false,
+        "closing": false
+      },
+      "children": [
+        {
+          "kind": "Text",
+          "range": {
+            "start": 62,
+            "end": 68
+          },
+          "text": "Hello "
+        },
+        {
+          "kind": "Interpolation",
+          "range": {
+            "start": 68,
+            "end": 74
+          },
+          "expression": {
+            "range": {
+              "start": 69,
+              "end": 73
+            },
+            "text": "name"
+          },
+          "closed": true
+        }
+      ],
+      "closeTag": {
+        "kind": "Tag",
+        "range": {
+          "start": 74,
+          "end": 79
+        },
+        "tagName": "h1",
+        "rawTagName": "h1",
+        "attributes": [],
+        "selfClosing": false,
+        "closing": true
+      },
+      "selfClosing": false
+    },
+    {
+      "kind": "Text",
+      "range": {
+        "start": 79,
+        "end": 80
+      },
+      "text": "\n"
+    }
+  ]
+}

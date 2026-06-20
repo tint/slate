@@ -1,0 +1,10 @@
+[
+  {
+    "message": "`is:*` directives are not allowed on <script slate>.",
+    "severity": "error",
+    "range": {
+      "start": 14,
+      "end": 23
+    }
+  }
+]

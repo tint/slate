@@ -1,0 +1,50 @@
+[
+  {
+    "message": "Use `slot:name` for Slate slot assignment, not `slot=\"name\"`.",
+    "severity": "error",
+    "range": {
+      "start": 41,
+      "end": 56
+    }
+  },
+  {
+    "message": "Expected a slot name after `slot:`.",
+    "severity": "error",
+    "range": {
+      "start": 77,
+      "end": 82
+    }
+  },
+  {
+    "message": "Use `slot:name={pattern}` to bind slot data, not a string value.",
+    "severity": "error",
+    "range": {
+      "start": 112,
+      "end": 132
+    }
+  },
+  {
+    "message": "`<slot>` name must be a static string attribute.",
+    "severity": "error",
+    "range": {
+      "start": 287,
+      "end": 305
+    }
+  },
+  {
+    "message": "`<slot>` data must use an expression attribute, for example `data={value}`.",
+    "severity": "error",
+    "range": {
+      "start": 315,
+      "end": 325
+    }
+  },
+  {
+    "message": "`slot:*` assigns content to a component slot and is not allowed on `<slot>` outlets.",
+    "severity": "error",
+    "range": {
+      "start": 335,
+      "end": 347
+    }
+  }
+]

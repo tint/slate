@@ -1,0 +1,15 @@
+<Card>
+  <h1 slot:title>Title</h1>
+  <h2 slot="subtitle">Subtitle</h2>
+  <h3 slot:>Missing slot name</h3>
+  <h4 slot:footer="footer">String slot pattern</h4>
+  <header slot:header={{ title, icon }}>
+    {title}
+  </header>
+</Card>
+
+<slot />
+<slot name="header" data={{ title }} />
+<slot name={dynamicName} />
+<slot data="bad" />
+<slot slot:header />

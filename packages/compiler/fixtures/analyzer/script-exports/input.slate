@@ -1,0 +1,14 @@
+<script slate>
+  export type Variant = "default" | "featured";
+
+  export interface CardProps {
+    title?: string;
+  }
+
+  export type { Theme } from "./theme";
+
+  export const prerender = true;
+  export function helper() {}
+</script>
+
+<h1>Card</h1>
