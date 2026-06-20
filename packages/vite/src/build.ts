@@ -5,6 +5,7 @@ import type { InlineConfig } from "vite";
 import { build as viteBuild, mergeConfig } from "vite";
 import { formatDiagnostic } from "@slate/compiler";
 import { normalizeInputs, normalizeUserViteConfig } from "./config";
+import { buildSlateCssImports, collectSlateCssImports, injectStylesheets } from "./css-imports";
 import { isSlateRenderError } from "./errors";
 import { copyPublicDir } from "./public-files";
 import { slate } from "./plugin";
@@ -34,7 +35,7 @@ export async function buildSlate(options: SlateBuildOptions): Promise<boolean> {
 
   for (const input of inputs) {
     const outPath = inputs.length > 1 ? resolve(output, `${input.name}.html`) : output;
-    const result = await renderBuildInput(root, input.path, resolve(tmpDir, input.name), options.kitSpecifier ?? "@slate/kit", options.plugins ?? [], options.vite);
+    const result = await renderBuildInput(root, input.path, resolve(tmpDir, input.name), publicOutDir, options.kitSpecifier ?? "@slate/kit", options.plugins ?? [], options.vite);
 
     if (!result.ok) {
       options.onError?.(result.message);
@@ -55,7 +56,7 @@ export async function buildSlate(options: SlateBuildOptions): Promise<boolean> {
   return true;
 }
 
-async function renderBuildInput(root: string, inputPath: string, tmpDir: string, kitSpecifier: string, plugins: SlatePlugin[], vite?: SlateViteUserConfig): Promise<
+async function renderBuildInput(root: string, inputPath: string, tmpDir: string, outDir: string, kitSpecifier: string, plugins: SlatePlugin[], vite?: SlateViteUserConfig): Promise<
   | { ok: true; html: string }
   | { ok: false; message: string }
 > {
@@ -89,6 +90,19 @@ async function renderBuildInput(root: string, inputPath: string, tmpDir: string,
     };
   }
 
+  const source = await readFile(inputPath, "utf8");
+  const cssImports = collectSlateCssImports(source);
+  const stylesheetHrefs = await buildSlateCssImports({
+    root,
+    inputPath,
+    tmpDir: resolve(tmpDir, "css"),
+    outDir,
+    imports: cssImports,
+    plugins,
+    vite,
+    kitSpecifier,
+  });
+
   // Import the freshly-built SSR entry with a cache-busting query so repeated
   // builds in the same process do not reuse stale modules.
   const mod = await import(`${pathToFileURL(resolve(tmpDir, "entry.mjs")).href}?t=${Date.now()}`);
@@ -96,7 +110,7 @@ async function renderBuildInput(root: string, inputPath: string, tmpDir: string,
   try {
     return {
       ok: true,
-      html: await mod.render(),
+      html: injectStylesheets(await mod.render(), stylesheetHrefs),
     };
   } catch (error) {
     if (isSlateRenderError(error)) {
