@@ -3,14 +3,13 @@
   "version": "0.0.1-alpha.1",
   "license": "MIT",
   "exports": {
-    ".": "./dist/index.mjs",
-    "./config": "./dist/config.mjs"
+    ".": "./src/index.ts",
+    "./config": "./src/config.ts"
   },
   "publish": {
     "include": [
       "README.md",
-      "dist/**/*.mjs",
-      "dist/**/*.d.mts"
+      "src/**/*.ts"
     ]
   }
 }
