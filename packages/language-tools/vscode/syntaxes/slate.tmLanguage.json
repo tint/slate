@@ -1,0 +1,202 @@
+{
+  "$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
+  "name": "Slate",
+  "scopeName": "source.slate",
+  "fileTypes": ["slate"],
+  "patterns": [
+    { "include": "#comments" },
+    { "include": "#slate-script" },
+    { "include": "#style" },
+    { "include": "#slate-blocks" },
+    { "include": "#slate-tags" },
+    { "include": "#interpolation" },
+    { "include": "text.html.basic" }
+  ],
+  "repository": {
+    "comments": {
+      "patterns": [
+        {
+          "name": "comment.block.html.slate",
+          "begin": "<!--",
+          "end": "-->"
+        }
+      ]
+    },
+    "slate-script": {
+      "patterns": [
+        {
+          "name": "meta.embedded.block.script.slate",
+          "begin": "(<)(script)\\b(?=[^>]*\\bslate\\b)([^>]*)(>)",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.tag.begin.html.slate" },
+            "2": { "name": "entity.name.tag.script.slate" },
+            "3": { "patterns": [{ "include": "#attributes" }] },
+            "4": { "name": "punctuation.definition.tag.end.html.slate" }
+          },
+          "end": "(</)(script)(>)",
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.tag.begin.html.slate" },
+            "2": { "name": "entity.name.tag.script.slate" },
+            "3": { "name": "punctuation.definition.tag.end.html.slate" }
+          },
+          "contentName": "source.ts",
+          "patterns": [{ "include": "source.ts" }]
+        }
+      ]
+    },
+    "style": {
+      "patterns": [
+        {
+          "name": "meta.embedded.block.style.slate",
+          "begin": "(<)(style)\\b([^>]*)(>)",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.tag.begin.html.slate" },
+            "2": { "name": "entity.name.tag.style.slate" },
+            "3": { "patterns": [{ "include": "#attributes" }] },
+            "4": { "name": "punctuation.definition.tag.end.html.slate" }
+          },
+          "end": "(</)(style)(>)",
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.tag.begin.html.slate" },
+            "2": { "name": "entity.name.tag.style.slate" },
+            "3": { "name": "punctuation.definition.tag.end.html.slate" }
+          },
+          "contentName": "source.css",
+          "patterns": [{ "include": "source.css" }]
+        }
+      ]
+    },
+    "slate-blocks": {
+      "patterns": [
+        {
+          "name": "meta.control.if.slate",
+          "match": "(\\{)(#if|:else if|:else|/if)\\b([^}]*)?(\\})",
+          "captures": {
+            "1": { "name": "punctuation.definition.block.begin.slate" },
+            "2": { "name": "keyword.control.conditional.slate" },
+            "3": { "name": "source.ts.embedded.slate" },
+            "4": { "name": "punctuation.definition.block.end.slate" }
+          }
+        },
+        {
+          "name": "meta.control.each.slate",
+          "match": "(\\{)(#each)\\b([^}]*?)(\\bas\\b)([^}]*)?(\\})",
+          "captures": {
+            "1": { "name": "punctuation.definition.block.begin.slate" },
+            "2": { "name": "keyword.control.loop.slate" },
+            "3": { "name": "source.ts.embedded.slate" },
+            "4": { "name": "keyword.operator.expression.as.slate" },
+            "5": { "name": "source.ts.embedded.slate" },
+            "6": { "name": "punctuation.definition.block.end.slate" }
+          }
+        },
+        {
+          "name": "meta.control.each.slate",
+          "match": "(\\{)(:else|/each)\\b([^}]*)?(\\})",
+          "captures": {
+            "1": { "name": "punctuation.definition.block.begin.slate" },
+            "2": { "name": "keyword.control.loop.slate" },
+            "3": { "name": "source.ts.embedded.slate" },
+            "4": { "name": "punctuation.definition.block.end.slate" }
+          }
+        },
+        {
+          "name": "meta.control.await.slate",
+          "match": "(\\{)(#await|:then|:catch|/await)\\b([^}]*)?(\\})",
+          "captures": {
+            "1": { "name": "punctuation.definition.block.begin.slate" },
+            "2": { "name": "keyword.control.async.slate" },
+            "3": { "name": "source.ts.embedded.slate" },
+            "4": { "name": "punctuation.definition.block.end.slate" }
+          }
+        },
+        {
+          "name": "meta.declaration.slate",
+          "match": "(\\{)(const|let)\\b([^}]*)?(\\})",
+          "captures": {
+            "1": { "name": "punctuation.definition.block.begin.slate" },
+            "2": { "name": "storage.type.slate" },
+            "3": { "name": "source.ts.embedded.slate" },
+            "4": { "name": "punctuation.definition.block.end.slate" }
+          }
+        },
+        {
+          "name": "meta.directive.slate",
+          "match": "(\\{)(@html|@debug)\\b([^}]*)?(\\})",
+          "captures": {
+            "1": { "name": "punctuation.definition.directive.begin.slate" },
+            "2": { "name": "keyword.other.directive.slate" },
+            "3": { "name": "source.ts.embedded.slate" },
+            "4": { "name": "punctuation.definition.directive.end.slate" }
+          }
+        }
+      ]
+    },
+    "interpolation": {
+      "patterns": [
+        {
+          "name": "meta.interpolation.slate",
+          "begin": "\\{(?![#/:@])",
+          "beginCaptures": {
+            "0": { "name": "punctuation.definition.interpolation.begin.slate" }
+          },
+          "end": "\\}",
+          "endCaptures": {
+            "0": { "name": "punctuation.definition.interpolation.end.slate" }
+          },
+          "contentName": "source.ts.embedded.slate",
+          "patterns": [{ "include": "source.ts" }]
+        }
+      ]
+    },
+    "slate-tags": {
+      "patterns": [
+        {
+          "name": "meta.tag.fragment.slate",
+          "match": "(</?)(Fragment)(\\s*/?>)",
+          "captures": {
+            "1": { "name": "punctuation.definition.tag.begin.html.slate" },
+            "2": { "name": "entity.name.tag.fragment.slate" },
+            "3": { "name": "punctuation.definition.tag.end.html.slate" }
+          }
+        },
+        {
+          "name": "meta.tag.slot.slate",
+          "begin": "(<)(/?slot)\\b",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.tag.begin.html.slate" },
+            "2": { "name": "entity.name.tag.slot.slate" }
+          },
+          "end": "(/?>)",
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.tag.end.html.slate" }
+          },
+          "patterns": [{ "include": "#attributes" }]
+        }
+      ]
+    },
+    "attributes": {
+      "patterns": [
+        {
+          "name": "entity.other.attribute-name.directive.slate",
+          "match": "\\b(slot|is):[A-Za-z_$][\\w$-]*"
+        },
+        {
+          "name": "entity.other.attribute-name.slate",
+          "match": "\\b[A-Za-z_:][-A-Za-z0-9_:.]*"
+        },
+        {
+          "name": "string.quoted.double.html.slate",
+          "begin": "\"",
+          "end": "\""
+        },
+        {
+          "name": "string.quoted.single.html.slate",
+          "begin": "'",
+          "end": "'"
+        },
+        { "include": "#interpolation" }
+      ]
+    }
+  }
+}

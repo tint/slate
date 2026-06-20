@@ -1,0 +1,9 @@
+<script slate>
+    const label = $prop("label", "Click Me");
+</script>
+
+<button class={["btn", { primary: true }]} style={{ padding: "12px 24px" }}>
+    <slot name="leading" />
+    <slot>{label}</slot>
+    <slot name="trailing" />
+</button>

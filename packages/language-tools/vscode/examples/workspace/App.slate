@@ -1,0 +1,28 @@
+<script slate>
+import Button from "./Button.slate";
+
+const title = $prop("title", "Slate DX");
+const items = ["syntax", "diagnostics", "completion"];
+</script>
+
+<script is:global>
+console.log("App component loaded");
+</script>
+
+<section class={["card", { ready: true }]} style={{ padding: "24px" }}>
+  <h1>{title}</h1>
+
+  {#if items.length > 0}
+    <ul>
+      {#each items as item, index}
+        <li>{index}: {item}</li>
+      {/each}
+    </ul>
+  {:else}
+    <p>No items</p>
+  {/if}
+
+  <Button label="Click Me" />
+
+  <slot name="footer" data={{ title }} />
+</section>

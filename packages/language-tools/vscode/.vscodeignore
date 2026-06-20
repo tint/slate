@@ -1,0 +1,9 @@
+.vscode/**
+.tmp-vsix/**
+examples/**
+node_modules/**
+src/**
+tsconfig.json
+*.vsix
+*.log
+.DS_Store

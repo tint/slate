@@ -1,0 +1,89 @@
+{
+  "name": "slate-vscode",
+  "displayName": "Slate",
+  "publisher": "slate",
+  "version": "0.0.1-alpha.1",
+  "type": "module",
+  "private": true,
+  "main": "./dist/index.mjs",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "activationEvents": [
+    "onLanguage:slate"
+  ],
+  "contributes": {
+    "languages": [
+      {
+        "id": "slate",
+        "aliases": [
+          "Slate"
+        ],
+        "extensions": [
+          ".slate"
+        ],
+        "configuration": "./language-configuration.json"
+      }
+    ],
+    "grammars": [
+      {
+        "language": "slate",
+        "scopeName": "source.slate",
+        "path": "./syntaxes/slate.tmLanguage.json",
+        "embeddedLanguages": {
+          "source.ts": "typescript",
+          "source.css": "css"
+        }
+      }
+    ],
+    "configuration": [
+      {
+        "title": "Slate",
+        "properties": {
+          "slate.languageServer.command": {
+            "type": "string",
+            "default": "",
+            "description": "Command used to launch the Slate language server. Leave empty to use the bundled workspace server."
+          },
+          "slate.languageServer.args": {
+            "type": "array",
+            "description": "Arguments passed to the language server command when slate.languageServer.command is set.",
+            "default": [],
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    ]
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "types": "./dist/index.d.mts",
+  "dependencies": {
+    "typescript": "^5.8.0"
+  },
+  "devDependencies": {
+    "@types/vscode": "^1.100.0",
+    "@vscode/vsce": "^3.9.2",
+    "vscode-languageclient": "^9.0.1"
+  },
+  "scripts": {
+    "build": "tsdown src/index.ts src/server.ts --format esm --dts --out-dir dist --clean --shims",
+    "check": "tsc --noEmit",
+    "package": "node scripts/package-vsix.mjs"
+  },
+  "tsdown": {
+    "deps": {
+      "neverBundle": [
+        "vscode",
+        "typescript"
+      ]
+    }
+  }
+}
