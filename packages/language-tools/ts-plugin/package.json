@@ -1,0 +1,32 @@
+{
+  "name": "@slate/ts-plugin",
+  "version": "0.0.1-alpha.1",
+  "type": "module",
+  "private": true,
+  "main": "./dist/index.mjs",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "types": "./dist/index.d.mts",
+  "dependencies": {
+    "@slate/compiler": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "catalog:"
+  },
+  "peerDependencies": {
+    "typescript": ">=5.0.0"
+  },
+  "scripts": {
+    "build": "tsdown src/index.ts --format esm --dts --out-dir dist --clean",
+    "check": "tsc --noEmit",
+    "snapshot:language-service": "tsx scripts/run-language-service-fixtures.ts",
+    "snapshot:shared-host": "tsx scripts/snapshot-shared-host.ts",
+    "snapshot:component-types": "tsx scripts/snapshot-component-types.ts",
+    "test": "bun run snapshot:language-service && bun run snapshot:shared-host && bun run snapshot:component-types"
+  }
+}

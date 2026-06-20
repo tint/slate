@@ -1,0 +1,44 @@
+[
+  {
+    "filename": "entry.ts",
+    "message": "Type 'number' is not assignable to type 'string'.",
+    "range": {
+      "start": {
+        "line": 3,
+        "character": 4
+      },
+      "end": {
+        "line": 3,
+        "character": 9
+      }
+    }
+  },
+  {
+    "filename": "entry.ts",
+    "message": "Property 'toFixed' does not exist on type '\"Hello\"'. Did you mean 'fixed'?",
+    "range": {
+      "start": {
+        "line": 6,
+        "character": 12
+      },
+      "end": {
+        "line": 6,
+        "character": 19
+      }
+    }
+  },
+  {
+    "filename": "entry.ts",
+    "message": "Property 'toUpperCase' does not exist on type '1'.",
+    "range": {
+      "start": {
+        "line": 7,
+        "character": 11
+      },
+      "end": {
+        "line": 7,
+        "character": 22
+      }
+    }
+  }
+]

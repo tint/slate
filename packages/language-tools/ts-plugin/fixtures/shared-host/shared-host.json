@@ -1,0 +1,86 @@
+{
+  "languageService": [
+    {
+      "file": "entry.slate.ts",
+      "message": "Invalid module name in augmentation, module '*.slate' cannot be found."
+    },
+    {
+      "file": "entry.slate.ts",
+      "message": "Type 'number' does not satisfy the expected type 'string'.",
+      "range": {
+        "start": 72,
+        "end": 81
+      }
+    },
+    {
+      "file": "entry.slate.ts",
+      "message": "Property 'toFixed' does not exist on type '\"Hello\"'. Did you mean 'fixed'?",
+      "range": {
+        "start": 130,
+        "end": 137
+      }
+    },
+    {
+      "file": "entry.slate.ts",
+      "message": "Property 'toUpperCase' does not exist on type '1'.",
+      "range": {
+        "start": 151,
+        "end": 162
+      }
+    },
+    {
+      "file": "entry.slate.ts",
+      "message": "Object literal may only specify known properties, and '\"footer\"' does not exist in type '__SlateInferredSlots'.",
+      "range": {
+        "start": 188,
+        "end": 196
+      }
+    },
+    {
+      "file": "entry.slate.ts",
+      "message": "Parameter '__slateSlotData' implicitly has an 'any' type."
+    }
+  ],
+  "compiler": [
+    {
+      "file": "entry.slate.ts",
+      "message": "Invalid module name in augmentation, module '*.slate' cannot be found."
+    },
+    {
+      "file": "entry.slate.ts",
+      "message": "Type 'number' does not satisfy the expected type 'string'.",
+      "range": {
+        "start": 72,
+        "end": 81
+      }
+    },
+    {
+      "file": "entry.slate.ts",
+      "message": "Property 'toFixed' does not exist on type '\"Hello\"'. Did you mean 'fixed'?",
+      "range": {
+        "start": 130,
+        "end": 137
+      }
+    },
+    {
+      "file": "entry.slate.ts",
+      "message": "Property 'toUpperCase' does not exist on type '1'.",
+      "range": {
+        "start": 151,
+        "end": 162
+      }
+    },
+    {
+      "file": "entry.slate.ts",
+      "message": "Object literal may only specify known properties, and '\"footer\"' does not exist in type '__SlateInferredSlots'.",
+      "range": {
+        "start": 188,
+        "end": 196
+      }
+    },
+    {
+      "file": "entry.slate.ts",
+      "message": "Parameter '__slateSlotData' implicitly has an 'any' type."
+    }
+  ]
+}

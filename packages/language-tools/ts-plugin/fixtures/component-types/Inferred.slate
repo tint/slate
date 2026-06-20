@@ -1,0 +1,11 @@
+<script slate>
+const title = $prop("title", "Untitled");
+const count = $prop<number>("count");
+const props = $props<{ tone: "primary" | "secondary" }>();
+const tail = 1;
+</script>
+
+<section>
+  <slot name="header" data={{ title, count, tail }} />
+  <slot />
+</section>

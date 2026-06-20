@@ -1,0 +1,15 @@
+<script slate>
+export type Props = {
+  title: string;
+};
+
+export type Slots = {
+  header?: (data: { title: string }) => unknown;
+};
+
+const title = $prop("title", "Untitled");
+</script>
+
+<section>
+  <slot name="header" data={{ title }} />
+</section>
