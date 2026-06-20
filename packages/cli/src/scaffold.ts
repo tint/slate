@@ -1,7 +1,7 @@
 import { homedir } from "node:os";
-import { mkdir, readdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, readdir, writeFile } from "node:fs/promises";
 import { basename, parse, resolve } from "node:path";
-import { readCliPackageJson, resolveCliVersion, type CliPackageJson } from "./package-info";
+import { readCliPackageJson, resolveCliVersion, type CliPackageJson } from "./package-info.ts";
 
 export type InitOptions = {
   force?: boolean;
@@ -35,14 +35,6 @@ async function createProject(targetDir: string, options: CreateProjectOptions): 
     if (!options.force) {
       throw new Error(`Target directory is not empty: ${targetDir}. Use --force to overwrite scaffold files.`);
     }
-
-    await rm(targetDir, {
-      recursive: true,
-      force: true,
-    });
-    await mkdir(targetDir, {
-      recursive: true,
-    });
   }
 
   const projectName = normalizePackageName(basename(targetDir) || "slate-app");
@@ -53,15 +45,9 @@ async function createProject(targetDir: string, options: CreateProjectOptions): 
   await writeFile(`${targetDir}/README.md`, createReadme(projectName), "utf8");
   await writeFile(`${targetDir}/slate.config.ts`, createSlateConfig(), "utf8");
   await writeFile(`${targetDir}/.gitignore`, "node_modules\ndist\n.slate-tmp\n.slate-dev\n", "utf8");
-  await mkdir(`${targetDir}/src`, {
-    recursive: true,
-  });
-  await mkdir(`${targetDir}/src/components`, {
-    recursive: true,
-  });
-  await mkdir(`${targetDir}/public`, {
-    recursive: true,
-  });
+  await mkdir(`${targetDir}/src`, { recursive: true });
+  await mkdir(`${targetDir}/src/components`, { recursive: true });
+  await mkdir(`${targetDir}/public`, { recursive: true });
   await writeFile(`${targetDir}/src/App.slate`, createAppSlate(), "utf8");
   await writeFile(`${targetDir}/src/components/Card.slate`, createCardSlate(), "utf8");
   await writeFile(`${targetDir}/public/favicon.svg`, createFavicon(), "utf8");
@@ -200,7 +186,6 @@ function assertSafeTargetDir(targetDir: string): void {
   const forbidden = new Set([
     parsed.root,
     resolve(homedir()),
-    process.cwd(),
   ]);
 
   if (forbidden.has(targetDir)) {

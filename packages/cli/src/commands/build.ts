@@ -1,7 +1,7 @@
 import { resolve } from "node:path";
 import { buildSlate } from "@slate/vite";
-import { resolveInputs } from "../args";
-import { loadConfig } from "../config";
+import { resolveInputs } from "../args.ts";
+import { loadConfig } from "../config.ts";
 
 export type BuildOptions = {
   input?: string;
@@ -14,12 +14,17 @@ export type BuildOptions = {
 };
 
 export async function runBuild(options: BuildOptions = {}): Promise<void> {
-  const config = await loadConfig(options.config);
+  const config = await loadConfig(options.config, {
+    command: "build",
+    mode: "production",
+    phase: "build",
+  });
   const input = resolveInputs(options.input, config.input);
-  const output = options.output ?? options.out ?? config.build.output ?? (input.length > 1 ? "dist" : "dist/index.html");
+  const outputFlag = options.output ?? options.out;
+  const output = outputFlag ? resolve(outputFlag) : config.build.output ?? resolve(input.length > 1 ? "dist" : "dist/index.html");
   const tmpDir = resolve(options.tmpDir ?? config.build.tmpDir);
   const kitSpecifier = options.kit ?? config.kit.specifier;
-  const publicDir = options.publicDir ?? config.publicDir;
+  const publicDir = options.publicDir ? resolve(options.publicDir) : config.publicDir;
 
   if (!input.length) {
     throw new Error("Missing input file. Usage: slate build [input.slate] [--output dist/index.html]");

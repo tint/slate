@@ -3,7 +3,19 @@ import { dirname, extname, isAbsolute, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import type { SlatePlugin, SlateViteUserConfig } from "@slate/vite";
 
-/** User-authored `slate.config.*` shape. */
+export type SlateConfigCommand = "serve" | "build";
+
+export type SlateConfigMode = "development" | "production";
+
+export type SlateConfigPhase = "dev" | "build" | "preview" | "check";
+
+export type SlateConfigContext = {
+  command: SlateConfigCommand;
+  mode: SlateConfigMode;
+  phase: SlateConfigPhase;
+};
+
+/** User-authored Slate config object shape. */
 export type SlateConfig = {
   input?: string | Record<string, string>;
   plugins?: SlatePlugin[];
@@ -12,7 +24,6 @@ export type SlateConfig = {
   dev?: {
     host?: string;
     port?: number;
-    tmpDir?: string;
     reload?: boolean;
   };
   build?: {
@@ -28,6 +39,11 @@ export type SlateConfig = {
   };
 };
 
+export type SlateConfigExport =
+  | SlateConfig
+  | Promise<SlateConfig>
+  | ((context: SlateConfigContext) => SlateConfig | Promise<SlateConfig>);
+
 /** Fully resolved config after defaults and config-relative paths are applied. */
 export type ResolvedSlateConfig = {
   configPath?: string;
@@ -38,7 +54,6 @@ export type ResolvedSlateConfig = {
   dev: {
     host: string;
     port: number;
-    tmpDir: string;
     reload: boolean;
   };
   build: {
@@ -64,7 +79,6 @@ const DEFAULT_CONFIG: Omit<ResolvedSlateConfig, "configPath" | "input"> = {
   dev: {
     host: "127.0.0.1",
     port: 5173,
-    tmpDir: "node_modules/.slate-dev",
     reload: true,
   },
   build: {
@@ -80,14 +94,14 @@ const DEFAULT_CONFIG: Omit<ResolvedSlateConfig, "configPath" | "input"> = {
 };
 
 /** Type helper for `slate.config.ts`. */
-export function defineConfig(config: SlateConfig): SlateConfig {
+export function defineConfig<TConfig extends SlateConfigExport>(config: TConfig): TConfig {
   return config;
 }
 
 /** Load Slate config, applying CLI config selection and config-relative paths. */
-export async function loadConfig(configFile?: string): Promise<ResolvedSlateConfig> {
+export async function loadConfig(configFile: string | undefined, context: SlateConfigContext): Promise<ResolvedSlateConfig> {
   const configPath = await findConfig(configFile);
-  const userConfig = configPath ? await importConfig(configPath) : {};
+  const userConfig = configPath ? await importConfig(configPath, context) : {};
   const baseDir = configPath ? dirname(configPath) : process.cwd();
 
   return {
@@ -99,7 +113,6 @@ export async function loadConfig(configFile?: string): Promise<ResolvedSlateConf
     dev: {
       host: userConfig.dev?.host ?? DEFAULT_CONFIG.dev.host,
       port: userConfig.dev?.port ?? DEFAULT_CONFIG.dev.port,
-      tmpDir: userConfig.dev?.tmpDir ? resolveConfigPath(baseDir, userConfig.dev.tmpDir) : DEFAULT_CONFIG.dev.tmpDir,
       reload: userConfig.dev?.reload ?? DEFAULT_CONFIG.dev.reload,
     },
     build: {
@@ -154,15 +167,20 @@ async function findConfig(configFile: string | undefined): Promise<string | unde
   return undefined;
 }
 
-async function importConfig(configPath: string): Promise<SlateConfig> {
+async function importConfig(configPath: string, context: SlateConfigContext): Promise<SlateConfig> {
   const mod = await importConfigModule(configPath);
-  const config = mod.default ?? mod.config ?? {};
+  const config = await resolveConfigExport(mod.default ?? mod.config ?? {}, context);
 
   if (!isObject(config)) {
     throw new Error(`Slate config must export an object: ${configPath}`);
   }
 
   return config as SlateConfig;
+}
+
+async function resolveConfigExport(config: unknown, context: SlateConfigContext): Promise<unknown> {
+  const resolved = typeof config === "function" ? config(context) : config;
+  return await resolved;
 }
 
 async function importConfigModule(configPath: string): Promise<Record<string, unknown>> {

@@ -1,10 +1,10 @@
 import { cac } from "cac";
-import { runBuild } from "./commands/build";
-import { runCheck } from "./commands/check";
-import { runDev } from "./commands/dev";
-import { runInitCommand } from "./commands/init";
-import { runPreview } from "./commands/preview";
-import { readCliPackageJson, resolveCliVersion } from "./package-info";
+import { runBuild } from "./commands/build.ts";
+import { runCheck } from "./commands/check.ts";
+import { runDev } from "./commands/dev.ts";
+import { runInitCommand } from "./commands/init.ts";
+import { runPreview } from "./commands/preview.ts";
+import { readCliPackageJson, resolveCliVersion } from "./package-info.ts";
 
 /**
  * Run the Slate CLI dispatcher.
@@ -33,7 +33,6 @@ export async function run(argv: string[] = process.argv.slice(2)): Promise<void>
     .option("--config <path>", "Path to slate.config.*")
     .option("--port <port>", "Dev server port")
     .option("--host <host>", "Dev server host")
-    .option("--tmpDir <path>", "Temporary build directory")
     .option("--publicDir <path>", "Public assets directory")
     .option("--reload", "Enable browser reload")
     .option("--no-reload", "Disable browser reload")
@@ -42,7 +41,6 @@ export async function run(argv: string[] = process.argv.slice(2)): Promise<void>
       config?: string;
       port?: number | string;
       host?: string;
-      tmpDir?: string;
       publicDir?: string;
       reload?: boolean;
       kit?: string;

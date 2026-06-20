@@ -1,5 +1,5 @@
 import { dirname, resolve } from "node:path";
-import type { ResolvedSlateInput } from "./config";
+import type { ResolvedSlateInput } from "./config.ts";
 
 export function resolveInputs(input: string | undefined, configured: ResolvedSlateInput[]): ResolvedSlateInput[] {
   if (input) {
@@ -14,7 +14,7 @@ export function resolveInputs(input: string | undefined, configured: ResolvedSla
 
 export function previewDirFromConfig(output: string | undefined, input: ResolvedSlateInput[]): string {
   if (!output) {
-    return input.length > 1 ? "dist" : "dist";
+    return "dist";
   }
 
   return input.length > 1 ? output : dirname(output);

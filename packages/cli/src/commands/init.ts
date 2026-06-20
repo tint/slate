@@ -1,5 +1,5 @@
 import { resolve } from "node:path";
-import { runInit } from "../scaffold";
+import { runInit } from "../scaffold.ts";
 
 export type InitCommandOptions = {
   directory?: string;

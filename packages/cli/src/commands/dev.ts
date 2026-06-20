@@ -1,22 +1,25 @@
 import type { AddressInfo } from "node:net";
 import { resolve } from "node:path";
 import { createSlateDevServer } from "@slate/vite";
-import { resolveInputs } from "../args";
-import { loadConfig } from "../config";
+import { resolveInputs } from "../args.ts";
+import { loadConfig } from "../config.ts";
 
 export type DevOptions = {
   input?: string;
   config?: string;
   port?: number | string;
   host?: string;
-  tmpDir?: string;
   publicDir?: string;
   reload?: boolean;
   kit?: string;
 };
 
 export async function runDev(options: DevOptions = {}): Promise<void> {
-  const config = await loadConfig(options.config);
+  const config = await loadConfig(options.config, {
+    command: "serve",
+    mode: "development",
+    phase: "dev",
+  });
   const input = resolveInputs(options.input, config.input);
   const port = Number(options.port ?? process.env.PORT ?? config.dev.port);
   const host = options.host ?? config.dev.host;

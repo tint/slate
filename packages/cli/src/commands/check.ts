@@ -1,7 +1,7 @@
 import { formatDiagnostic } from "@slate/compiler";
 import { checkFiles } from "@slate/check";
-import { resolveInputs } from "../args";
-import { loadConfig } from "../config";
+import { resolveInputs } from "../args.ts";
+import { loadConfig } from "../config.ts";
 
 export type CheckOptions = {
   input?: string;
@@ -9,7 +9,11 @@ export type CheckOptions = {
 };
 
 export async function runCheck(options: CheckOptions = {}): Promise<void> {
-  const config = await loadConfig(options.config);
+  const config = await loadConfig(options.config, {
+    command: "serve",
+    mode: "development",
+    phase: "check",
+  });
   const input = resolveInputs(options.input, config.input);
 
   if (!input.length) {

@@ -1,21 +1,30 @@
 #!/usr/bin/env node
 
 import { pathToFileURL } from "node:url";
-import { run } from "./commands";
+import { run } from "./commands.ts";
 
-export { runBuild } from "./commands/build";
-export type { BuildOptions } from "./commands/build";
-export { runCheck } from "./commands/check";
-export type { CheckOptions } from "./commands/check";
-export { runDev } from "./commands/dev";
-export type { DevOptions } from "./commands/dev";
-export { runPreview } from "./commands/preview";
-export type { PreviewOptions } from "./commands/preview";
-export { runInit } from "./scaffold";
-export { run } from "./commands";
-export type { InitOptions } from "./scaffold";
-export { defineConfig } from "./config";
-export type { ResolvedSlateConfig, ResolvedSlateInput, SlateConfig } from "./config";
+export { runBuild } from "./commands/build.ts";
+export type { BuildOptions } from "./commands/build.ts";
+export { runCheck } from "./commands/check.ts";
+export type { CheckOptions } from "./commands/check.ts";
+export { runDev } from "./commands/dev.ts";
+export type { DevOptions } from "./commands/dev.ts";
+export { runPreview } from "./commands/preview.ts";
+export type { PreviewOptions } from "./commands/preview.ts";
+export { runInit } from "./scaffold.ts";
+export { run } from "./commands.ts";
+export type { InitOptions } from "./scaffold.ts";
+export { defineConfig } from "./config.ts";
+export type {
+  ResolvedSlateConfig,
+  ResolvedSlateInput,
+  SlateConfig,
+  SlateConfigCommand,
+  SlateConfigContext,
+  SlateConfigExport,
+  SlateConfigMode,
+  SlateConfigPhase,
+} from "./config.ts";
 
 if (import.meta.url === pathToFileURL(process.argv[1] ?? "").href) {
   await run();
