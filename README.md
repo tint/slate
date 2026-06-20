@@ -49,7 +49,7 @@ Install dependencies:
 bun install
 ```
 
-Build all packages:
+Check source packages and build editor extension packages:
 
 ```sh
 bun run build

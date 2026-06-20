@@ -4,21 +4,21 @@
   "type": "module",
   "private": true,
   "bin": {
-    "slate": "./dist/index.mjs"
+    "slate": "./src/index.ts"
   },
   "exports": {
     ".": {
-      "types": "./dist/index.d.mts",
-      "import": "./dist/index.mjs",
-      "default": "./dist/index.mjs"
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
     },
     "./config": {
-      "types": "./dist/config.d.mts",
-      "import": "./dist/config.mjs",
-      "default": "./dist/config.mjs"
+      "types": "./src/config.ts",
+      "import": "./src/config.ts",
+      "default": "./src/config.ts"
     }
   },
-  "types": "./dist/index.d.mts",
+  "types": "./src/index.ts",
   "dependencies": {
     "@slate/check": "^0.0.1-alpha.2",
     "@slate/compiler": "^0.0.1-alpha.2",
@@ -28,8 +28,10 @@
     "tsx": "^4.20.0"
   },
   "scripts": {
-    "build": "tsdown src/index.ts src/commands.ts src/config.ts --format esm --dts --out-dir dist --clean",
     "check": "tsc --noEmit",
     "test": "tsx scripts/run-fixtures.ts"
+  },
+  "engines": {
+    "node": ">=22.18"
   }
 }

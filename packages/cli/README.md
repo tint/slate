@@ -13,11 +13,22 @@ Slate command-line interface.
 
 Implemented with `init`, `dev`, `build`, `preview`, and `check` command entry points.
 
+## Install
+
+Using JSR:
+
+```sh
+npx jsr add -D @slate/cli
+npx jsr add @slate/kit
+```
+
+The published CLI package provides the `slate` binary from TypeScript source and requires a modern Node.js runtime.
+
 ## Commands
 
 ```sh
 slate init <directory> [--force]
-slate dev [input.slate] [--port 5173] [--host 127.0.0.1] [--tmpDir node_modules/.slate-dev] [--publicDir public] [--reload] [--no-reload] [--kit @slate/kit]
+slate dev [input.slate] [--port 5173] [--host 127.0.0.1] [--publicDir public] [--reload] [--no-reload] [--kit @slate/kit]
 slate build [input.slate] [--output dist/index.html] [--tmpDir node_modules/.slate-tmp] [--publicDir public] [--kit @slate/kit]
 slate preview [--dir dist] [--port 4173] [--host 127.0.0.1]
 slate check <input.slate>
@@ -62,7 +73,6 @@ export default defineConfig({
     host: "127.0.0.1",
     port: 5173,
     reload: true,
-    tmpDir: "node_modules/.slate-dev",
   },
   build: {
     output: "dist/index.html",
@@ -76,6 +86,33 @@ export default defineConfig({
     specifier: "@slate/kit",
   },
 });
+```
+
+Config files can also export a promise or a function:
+
+```ts
+import { defineConfig } from "@slate/cli";
+
+export default defineConfig(({ command, mode, phase }) => ({
+  input: "src/App.slate",
+  build: {
+    output: phase === "build" ? "dist/index.html" : undefined,
+  },
+  vite: {
+    define: {
+      __DEV__: JSON.stringify(command === "serve" && mode === "development"),
+    },
+  },
+}));
+```
+
+`command` and `mode` follow Vite's config context model. `phase` keeps the exact Slate CLI phase:
+
+```txt
+slate dev     -> { command: "serve", mode: "development", phase: "dev" }
+slate build   -> { command: "build", mode: "production", phase: "build" }
+slate preview -> { command: "serve", mode: "production", phase: "preview" }
+slate check   -> { command: "serve", mode: "development", phase: "check" }
 ```
 
 Files in `publicDir` are served by `slate dev` from `/` and copied by `slate build` into the build output directory. Missing public directories are ignored.
@@ -127,3 +164,13 @@ entry.slate:5:5: error: null is not an object (evaluating 'user.name')
 ## Boundary
 
 The CLI should stay thin. Core behavior should live in reusable packages.
+
+## Publishing note
+
+`@slate/cli` publishes TypeScript source to JSR like the other runtime packages. The `slate` binary points at `src/index.ts`, so the package requires a Node.js version that can execute TypeScript files.
+
+Before publishing a new CLI version:
+
+```sh
+npx jsr publish --dry-run
+```

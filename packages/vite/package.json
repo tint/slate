@@ -5,19 +5,18 @@
   "private": true,
   "exports": {
     ".": {
-      "types": "./dist/index.d.mts",
-      "import": "./dist/index.mjs",
-      "default": "./dist/index.mjs"
+      "types": "./src/index.ts",
+      "import": "./src/index.ts",
+      "default": "./src/index.ts"
     }
   },
-  "types": "./dist/index.d.mts",
+  "types": "./src/index.ts",
   "dependencies": {
     "@slate/compiler": "^0.0.1-alpha.2",
     "@slate/kit": "^0.0.1-alpha.2",
     "vite": "^8.0.16"
   },
   "scripts": {
-    "build": "tsdown src/index.ts --format esm --dts --out-dir dist --clean",
     "check": "tsc --noEmit",
     "test": "tsx scripts/run-fixtures.ts"
   }

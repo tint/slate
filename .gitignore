@@ -7,8 +7,6 @@ internal/**/node_modules/
 dist/
 packages/**/dist/
 internal/**/dist/
-!packages/cli/dist/
-!packages/cli/dist/**
 *.tsbuildinfo
 
 # Temporary files

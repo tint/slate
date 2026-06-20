@@ -1,2 +1,0 @@
-import { a as loadConfig, i as defineConfig, n as ResolvedSlateInput, r as SlateConfig, t as ResolvedSlateConfig } from "./config-B-WRppiv.mjs";
-export { ResolvedSlateConfig, ResolvedSlateInput, SlateConfig, defineConfig, loadConfig };

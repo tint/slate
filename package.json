@@ -10,7 +10,7 @@
   ],
   "scripts": {
     "build": "bun run build:packages",
-    "build:packages": "bun run --cwd packages/compiler build && bun run --cwd packages/kit build && bun run --cwd packages/vite build && bun run --cwd packages/language-tools/ts-plugin build && bun run --cwd packages/language-tools/check build && bun run --cwd packages/language-tools/language-server build && bun run --cwd packages/cli build && bun run --cwd packages/language-tools/vscode build && bun run --cwd packages/language-tools/zed build",
+    "build:packages": "bun run --cwd packages/compiler check && bun run --cwd packages/kit check && bun run --cwd packages/vite check && bun run --cwd packages/language-tools/ts-plugin check && bun run --cwd packages/language-tools/check check && bun run --cwd packages/language-tools/language-server check && bun run --cwd packages/cli check && bun run --cwd packages/language-tools/vscode build && bun run --cwd packages/language-tools/zed build",
     "check": "bun run build && bun run --filter='*' check",
     "test": "bun run test:language-tools",
     "test:all": "bun run build && bun run test:compiler && bun run test:vite && bun run test:language-tools && bun run test:cli",

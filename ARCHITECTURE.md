@@ -6,6 +6,8 @@ Slate uses Bun for dependency management and workspace installation.
 
 Slate packages should remain Node-compatible. Bun is not part of the runtime contract.
 
+Runtime packages publish TypeScript source to JSR and should not require committed build output. Editor extension packages may still build bundled artifacts for their host editors.
+
 ```txt
 internal/
 |- bump                     @internal/bump
