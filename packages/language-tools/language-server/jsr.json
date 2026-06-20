@@ -1,0 +1,14 @@
+{
+  "name": "@slate/language-server",
+  "version": "0.0.1-alpha.1",
+  "license": "MIT",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "publish": {
+    "include": [
+      "README.md",
+      "src/**/*.ts"
+    ]
+  }
+}
