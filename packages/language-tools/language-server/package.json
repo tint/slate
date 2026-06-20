@@ -1,0 +1,32 @@
+{
+  "name": "@slate/language-server",
+  "version": "0.0.1-alpha.1",
+  "type": "module",
+  "private": true,
+  "bin": {
+    "slate-language-server": "./dist/index.mjs"
+  },
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.mts",
+      "import": "./dist/index.mjs",
+      "default": "./dist/index.mjs"
+    }
+  },
+  "types": "./dist/index.d.mts",
+  "dependencies": {
+    "@slate/check": "workspace:*",
+    "@slate/compiler": "workspace:*",
+    "@slate/ts-plugin": "workspace:*",
+    "typescript": "catalog:",
+    "vscode-languageserver": "catalog:",
+    "vscode-languageserver-textdocument": "catalog:",
+    "vscode-uri": "catalog:"
+  },
+  "scripts": {
+    "build": "tsdown src/index.ts --format esm --dts --out-dir dist --clean",
+    "check": "tsc --noEmit",
+    "snapshot:lsp": "tsx scripts/run-lsp-fixtures.ts",
+    "test": "bun run snapshot:lsp"
+  }
+}

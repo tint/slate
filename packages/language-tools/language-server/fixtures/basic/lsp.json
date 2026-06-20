@@ -1,0 +1,341 @@
+{
+  "diagnostics": [],
+  "hover": {
+    "range": {
+      "start": {
+        "line": 10,
+        "character": 5
+      },
+      "end": {
+        "line": 10,
+        "character": 10
+      }
+    },
+    "contents": {
+      "kind": "markdown",
+      "value": "```ts\nconst title: \"Hello\"\n```"
+    }
+  },
+  "hoverComponentImport": {
+    "range": {
+      "start": {
+        "line": 1,
+        "character": 7
+      },
+      "end": {
+        "line": 1,
+        "character": 11
+      }
+    },
+    "contents": {
+      "kind": "markdown",
+      "value": "### Slate component Card\n\n```slate\nimport Card from \"./Card.slate\"\n```\n\nImports a `.slate` component. Use it as a template element and pass props with attributes.\n\nExample:\n```slate\n<Card title=\"Hello\">\n  <p>Content</p>\n</Card>\n```\n\n---\n\n```ts\n(alias) const Card: Component<Props, __SlateInferredSlots>\nimport Card\n```"
+    }
+  },
+  "hoverRune": {
+    "range": {
+      "start": {
+        "line": 4,
+        "character": 16
+      },
+      "end": {
+        "line": 4,
+        "character": 21
+      }
+    },
+    "contents": {
+      "kind": "markdown",
+      "value": "```ts\nfunction $prop<\"primary\">(name: string, defaultValue?: \"primary\" | undefined): \"primary\"\n```\n\n---\n\n### $prop\n\n```slate\n$prop<T>(name: string, defaultValue?: T): T\n```\n\nDeclares a single component prop and returns the provided value or the default value.\n\nExample:\n```slate\nconst title = $prop(\"title\", \"Untitled\");\n```"
+    }
+  },
+  "hoverEach": {
+    "range": {
+      "start": {
+        "line": 15,
+        "character": 1
+      },
+      "end": {
+        "line": 15,
+        "character": 6
+      }
+    },
+    "contents": {
+      "kind": "markdown",
+      "value": "### {#each ...}\n\n```slate\n{#each items as item, index} ... {/each}\n```\n\nIterates over an iterable or array-like value and renders the block for each item.\n\nExample:\n```slate\n{#each items as item, index}\n  <li>{index}: {item}</li>\n{/each}\n```"
+    }
+  },
+  "hoverSlotDirective": {
+    "range": {
+      "start": {
+        "line": 9,
+        "character": 10
+      },
+      "end": {
+        "line": 9,
+        "character": 18
+      }
+    },
+    "contents": {
+      "kind": "markdown",
+      "value": "```ts\n(property) \"header\"?: ((data: {\n    title: \"Hello\";\n    tail: 1;\n}) => unknown) | undefined\n```\n\n---\n\n### slot:*\n\n```slate\n<header slot:header={{ title, icon }}>...</header>\n```\n\nProvides content for a named slot on a child component. The directive name after `slot:` selects the outlet.\n\nExample:\n```slate\n<Card>\n  <header slot:header={{ title, icon }}>{title}</header>\n</Card>\n```"
+    }
+  },
+  "definition": [
+    {
+      "uri": "entry.slate",
+      "range": {
+        "start": {
+          "line": 3,
+          "character": 6
+        },
+        "end": {
+          "line": 3,
+          "character": 15
+        }
+      }
+    }
+  ],
+  "completion": [
+    {
+      "label": "toLowerCase",
+      "kind": 3
+    },
+    {
+      "label": "toString",
+      "kind": 3
+    },
+    {
+      "label": "toUpperCase",
+      "kind": 3
+    }
+  ],
+  "slateBlockCompletion": [
+    {
+      "label": "#if",
+      "detail": "Slate if block"
+    },
+    {
+      "label": "#each",
+      "detail": "Slate each block"
+    },
+    {
+      "label": "#await",
+      "detail": "Slate await block"
+    },
+    {
+      "label": "$inject"
+    },
+    {
+      "label": "$prop"
+    },
+    {
+      "label": "$props"
+    },
+    {
+      "label": "$provide"
+    }
+  ],
+  "runeCompletion": [
+    {
+      "label": "$prop",
+      "detail": "Declare one component prop"
+    },
+    {
+      "label": "$props",
+      "detail": "Declare multiple component props"
+    },
+    {
+      "label": "$inject",
+      "detail": "Inject cloneable context data"
+    },
+    {
+      "label": "$provide",
+      "detail": "Provide cloneable context data"
+    }
+  ],
+  "slotCompletion": [
+    {
+      "label": "slot:name",
+      "detail": "Provide content for a named slot"
+    },
+    {
+      "label": "slot:default",
+      "detail": "Provide default slot content"
+    },
+    {
+      "label": "slot:header",
+      "detail": "Provide header slot content"
+    }
+  ],
+  "semanticTokens": {
+    "dataLength": 40,
+    "firstTokens": [
+      0,
+      8,
+      5,
+      0,
+      0,
+      4,
+      16,
+      5,
+      1,
+      0,
+      5,
+      10,
+      11,
+      2,
+      0,
+      6,
+      1,
+      5,
+      0,
+      0
+    ]
+  },
+  "documentSymbol": [
+    {
+      "name": "Card",
+      "kind": 2,
+      "range": {
+        "start": {
+          "line": 1,
+          "character": 7
+        },
+        "end": {
+          "line": 1,
+          "character": 11
+        }
+      },
+      "selectionRange": {
+        "start": {
+          "line": 1,
+          "character": 7
+        },
+        "end": {
+          "line": 1,
+          "character": 11
+        }
+      }
+    },
+    {
+      "name": "pageTitle",
+      "kind": 13,
+      "range": {
+        "start": {
+          "line": 3,
+          "character": 6
+        },
+        "end": {
+          "line": 3,
+          "character": 15
+        }
+      },
+      "selectionRange": {
+        "start": {
+          "line": 3,
+          "character": 6
+        },
+        "end": {
+          "line": 3,
+          "character": 15
+        }
+      }
+    },
+    {
+      "name": "variant",
+      "kind": 13,
+      "range": {
+        "start": {
+          "line": 4,
+          "character": 6
+        },
+        "end": {
+          "line": 4,
+          "character": 13
+        }
+      },
+      "selectionRange": {
+        "start": {
+          "line": 4,
+          "character": 6
+        },
+        "end": {
+          "line": 4,
+          "character": 13
+        }
+      }
+    },
+    {
+      "name": "items",
+      "kind": 13,
+      "range": {
+        "start": {
+          "line": 5,
+          "character": 6
+        },
+        "end": {
+          "line": 5,
+          "character": 11
+        }
+      },
+      "selectionRange": {
+        "start": {
+          "line": 5,
+          "character": 6
+        },
+        "end": {
+          "line": 5,
+          "character": 11
+        }
+      }
+    },
+    {
+      "name": "item",
+      "kind": 13,
+      "range": {
+        "start": {
+          "line": 15,
+          "character": 15
+        },
+        "end": {
+          "line": 15,
+          "character": 19
+        }
+      },
+      "selectionRange": {
+        "start": {
+          "line": 15,
+          "character": 15
+        },
+        "end": {
+          "line": 15,
+          "character": 19
+        }
+      }
+    },
+    {
+      "name": "index",
+      "kind": 13,
+      "range": {
+        "start": {
+          "line": 15,
+          "character": 21
+        },
+        "end": {
+          "line": 15,
+          "character": 26
+        }
+      },
+      "selectionRange": {
+        "start": {
+          "line": 15,
+          "character": 21
+        },
+        "end": {
+          "line": 15,
+          "character": 26
+        }
+      }
+    }
+  ]
+}

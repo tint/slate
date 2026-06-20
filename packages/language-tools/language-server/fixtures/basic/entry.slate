@@ -1,0 +1,18 @@
+<script slate>
+import Card from "./Card.slate";
+
+const pageTitle = "Dashboard";
+const variant = $prop("variant", "primary");
+const items = ["alpha", "beta"];
+</script>
+
+<Card title={pageTitle}>
+  <header slot:header={{ title, tail }}>
+    {title.toUpperCase()}
+    {tail.toFixed()}
+  </header>
+</Card>
+
+{#each items as item, index}
+  <p class={["item", variant]}>{index}: {item}</p>
+{/each}
