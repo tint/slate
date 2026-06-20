@@ -98,6 +98,7 @@ async function createProject(targetArg, options) {
 
   await writeFile(`${targetDir}/package.json`, `${JSON.stringify(createPackageJson(projectName, packageJson), null, 2)}\n`, "utf8");
   await writeFile(`${targetDir}/deno.json`, `${JSON.stringify(createDenoJson(), null, 2)}\n`, "utf8");
+  await writeFile(`${targetDir}/.npmrc`, "@jsr:registry=https://npm.jsr.io\n", "utf8");
   await writeFile(`${targetDir}/README.md`, createReadme(projectName, options.packageManager), "utf8");
   await writeFile(`${targetDir}/slate.config.ts`, createSlateConfig(), "utf8");
   await writeFile(`${targetDir}/.gitignore`, "node_modules\ndist\n.slate-tmp\n.slate-dev\n", "utf8");

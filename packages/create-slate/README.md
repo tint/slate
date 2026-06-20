@@ -33,6 +33,7 @@ After creating the project, it asks whether to install dependencies. Use `--inst
 
 - `slate.config.ts`
 - `deno.json`
+- `.npmrc`
 - `src/App.slate`
 - `src/components/Card.slate`
 - `scripts/slate.mjs`
