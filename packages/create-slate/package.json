@@ -3,7 +3,7 @@
   "version": "0.0.1-alpha.1",
   "type": "module",
   "bin": {
-    "create-slate": "./src/index.mjs"
+    "create-slate": "src/index.mjs"
   },
   "files": [
     "README.md",
