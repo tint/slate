@@ -1,6 +1,6 @@
 {
   "name": "@slate/check",
-  "version": "0.0.1-alpha.2",
+  "version": "0.0.1-alpha.3",
   "type": "module",
   "private": true,
   "exports": {
@@ -12,8 +12,8 @@
   },
   "types": "./src/index.ts",
   "dependencies": {
-    "@slate/compiler": "^0.0.1-alpha.2",
-    "@slate/ts-plugin": "^0.0.1-alpha.2",
+    "@slate/compiler": "^0.0.1-alpha.3",
+    "@slate/ts-plugin": "^0.0.1-alpha.3",
     "typescript": "^5.8.0"
   },
   "scripts": {

@@ -20,10 +20,10 @@
   },
   "types": "./src/index.ts",
   "dependencies": {
-    "@slate/check": "^0.0.1-alpha.2",
-    "@slate/compiler": "^0.0.1-alpha.2",
-    "@slate/kit": "^0.0.1-alpha.2",
-    "@slate/vite": "^0.0.1-alpha.2",
+    "@slate/check": "^0.0.1-alpha.3",
+    "@slate/compiler": "^0.0.1-alpha.3",
+    "@slate/kit": "^0.0.1-alpha.3",
+    "@slate/vite": "^0.0.1-alpha.3",
     "cac": "^7.0.0",
     "tsx": "^4.20.0"
   },
