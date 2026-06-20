@@ -9,6 +9,7 @@
   "publish": {
     "include": [
       "README.md",
+      "package.json",
       "src/**/*.ts"
     ]
   }
