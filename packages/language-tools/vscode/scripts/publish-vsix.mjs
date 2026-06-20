@@ -1,13 +1,13 @@
 import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { createRequire } from "node:module";
-import { dirname, join, relative, resolve } from "node:path";
+import { dirname, join, resolve } from "node:path";
 import { spawn } from "node:child_process";
 
 const require = createRequire(import.meta.url);
 const packageRoot = resolve(dirname(new URL(import.meta.url).pathname), "..");
 const workspaceRoot = resolve(packageRoot, "../../..");
 const stageRoot = join(packageRoot, ".tmp-vsix");
-const output = join(packageRoot, "slate-vscode.vsix");
+const args = process.argv.slice(2);
 
 await rm(stageRoot, {
   recursive: true,
@@ -59,13 +59,10 @@ await writeFile(
 );
 
 await run("vsce", [
-  "package",
+  "publish",
   "--allow-missing-repository",
-  "--out",
-  output,
+  ...args,
 ], stageRoot);
-
-console.log(`Packaged ${relative(packageRoot, output)}`);
 
 async function copyPackageFile(name) {
   await cp(join(packageRoot, name), join(stageRoot, name), {
