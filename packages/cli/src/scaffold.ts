@@ -1,5 +1,6 @@
 import { mkdir, readdir, rm, writeFile } from "node:fs/promises";
 import { basename, resolve } from "node:path";
+import { readCliPackageJson, resolveCliVersion, type CliPackageJson } from "./package-info";
 
 export type InitOptions = {
   force?: boolean;
@@ -43,7 +44,9 @@ async function createProject(targetDir: string, options: CreateProjectOptions): 
 
   const projectName = normalizePackageName(basename(targetDir) || "slate-app");
 
-  await writeFile(`${targetDir}/package.json`, `${JSON.stringify(createPackageJson(projectName), null, 2)}\n`, "utf8");
+  const packageJson = await readCliPackageJson();
+
+  await writeFile(`${targetDir}/package.json`, `${JSON.stringify(createPackageJson(projectName, packageJson), null, 2)}\n`, "utf8");
   await writeFile(`${targetDir}/README.md`, createReadme(projectName), "utf8");
   await writeFile(`${targetDir}/slate.config.ts`, createSlateConfig(), "utf8");
   await writeFile(`${targetDir}/.gitignore`, "node_modules\ndist\n.slate-tmp\n.slate-dev\n", "utf8");
@@ -61,7 +64,10 @@ async function createProject(targetDir: string, options: CreateProjectOptions): 
   await writeFile(`${targetDir}/public/favicon.svg`, createFavicon(), "utf8");
 }
 
-function createPackageJson(projectName: string): Record<string, unknown> {
+function createPackageJson(projectName: string, packageJson: CliPackageJson): Record<string, unknown> {
+  const cliRange = toJsrAliasRange("cli", resolveCliVersion(packageJson));
+  const kitRange = toJsrAliasRange("kit", packageJson.dependencies?.["@slate/kit"]);
+
   return {
     name: projectName,
     private: true,
@@ -73,12 +79,17 @@ function createPackageJson(projectName: string): Record<string, unknown> {
       preview: "slate preview",
     },
     dependencies: {
-      "@slate/kit": "latest",
+      "@slate/kit": kitRange,
     },
     devDependencies: {
-      "@slate/cli": "latest",
+      "@slate/cli": cliRange,
     },
   };
+}
+
+function toJsrAliasRange(packageName: string, range: string | undefined): string {
+  const resolvedRange = range ?? "latest";
+  return `npm:@jsr/slate__${packageName}@${resolvedRange}`;
 }
 
 function createReadme(projectName: string): string {
@@ -86,14 +97,23 @@ function createReadme(projectName: string): string {
 
 Minimal Slate project.
 
+This project uses JSR packages through npm aliases while source code imports remain \`@slate/*\`.
+
+## Install
+
+\`\`\`sh
+npm install
+\`\`\`
+
+Other package managers that support npm aliases can also be used.
+
 ## Commands
 
 \`\`\`sh
-bun install
-bun run dev
-bun run check
-bun run build
-bun run preview
+npm run dev
+npm run check
+npm run build
+npm run preview
 \`\`\`
 `;
 }

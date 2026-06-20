@@ -4,6 +4,7 @@ import { runCheck } from "./commands/check";
 import { runDev } from "./commands/dev";
 import { runInitCommand } from "./commands/init";
 import { runPreview } from "./commands/preview";
+import { readCliPackageJson, resolveCliVersion } from "./package-info";
 
 /**
  * Run the Slate CLI dispatcher.
@@ -13,6 +14,7 @@ import { runPreview } from "./commands/preview";
  */
 export async function run(argv: string[] = process.argv.slice(2)): Promise<void> {
   let task: (() => Promise<void>) | undefined;
+  const packageJson = await readCliPackageJson();
   const cli = cac("slate");
   const knownCommands = new Set(["build", "check", "dev", "help", "init", "preview"]);
 
@@ -107,7 +109,7 @@ export async function run(argv: string[] = process.argv.slice(2)): Promise<void>
     });
 
   cli.help();
-  cli.version("0.0.0");
+  cli.version(resolveCliVersion(packageJson));
 
   try {
     if (!argv.length) {
