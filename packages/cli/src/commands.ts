@@ -11,7 +11,7 @@ import { runPreview } from "./commands/preview";
  * Programmatic consumers should import from `@slate/cli` and call `runInit`,
  * `runBuild`, `runDev`, `runPreview`, or `runCheck` directly.
  */
-export async function run(argv = process.argv.slice(2)): Promise<void> {
+export async function run(argv: string[] = process.argv.slice(2)): Promise<void> {
   let task: (() => Promise<void>) | undefined;
   const cli = cac("slate");
   const knownCommands = new Set(["build", "check", "dev", "help", "init", "preview"]);
