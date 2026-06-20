@@ -15,7 +15,7 @@ import {
   type Location,
   type Position,
   type SemanticTokens,
-} from "vscode-languageserver/node";
+} from "vscode-languageserver/node.js";
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { URI } from "vscode-uri";
 import type {

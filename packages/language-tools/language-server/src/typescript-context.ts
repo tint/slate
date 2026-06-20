@@ -9,7 +9,7 @@ import {
   type Location,
   type Position,
   type Range as LspRange,
-} from "vscode-languageserver/node";
+} from "vscode-languageserver/node.js";
 import type { TextDocument } from "vscode-languageserver-textdocument";
 import { URI } from "vscode-uri";
 import {
