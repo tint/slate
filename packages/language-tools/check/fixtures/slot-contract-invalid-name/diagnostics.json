@@ -1,0 +1,11 @@
+[
+  {
+    "message": "Object literal may only specify known properties, and '\"footer\"' does not exist in type '__SlateInferredSlots'.",
+    "severity": "error",
+    "range": {
+      "start": 89,
+      "end": 112
+    },
+    "filename": "entry.slate"
+  }
+]

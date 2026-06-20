@@ -1,0 +1,9 @@
+<script slate>
+import Card from "./Card.slate";
+</script>
+
+<Card title="Card">
+  <header slot:header={{ missing }}>
+    {missing}
+  </header>
+</Card>

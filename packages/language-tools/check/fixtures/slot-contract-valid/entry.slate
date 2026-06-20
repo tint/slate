@@ -1,0 +1,13 @@
+<script slate>
+import Card from "./Card.slate";
+</script>
+
+<Card title="Card">
+  <header slot:header={{ title, icon, tail }}>
+    {title.toUpperCase()}
+    {icon.toUpperCase()}
+    {tail.toFixed()}
+  </header>
+
+  <p>Body</p>
+</Card>

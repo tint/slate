@@ -1,0 +1,5 @@
+<script slate>
+const count: number = "nope";
+</script>
+
+<p>{count}</p>

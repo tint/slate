@@ -1,0 +1,11 @@
+[
+  {
+    "message": "Property 'missing' does not exist on type '{ title: \"Hello\"; icon: \">\"; tail: 1; }'.",
+    "severity": "error",
+    "range": {
+      "start": 104,
+      "end": 111
+    },
+    "filename": "entry.slate"
+  }
+]

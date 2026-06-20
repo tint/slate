@@ -1,0 +1,7 @@
+<script slate>
+const items = ["alpha", "beta"];
+</script>
+
+{#each items as item, index}
+  <p>{item.toFixed()} {index.toUpperCase()}</p>
+{/each}

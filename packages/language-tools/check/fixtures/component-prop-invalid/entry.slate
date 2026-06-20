@@ -1,0 +1,5 @@
+<script slate>
+import Card from "./Card.slate";
+</script>
+
+<Card title={123} count="nope" extra="ignored" />

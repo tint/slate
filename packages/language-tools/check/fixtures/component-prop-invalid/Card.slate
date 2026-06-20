@@ -1,0 +1,10 @@
+<script slate>
+export type Props = {
+  title: string;
+  count: number;
+};
+</script>
+
+<section>
+  <slot />
+</section>

@@ -1,0 +1,11 @@
+[
+  {
+    "message": "Property 'toFixed' does not exist on type '\"Hello\"'. Did you mean 'fixed'?",
+    "severity": "error",
+    "range": {
+      "start": 59,
+      "end": 66
+    },
+    "filename": "entry.slate"
+  }
+]

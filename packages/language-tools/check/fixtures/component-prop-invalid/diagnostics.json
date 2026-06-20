@@ -1,0 +1,29 @@
+[
+  {
+    "message": "Type 'number' does not satisfy the expected type 'string'.",
+    "severity": "error",
+    "range": {
+      "start": 72,
+      "end": 75
+    },
+    "filename": "entry.slate"
+  },
+  {
+    "message": "Type 'string' does not satisfy the expected type 'number'.",
+    "severity": "error",
+    "range": {
+      "start": 83,
+      "end": 89
+    },
+    "filename": "entry.slate"
+  },
+  {
+    "message": "Object literal may only specify known properties, and '\"extra\"' does not exist in type 'Props'.",
+    "severity": "error",
+    "range": {
+      "start": 90,
+      "end": 95
+    },
+    "filename": "entry.slate"
+  }
+]

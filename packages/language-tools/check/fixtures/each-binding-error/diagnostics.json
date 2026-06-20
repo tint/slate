@@ -1,0 +1,20 @@
+[
+  {
+    "message": "Property 'toFixed' does not exist on type 'string'. Did you mean 'fixed'?",
+    "severity": "error",
+    "range": {
+      "start": 99,
+      "end": 106
+    },
+    "filename": "entry.slate"
+  },
+  {
+    "message": "Property 'toUpperCase' does not exist on type 'number'.",
+    "severity": "error",
+    "range": {
+      "start": 117,
+      "end": 128
+    },
+    "filename": "entry.slate"
+  }
+]

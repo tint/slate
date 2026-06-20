@@ -1,0 +1,5 @@
+<script slate>
+const title = "Hello";
+</script>
+
+<p>{title.toFixed()}</p>

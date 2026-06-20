@@ -1,0 +1,14 @@
+<script slate>
+export interface Props {
+  title: string;
+}
+
+const title = "Hello";
+const icon = ">";
+const tail = 1;
+</script>
+
+<section>
+  <slot name="header" data={{ title, icon, tail }} />
+  <slot />
+</section>
