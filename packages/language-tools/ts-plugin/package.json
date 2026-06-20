@@ -13,10 +13,10 @@
   },
   "types": "./dist/index.d.mts",
   "dependencies": {
-    "@slate/compiler": "workspace:*"
+    "@slate/compiler": "^0.0.1-alpha.1"
   },
   "devDependencies": {
-    "typescript": "catalog:"
+    "typescript": "^5.8.0"
   },
   "peerDependencies": {
     "typescript": ">=5.0.0"

@@ -15,13 +15,13 @@
   },
   "types": "./dist/index.d.mts",
   "dependencies": {
-    "@slate/check": "workspace:*",
-    "@slate/compiler": "workspace:*",
-    "@slate/ts-plugin": "workspace:*",
-    "typescript": "catalog:",
-    "vscode-languageserver": "catalog:",
-    "vscode-languageserver-textdocument": "catalog:",
-    "vscode-uri": "catalog:"
+    "@slate/check": "^0.0.1-alpha.1",
+    "@slate/compiler": "^0.0.1-alpha.1",
+    "@slate/ts-plugin": "^0.0.1-alpha.1",
+    "typescript": "^5.8.0",
+    "vscode-languageserver": "^9.0.1",
+    "vscode-languageserver-textdocument": "^1.0.12",
+    "vscode-uri": "^3.0.8"
   },
   "scripts": {
     "build": "tsdown src/index.ts --format esm --dts --out-dir dist --clean",

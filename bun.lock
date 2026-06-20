@@ -13,7 +13,7 @@
     },
     "internal/bump": {
       "name": "@internal/bump",
-      "version": "0.0.0",
+      "version": "0.0.1-alpha.1",
       "dependencies": {
         "logtra": "^0.0.5",
         "prompts": "^2.4.2",
@@ -29,63 +29,63 @@
     },
     "packages/cli": {
       "name": "@slate/cli",
-      "version": "0.0.0",
+      "version": "0.0.1-alpha.1",
       "bin": {
         "slate": "./dist/index.mjs",
       },
       "dependencies": {
-        "@slate/check": "workspace:*",
-        "@slate/compiler": "workspace:*",
-        "@slate/kit": "workspace:*",
-        "@slate/vite": "workspace:*",
+        "@slate/check": "^0.0.1-alpha.1",
+        "@slate/compiler": "^0.0.1-alpha.1",
+        "@slate/kit": "^0.0.1-alpha.1",
+        "@slate/vite": "^0.0.1-alpha.1",
         "cac": "^7.0.0",
-        "tsx": "catalog:",
+        "tsx": "^4.20.0",
       },
     },
     "packages/compiler": {
       "name": "@slate/compiler",
-      "version": "0.0.0",
+      "version": "0.0.1-alpha.1",
       "dependencies": {
-        "typescript": "catalog:",
+        "typescript": "^5.8.0",
       },
     },
     "packages/kit": {
       "name": "@slate/kit",
-      "version": "0.0.0",
+      "version": "0.0.1-alpha.1",
     },
     "packages/language-tools/check": {
       "name": "@slate/check",
-      "version": "0.0.0",
+      "version": "0.0.1-alpha.1",
       "dependencies": {
-        "@slate/compiler": "workspace:*",
-        "@slate/ts-plugin": "workspace:*",
-        "typescript": "catalog:",
+        "@slate/compiler": "^0.0.1-alpha.1",
+        "@slate/ts-plugin": "^0.0.1-alpha.1",
+        "typescript": "^5.8.0",
       },
     },
     "packages/language-tools/language-server": {
       "name": "@slate/language-server",
-      "version": "0.0.0",
+      "version": "0.0.1-alpha.1",
       "bin": {
         "slate-language-server": "./dist/index.mjs",
       },
       "dependencies": {
-        "@slate/check": "workspace:*",
-        "@slate/compiler": "workspace:*",
-        "@slate/ts-plugin": "workspace:*",
-        "typescript": "catalog:",
-        "vscode-languageserver": "catalog:",
-        "vscode-languageserver-textdocument": "catalog:",
-        "vscode-uri": "catalog:",
+        "@slate/check": "^0.0.1-alpha.1",
+        "@slate/compiler": "^0.0.1-alpha.1",
+        "@slate/ts-plugin": "^0.0.1-alpha.1",
+        "typescript": "^5.8.0",
+        "vscode-languageserver": "^9.0.1",
+        "vscode-languageserver-textdocument": "^1.0.12",
+        "vscode-uri": "^3.0.8",
       },
     },
     "packages/language-tools/ts-plugin": {
       "name": "@slate/ts-plugin",
-      "version": "0.0.0",
+      "version": "0.0.1-alpha.1",
       "dependencies": {
-        "@slate/compiler": "workspace:*",
+        "@slate/compiler": "^0.0.1-alpha.1",
       },
       "devDependencies": {
-        "typescript": "catalog:",
+        "typescript": "^5.8.0",
       },
       "peerDependencies": {
         "typescript": ">=5.0.0",
@@ -93,7 +93,7 @@
     },
     "packages/language-tools/vscode": {
       "name": "slate-vscode",
-      "version": "0.0.0",
+      "version": "0.0.1-alpha.1",
       "dependencies": {
         "typescript": "^5.8.0",
       },
@@ -105,18 +105,18 @@
     },
     "packages/language-tools/zed": {
       "name": "slate-zed",
-      "version": "0.0.0",
+      "version": "0.0.1-alpha.1",
       "dependencies": {
         "@slate/language-server": "workspace:*",
       },
     },
     "packages/vite": {
       "name": "@slate/vite",
-      "version": "0.0.0",
+      "version": "0.0.1-alpha.1",
       "dependencies": {
-        "@slate/compiler": "workspace:*",
-        "@slate/kit": "workspace:*",
-        "vite": "catalog:",
+        "@slate/compiler": "^0.0.1-alpha.1",
+        "@slate/kit": "^0.0.1-alpha.1",
+        "vite": "^8.0.16",
       },
     },
   },

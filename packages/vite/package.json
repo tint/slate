@@ -12,9 +12,9 @@
   },
   "types": "./dist/index.d.mts",
   "dependencies": {
-    "@slate/compiler": "workspace:*",
-    "@slate/kit": "workspace:*",
-    "vite": "catalog:"
+    "@slate/compiler": "^0.0.1-alpha.1",
+    "@slate/kit": "^0.0.1-alpha.1",
+    "vite": "^8.0.16"
   },
   "scripts": {
     "build": "tsdown src/index.ts --format esm --dts --out-dir dist --clean",

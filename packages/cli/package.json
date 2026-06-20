@@ -20,12 +20,12 @@
   },
   "types": "./dist/index.d.mts",
   "dependencies": {
-    "@slate/check": "workspace:*",
-    "@slate/compiler": "workspace:*",
-    "@slate/kit": "workspace:*",
-    "@slate/vite": "workspace:*",
+    "@slate/check": "^0.0.1-alpha.1",
+    "@slate/compiler": "^0.0.1-alpha.1",
+    "@slate/kit": "^0.0.1-alpha.1",
+    "@slate/vite": "^0.0.1-alpha.1",
     "cac": "^7.0.0",
-    "tsx": "catalog:"
+    "tsx": "^4.20.0"
   },
   "scripts": {
     "build": "tsdown src/index.ts src/commands.ts src/config.ts --format esm --dts --out-dir dist --clean",
