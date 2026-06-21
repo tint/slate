@@ -1,5 +1,5 @@
 export { analyze } from "./analyze";
-export type { AnalyzeOptions, AnalyzeResult, ComponentBinding, SlateModule } from "./analyze";
+export type { AnalyzeOptions, AnalyzeResult, ComponentBinding, SlateModule, SlotBinding } from "./analyze";
 export { compileFiles } from "./compile-files";
 export type { CompiledFile, CompileFilesOptions, CompileFilesResult } from "./compile-files";
 export { generate } from "./codegen";

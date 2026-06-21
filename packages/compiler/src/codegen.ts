@@ -31,12 +31,13 @@ export function generate(cst: SlateFileCst, _options: GenerateOptions = {}): Gen
   const dev = _options.dev ?? false;
   const script = cst.children.find((child): child is SlateScriptElementCst => child.kind === "SlateScriptElement");
   const componentNames = new Set(_options.module?.components.map((component) => component.localName) ?? []);
+  const slotBindings = _options.module?.slots ?? [];
   const bodyNodes = cst.children.filter((child) => child.kind !== "SlateScriptElement");
   const scriptParts = script ? transpileSlateScript(script.body.text) : { imports: "", body: "" };
   const statements = generateStatements(bodyNodes, componentNames, "__html", filename, dev);
   const usedRunes = collectUsedRunes([scriptParts.body, statements]);
-  const kitImports = collectKitImports(statements);
-  const runeHelpers = generateRuneHelpers(usedRunes);
+  const kitImports = collectKitImports([scriptParts.body, statements]);
+  const runeHelpers = generateRuneHelpers(usedRunes, slotBindings);
   const code = [
     `import { ${kitImports.join(", ")} } from "@slate/kit";`,
     scriptParts.imports.trim(),
@@ -47,7 +48,7 @@ export function generate(cst: SlateFileCst, _options: GenerateOptions = {}): Gen
     scriptParts.body.trim() ? indent(scriptParts.body.trim(), 2) : "",
     "  let __html = \"\";",
     statements ? indent(statements, 2) : "",
-    "  return __html;",
+    "  return __slateHtml(__html);",
     "}",
     "",
     "export default { render };",
@@ -62,9 +63,9 @@ export function generate(cst: SlateFileCst, _options: GenerateOptions = {}): Gen
   };
 }
 
-type RuneName = "$prop" | "$props" | "$provide" | "$inject";
+type RuneName = "$prop" | "$props" | "$provide" | "$inject" | "$slot";
 
-const RUNE_NAMES: RuneName[] = ["$prop", "$props", "$provide", "$inject"];
+const RUNE_NAMES: RuneName[] = ["$prop", "$props", "$provide", "$inject", "$slot"];
 
 function collectUsedRunes(chunks: string[]): Set<RuneName> {
   const used = new Set<RuneName>();
@@ -94,23 +95,24 @@ function isRuneName(value: string): value is RuneName {
   return RUNE_NAMES.includes(value as RuneName);
 }
 
-function collectKitImports(statements: string): string[] {
-  const imports = ["cloneContext"];
+function collectKitImports(chunks: string[]): string[] {
+  const source = chunks.join("\n");
+  const imports = ["cloneContext", "html as __slateHtml"];
 
-  for (const helper of ["escapeHTML", "evaluateSlateExpression", "renderSlot", "serializeClass", "serializeStyle"]) {
-    if (statements.includes(`${helper}(`)) {
+  for (const helper of ["evaluateSlateExpression", "renderHTML", "renderSlot", "renderValue", "serializeAttribute", "serializeClass", "serializeStyle"]) {
+    if (source.includes(`${helper}(`) || (helper === "renderSlot" && source.includes("$slot"))) {
       imports.push(helper);
     }
   }
 
-  if (statements.includes("addGlobalAsset(")) {
+  if (source.includes("addGlobalAsset(")) {
     imports.push("addGlobalAsset");
   }
 
   return imports;
 }
 
-function generateRuneHelpers(usedRunes: Set<RuneName>): string[] {
+function generateRuneHelpers(usedRunes: Set<RuneName>, slots: SlateModule["slots"]): string[] {
   const helpers: string[] = [];
 
   if (usedRunes.has("$prop")) {
@@ -127,6 +129,13 @@ function generateRuneHelpers(usedRunes: Set<RuneName>): string[] {
 
   if (usedRunes.has("$inject")) {
     helpers.push("const $inject = (name, fallback) => Object.hasOwn(context.provides, name) ? context.provides[name] : fallback;");
+  }
+
+  if (usedRunes.has("$slot")) {
+    const knownSlots = new Map(slots.map((slot) => [slot.name, slot.defaultData]));
+    const defaults = [...knownSlots].map(([name, defaultData]) => `${JSON.stringify(name)}: ${defaultData ?? "undefined"}`);
+    helpers.push(`const __slotDefaults = { ${defaults.join(", ")} };`);
+    helpers.push("const $slot = (name, defaultData = __slotDefaults[name]) => (data = defaultData) => renderSlot(slots, name, __slateHtml(\"\"), data);");
   }
 
   return helpers;
@@ -214,13 +223,12 @@ function generateEachBlock(node: EachBlockCst, componentNames: Set<string>, file
   const body = node.children.map((child) => generateNode(child, componentNames, filename, dev)).filter(Boolean).join(",\n          ");
   const elseBody = node.else?.map((child) => generateNode(child, componentNames, filename, dev)).filter(Boolean).join(",\n        ");
   const eachExpression = `Array.from(${wrapExpression(node.expression.text, filename, node.expression.range, "template")})`;
-  const rendered = `${eachExpression}.length ? ${eachExpression}.map((${item}${index}) => [\n          ${body}\n        ].join("")).join("")`;
 
   if (!node.else) {
-    return `${eachExpression}.map((${item}${index}) => [\n          ${body}\n        ].join("")).join("")`;
+    return `(await Promise.all(${eachExpression}.map(async (${item}${index}) => [\n          ${body}\n        ].join("")))).join("")`;
   }
 
-  return `${rendered} : [\n        ${elseBody ?? ""}\n      ].join("")`;
+  return `await (async () => {\n        const __items = ${eachExpression};\n        return __items.length ? (await Promise.all(__items.map(async (${item}${index}) => [\n          ${body}\n        ].join("")))).join("") : [\n        ${elseBody ?? ""}\n      ].join("");\n      })()`;
 }
 
 function generateIfBlock(node: IfBlockCst, componentNames: Set<string>, filename: string, dev: boolean): string {
@@ -236,20 +244,28 @@ function generateText(node: TextCst): string {
 }
 
 function generateInterpolation(node: InterpolationCst, filename: string): string {
-  return `escapeHTML(${wrapExpression(node.expression.text, filename, node.expression.range, "template")})`;
+  return `await renderValue(${wrapExpression(node.expression.text, filename, node.expression.range, "template")})`;
 }
 
 function generateHtmlDirective(node: HtmlDirectiveCst, filename: string): string {
-  return `String(${wrapExpression(node.expression.text, filename, node.expression.range, "template")})`;
+  return `await renderHTML(${wrapExpression(node.expression.text, filename, node.expression.range, "template")})`;
 }
 
 function generateElement(node: ElementCst, componentNames: Set<string>, filename: string, dev: boolean): string {
   if (componentNames.has(node.rawTagName)) {
-    return generateComponent(node, filename, dev);
+    return generateComponent(node, filename, dev, componentNames);
   }
 
   if (node.tagName === "slot") {
     return generateSlotOutlet(node, componentNames, filename, dev);
+  }
+
+  if (node.rawTagName === "Fragment") {
+    return [
+      "[",
+      ...node.children.map((child) => generateNode(child, componentNames, filename, dev)).filter(Boolean).map((child) => `  ${child},`),
+      "].join(\"\")",
+    ].join("\n");
   }
 
   if (node.selfClosing) {
@@ -298,19 +314,16 @@ function generateAttributeParts(attributes: AttributeCst[], filename: string, de
     }
 
     if (attr.kind === "ExpressionAttribute") {
-      chunks.push(JSON.stringify(` ${attr.rawName}="`));
-
       const expression = wrapExpression(attr.expression.text, filename, attr.expression.range, "template");
+      let value = expression;
 
       if (attr.name === "class") {
-        chunks.push(`escapeHTML(serializeClass(${expression}))`);
+        value = `serializeClass(${expression})`;
       } else if (attr.name === "style") {
-        chunks.push(`escapeHTML(serializeStyle(${expression}))`);
-      } else {
-        chunks.push(`escapeHTML(${expression})`);
+        value = `serializeStyle(${expression})`;
       }
 
-      chunks.push(JSON.stringify("\""));
+      chunks.push(`serializeAttribute(${JSON.stringify(attr.rawName)}, ${value})`);
       continue;
     }
 
@@ -345,14 +358,14 @@ function generateSlotOutlet(node: ElementCst, componentNames: Set<string>, filen
     ? wrapExpression(dataAttr.expression.text, filename, dataAttr.expression.range, "slot")
     : "undefined";
 
-  return `await renderSlot(slots, ${JSON.stringify(name)}, ${fallback}, ${data})`;
+  return `await renderHTML(await renderSlot(slots, ${JSON.stringify(name)}, __slateHtml(${fallback}), ${data}))`;
 }
 
-function generateComponent(node: ElementCst, filename: string, dev: boolean): string {
-  return `await ${node.rawTagName}.render(${generatePropsObject(node.openTag.attributes, filename)}, ${generateSlotsObject(node, filename, dev)}, context)`;
+function generateComponent(node: ElementCst, filename: string, dev: boolean, componentNames?: Set<string>): string {
+  return `await renderHTML(await ${node.rawTagName}.render(${generatePropsObject(node.openTag.attributes, filename)}, ${generateSlotsObject(node, componentNames ?? new Set(), filename, dev)}, context))`;
 }
 
-function generateSlotsObject(node: ElementCst, filename: string, dev: boolean): string {
+function generateSlotsObject(node: ElementCst, componentNames: Set<string>, filename: string, dev: boolean): string {
   const slotGroups = new Map<string, { pattern?: string; children: TemplateCstNode[] }>();
   slotGroups.set("default", {
     children: [],
@@ -395,7 +408,7 @@ function generateSlotsObject(node: ElementCst, filename: string, dev: boolean): 
   const slots = entries.map(([name, slot]) => {
     const params = slot.pattern ? slot.pattern : "";
 
-    return `${JSON.stringify(name)}: async (${params}) => {\n      let __html = \"\";\n${indent(generateStatements(slot.children, new Set(), "__html", filename, dev), 6)}\n      return __html;\n    }`;
+    return `${JSON.stringify(name)}: async (${params}) => {\n      let __html = \"\";\n${indent(generateStatements(slot.children, componentNames, "__html", filename, dev), 6)}\n      return __slateHtml(__html);\n    }`;
   });
 
   return `{\n    ${slots.join(",\n    ")}\n  }`;

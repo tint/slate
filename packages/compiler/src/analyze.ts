@@ -20,9 +20,17 @@ export type ComponentBinding = {
   range: Range;
 };
 
+export type SlotBinding = {
+  localName: string;
+  name: string;
+  defaultData?: string;
+  range: Range;
+};
+
 export type SlateModule = {
   script?: SlateScriptElementCst;
   components: ComponentBinding[];
+  slots: SlotBinding[];
   diagnostics: Diagnostic[];
 };
 
@@ -52,9 +60,11 @@ export function analyze(cst: SlateFileCst, _options: AnalyzeOptions = {}): Analy
   }
 
   const components = script ? collectComponentImports(script) : [];
+  const slots = script ? collectSlotBindings(script, diagnostics) : [];
   const module: SlateModule = {
     script,
     components,
+    slots,
     diagnostics,
   };
 
@@ -154,6 +164,73 @@ function collectComponentImports(script: SlateScriptElementCst): ComponentBindin
   }
 
   return components;
+}
+
+function collectSlotBindings(script: SlateScriptElementCst, diagnostics: Diagnostic[]): SlotBinding[] {
+  const slots: SlotBinding[] = [];
+  const text = script.body.text;
+  const bodyStart = script.body.range.start;
+  const sourceFile = ts.createSourceFile("component.slate.ts", text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+
+  for (const statement of sourceFile.statements) {
+    if (!ts.isVariableStatement(statement)) {
+      continue;
+    }
+
+    const isConst = (statement.declarationList.flags & ts.NodeFlags.Const) !== 0;
+
+    for (const declaration of statement.declarationList.declarations) {
+      if (!declaration.initializer || !ts.isCallExpression(declaration.initializer)) {
+        continue;
+      }
+
+      const call = declaration.initializer;
+
+      if (!ts.isIdentifier(call.expression) || call.expression.text !== "$slot") {
+        continue;
+      }
+
+      if (!isConst || !ts.isIdentifier(declaration.name)) {
+        diagnostics.push(error("`$slot` must be assigned to a top-level const identifier.", {
+          start: bodyStart + declaration.getStart(sourceFile),
+          end: bodyStart + declaration.getEnd(),
+        }));
+        continue;
+      }
+
+      const nameArg = call.arguments[0];
+
+      if (!nameArg || !ts.isStringLiteralLike(nameArg)) {
+        diagnostics.push(error("`$slot` requires a static string slot name.", {
+          start: bodyStart + call.getStart(sourceFile),
+          end: bodyStart + call.getEnd(),
+        }));
+        continue;
+      }
+
+      if (!nameArg.text) {
+        diagnostics.push(error("`$slot` name must not be empty.", {
+          start: bodyStart + nameArg.getStart(sourceFile),
+          end: bodyStart + nameArg.getEnd(),
+        }));
+        continue;
+      }
+
+      const defaultData = call.arguments[1];
+
+      slots.push({
+        localName: declaration.name.text,
+        name: nameArg.text,
+        defaultData: defaultData ? text.slice(defaultData.getStart(sourceFile), defaultData.getEnd()) : undefined,
+        range: {
+          start: bodyStart + declaration.getStart(sourceFile),
+          end: bodyStart + declaration.getEnd(),
+        },
+      });
+    }
+  }
+
+  return slots;
 }
 
 function hasExportModifier(statement: ts.Statement): boolean {
