@@ -1,10 +1,19 @@
 import type { InlineConfig, PluginOption } from "vite";
+import type { PluggableList } from "unified";
 
 /** A single Slate entry or a named multi-entry map. Named entries become route/build output names. */
 export type SlateViteInput = string | Record<string, string>;
 
 /** Slate plugins intentionally use Vite's plugin shape so existing Vite plugins can be reused. */
 export type SlatePlugin = PluginOption;
+
+/** Final HTML postprocess options applied after Slate render output is produced. */
+export type SlateHtmlFormat = "preserve" | "pretty" | "minify";
+
+export type SlateHtmlOptions = {
+  format?: SlateHtmlFormat;
+  rehypePlugins?: PluggableList;
+};
 
 /**
  * Vite options accepted from Slate config.
@@ -24,6 +33,7 @@ export type SlateViteOptions = {
   kitSpecifier?: string;
   plugins?: SlatePlugin[];
   vite?: SlateViteUserConfig;
+  html?: SlateHtmlOptions;
   server?: {
     host?: string;
     port?: number;
@@ -40,6 +50,7 @@ export type SlateBuildOptions = {
   kitSpecifier?: string;
   plugins?: SlatePlugin[];
   vite?: SlateViteUserConfig;
+  html?: SlateHtmlOptions;
   onBuilt?: (outputPath: string) => void;
   onError?: (message: string) => void;
 };

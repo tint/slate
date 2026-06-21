@@ -8,6 +8,7 @@ import { cloneContext, injectCollectedAssets } from "@slate/kit";
 import { normalizeInputs, normalizeUserViteConfig } from "./config";
 import { buildSlateCssImports, collectSlateCssImports, injectStylesheets } from "./css-imports";
 import { isSlateRenderError } from "./errors";
+import { processHtml } from "./html";
 import { copyPublicDir } from "./public-files";
 import { slate } from "./plugin";
 import type { SlateBuildOptions, SlatePlugin, SlateViteUserConfig } from "./types";
@@ -36,7 +37,7 @@ export async function buildSlate(options: SlateBuildOptions): Promise<boolean> {
 
   for (const input of inputs) {
     const outPath = inputs.length > 1 ? resolve(output, `${input.name}.html`) : output;
-    const result = await renderBuildInput(root, input.path, resolve(tmpDir, input.name), publicOutDir, options.kitSpecifier ?? "@slate/kit", options.plugins ?? [], options.vite);
+    const result = await renderBuildInput(root, input.path, resolve(tmpDir, input.name), publicOutDir, options.kitSpecifier ?? "@slate/kit", options.plugins ?? [], options.vite, options.html);
 
     if (!result.ok) {
       options.onError?.(result.message);
@@ -57,7 +58,7 @@ export async function buildSlate(options: SlateBuildOptions): Promise<boolean> {
   return true;
 }
 
-async function renderBuildInput(root: string, inputPath: string, tmpDir: string, outDir: string, kitSpecifier: string, plugins: SlatePlugin[], vite?: SlateViteUserConfig): Promise<
+async function renderBuildInput(root: string, inputPath: string, tmpDir: string, outDir: string, kitSpecifier: string, plugins: SlatePlugin[], vite?: SlateViteUserConfig, htmlOptions?: SlateBuildOptions["html"]): Promise<
   | { ok: true; html: string }
   | { ok: false; message: string }
 > {
@@ -111,10 +112,11 @@ async function renderBuildInput(root: string, inputPath: string, tmpDir: string,
   try {
     const context = cloneContext();
     const html = injectCollectedAssets(await mod.render({}, {}, context), context);
+    const htmlWithStylesheets = injectStylesheets(html, stylesheetHrefs);
 
     return {
       ok: true,
-      html: injectStylesheets(html, stylesheetHrefs),
+      html: await processHtml(htmlWithStylesheets, htmlOptions),
     };
   } catch (error) {
     if (isSlateRenderError(error)) {

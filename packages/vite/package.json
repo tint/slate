@@ -14,6 +14,11 @@
   "dependencies": {
     "@slate/compiler": "^0.0.1-alpha.3",
     "@slate/kit": "^0.0.1-alpha.3",
+    "rehype-format": "^5.0.1",
+    "rehype-minify-whitespace": "^6.0.2",
+    "rehype-parse": "^9.0.1",
+    "rehype-stringify": "^10.0.1",
+    "unified": "^11.0.5",
     "vite": "^8.0.16"
   },
   "scripts": {

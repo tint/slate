@@ -183,6 +183,9 @@ function createSlateConfig() {
 export default defineConfig({
   input: "src/App.slate",
   publicDir: "public",
+  html: {
+    format: "preserve",
+  },
   dev: {
     host: "127.0.0.1",
     port: 5173,

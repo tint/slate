@@ -39,6 +39,7 @@ export async function runBuild(options: BuildOptions = {}): Promise<void> {
     kitSpecifier,
     plugins: config.plugins,
     vite: config.vite,
+    html: config.html,
     onBuilt(outputPath) {
       console.log(`Built ${outputPath}`);
     },

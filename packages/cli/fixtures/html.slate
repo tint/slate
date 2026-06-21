@@ -1,0 +1,20 @@
+<script slate>
+  const title = "Slate HTML";
+  const items = ["format", "minify"];
+</script>
+
+<html>
+  <head>
+    <title>{title}</title>
+  </head>
+  <body>
+    <main>
+      <h1>{title}</h1>
+      <ul>
+        {#each items as item}
+          <li>{item}</li>
+        {/each}
+      </ul>
+    </main>
+  </body>
+</html>

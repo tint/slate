@@ -1,7 +1,7 @@
 import { access } from "node:fs/promises";
 import { dirname, extname, isAbsolute, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import type { SlatePlugin, SlateViteUserConfig } from "@slate/vite";
+import type { SlateHtmlOptions, SlatePlugin, SlateViteUserConfig } from "@slate/vite";
 
 export type SlateConfigCommand = "serve" | "build";
 
@@ -20,6 +20,7 @@ export type SlateConfig = {
   input?: string | Record<string, string>;
   plugins?: SlatePlugin[];
   vite?: SlateViteUserConfig;
+  html?: SlateHtmlOptions;
   publicDir?: string;
   dev?: {
     host?: string;
@@ -50,6 +51,7 @@ export type ResolvedSlateConfig = {
   input: ResolvedSlateInput[];
   plugins: SlatePlugin[];
   vite?: SlateViteUserConfig;
+  html: SlateHtmlOptions;
   publicDir?: string;
   dev: {
     host: string;
@@ -76,6 +78,9 @@ export type ResolvedSlateInput = {
 
 const DEFAULT_CONFIG: Omit<ResolvedSlateConfig, "configPath" | "input"> = {
   plugins: [],
+  html: {
+    format: "preserve",
+  },
   dev: {
     host: "127.0.0.1",
     port: 5173,
@@ -109,6 +114,7 @@ export async function loadConfig(configFile: string | undefined, context: SlateC
     input: resolveInput(baseDir, userConfig.input),
     plugins: userConfig.plugins ?? [],
     vite: userConfig.vite,
+    html: userConfig.html ?? DEFAULT_CONFIG.html,
     publicDir: userConfig.publicDir ? resolveConfigPath(baseDir, userConfig.publicDir) : undefined,
     dev: {
       host: userConfig.dev?.host ?? DEFAULT_CONFIG.dev.host,

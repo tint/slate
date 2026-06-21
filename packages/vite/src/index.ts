@@ -5,6 +5,8 @@ export { createSlatePreviewServer } from "./preview";
 export type {
   NormalizedInput,
   SlateBuildOptions,
+  SlateHtmlFormat,
+  SlateHtmlOptions,
   SlatePlugin,
   SlatePluginOptions,
   SlatePreviewOptions,

@@ -25,6 +25,7 @@ await assertBuild("component", join(packageRoot, "fixtures/component/index.slate
 await assertRuntimeError();
 await assertDev();
 await assertConfig();
+await assertHtmlConfig();
 await assertProgrammaticApi();
 
 async function assertBuild(name: string, input: string): Promise<void> {
@@ -203,6 +204,23 @@ async function assertConfig(): Promise<void> {
     }
   } finally {
     preview.kill();
+  }
+}
+
+async function assertHtmlConfig(): Promise<void> {
+  const configPath = join(packageRoot, "fixtures/html.config.ts");
+
+  await runCli(["build", "--config", configPath], 0);
+
+  const builtHtml = await readFile(join(packageRoot, ".tmp/html-config-build/index.html"), "utf8");
+
+  if (
+    !builtHtml.includes("<title>Slate HTML</title>") ||
+    !builtHtml.includes("<h1>Slate HTML</h1>") ||
+    builtHtml.includes("\n  <") ||
+    builtHtml.includes("\n    ")
+  ) {
+    throw new Error(`Unexpected html config build output.\n${builtHtml}`);
   }
 }
 

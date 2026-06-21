@@ -21,6 +21,9 @@ export default defineConfig({
       __SLATE_CONFIG_DEFINE__: JSON.stringify("from slate config vite"),
     },
   },
+  html: {
+    format: "preserve",
+  },
   publicDir: "public",
   dev: {
     port: 0,

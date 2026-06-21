@@ -6,6 +6,7 @@ import { cloneContext, injectCollectedAssets } from "@slate/kit";
 import { normalizeInputs, normalizeUserViteConfig, routeForPath } from "./config";
 import { collectSlateCssImports, cssImportDevUrls, injectStylesheets } from "./css-imports";
 import { errorPage, injectViteClient, stripViteClient } from "./errors";
+import { processHtml } from "./html";
 import { slate } from "./plugin";
 import type { SlateViteOptions } from "./types";
 
@@ -47,7 +48,8 @@ export async function createSlateDevServer(options: SlateViteOptions): Promise<V
       const html = injectCollectedAssets(await mod.render({}, {}, context), context);
       const stylesheetUrls = cssImportDevUrls(root, input.path, collectSlateCssImports(await readFile(input.path, "utf8")));
       const transformedHtml = await server.transformIndexHtml(url.pathname, injectStylesheets(String(html), stylesheetUrls));
-      const body = options.reload === false ? stripViteClient(transformedHtml) : injectViteClient(transformedHtml);
+      const htmlWithClient = options.reload === false ? stripViteClient(transformedHtml) : injectViteClient(transformedHtml);
+      const body = await processHtml(htmlWithClient, options.html);
       response.statusCode = 200;
       response.setHeader("content-type", "text/html; charset=utf-8");
 

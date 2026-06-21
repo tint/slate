@@ -43,6 +43,7 @@ export async function runDev(options: DevOptions = {}): Promise<void> {
     kitSpecifier,
     plugins: config.plugins,
     vite: config.vite,
+    html: config.html,
     server: {
       host,
       port,

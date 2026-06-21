@@ -177,6 +177,9 @@ export default defineConfig({
   input: "src/App.slate",
   plugins: [],
   publicDir: "public",
+  html: {
+    format: "preserve",
+  },
   dev: {
     host: "127.0.0.1",
     port: 5173,
@@ -197,6 +200,7 @@ Top-level options:
 - `input`: Slate entry file or a named input map.
 - `plugins`: Vite-compatible plugins used by Slate dev/build.
 - `publicDir`: Static assets directory.
+- `html`: Final HTML postprocess options.
 - `dev`: Development server options.
 - `build`: Static build options.
 - `preview`: Preview server options.
@@ -209,6 +213,30 @@ CLI flags > slate.config.* > defaults
 ```
 
 Relative paths in config are resolved from the config file directory.
+
+## HTML postprocess
+
+Slate can postprocess the final rendered HTML with rehype:
+
+```ts
+import { defineConfig } from "@slate/cli";
+
+export default defineConfig({
+  input: "src/App.slate",
+  html: {
+    format: "minify",
+    rehypePlugins: [],
+  },
+});
+```
+
+`html.format` accepts:
+
+- `"preserve"`: Keep rendered HTML as-is. This is the default.
+- `"pretty"`: Format final HTML through rehype.
+- `"minify"`: Minify final HTML whitespace through rehype.
+
+`html.rehypePlugins` accepts rehype plugins that run before the selected formatter/minifier.
 
 ## Multiple inputs
 

@@ -23,6 +23,9 @@ await buildSlate({
   input: "src/App.slate",
   output: "dist/index.html",
   plugins: [],
+  html: {
+    format: "minify",
+  },
   vite: {
     define: {
       __BUILD_TARGET__: JSON.stringify("static"),
@@ -30,5 +33,7 @@ await buildSlate({
   },
 });
 ```
+
+`html.format` supports `"preserve"`, `"pretty"`, and `"minify"`. `html.rehypePlugins` can be used to run additional rehype transforms on the final rendered HTML.
 
 Client-side asset bundling will be added later when Slate gets client runtime features.

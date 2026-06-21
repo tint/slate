@@ -115,6 +115,36 @@ if (!logo.includes("<svg")) {
   throw new Error(`Unexpected buildSlate imported asset output.\n${logo}`);
 }
 
+const minifiedOk = await buildSlate({
+  root: fixtureRoot,
+  input: "App.slate",
+  output: join(tmpDir, "minified.html"),
+  tmpDir: join(tmpDir, "minified-modules"),
+  html: {
+    format: "minify",
+  },
+  vite: {
+    define: {
+      __SLATE_VITE_FIXTURE__: JSON.stringify("configured by vite"),
+    },
+  },
+});
+
+if (!minifiedOk) {
+  throw new Error("Expected minified buildSlate to complete successfully.");
+}
+
+const minifiedHtml = await readFile(join(tmpDir, "minified.html"), "utf8");
+
+if (
+  !minifiedHtml.includes("Slate Vite") ||
+  !minifiedHtml.includes("configured by vite") ||
+  minifiedHtml.includes("\n  <") ||
+  minifiedHtml.includes("\n    ")
+) {
+  throw new Error(`Unexpected minified buildSlate HTML output.\n${minifiedHtml}`);
+}
+
 async function getText(url: string): Promise<{
   statusCode: number;
   body: string;
