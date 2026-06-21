@@ -49,6 +49,8 @@ export async function createSlateDevServer(options: SlateViteOptions): Promise<V
       const stylesheetUrls = cssImportDevUrls(root, input.path, collectSlateCssImports(await readFile(input.path, "utf8")));
       const transformedHtml = await server.transformIndexHtml(url.pathname, injectStylesheets(String(html), stylesheetUrls));
       const htmlWithClient = options.reload === false ? stripViteClient(transformedHtml) : injectViteClient(transformedHtml);
+      // Run HTML postprocess after Vite's transformIndexHtml and reload client
+      // injection so dev responses match the final served document shape.
       const body = await processHtml(htmlWithClient, options.html);
       response.statusCode = 200;
       response.setHeader("content-type", "text/html; charset=utf-8");

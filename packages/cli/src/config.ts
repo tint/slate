@@ -20,6 +20,7 @@ export type SlateConfig = {
   input?: string | Record<string, string>;
   plugins?: SlatePlugin[];
   vite?: SlateViteUserConfig;
+  /** Final rendered HTML postprocess options passed to `@slate/vite`. */
   html?: SlateHtmlOptions;
   publicDir?: string;
   dev?: {

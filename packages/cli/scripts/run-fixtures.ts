@@ -214,6 +214,8 @@ async function assertHtmlConfig(): Promise<void> {
 
   const builtHtml = await readFile(join(packageRoot, ".tmp/html-config-build/index.html"), "utf8");
 
+  // This verifies the public CLI config path, not just the lower-level Vite API:
+  // slate.config.ts -> loadConfig() -> runBuild() -> buildSlate() -> processHtml().
   if (
     !builtHtml.includes("<title>Slate HTML</title>") ||
     !builtHtml.includes("<h1>Slate HTML</h1>") ||

@@ -7,11 +7,19 @@ export type SlateViteInput = string | Record<string, string>;
 /** Slate plugins intentionally use Vite's plugin shape so existing Vite plugins can be reused. */
 export type SlatePlugin = PluginOption;
 
-/** Final HTML postprocess options applied after Slate render output is produced. */
+/**
+ * Final HTML postprocess options applied after Slate render output is produced.
+ *
+ * The compiler does not trim template whitespace. Formatting and minification
+ * live here because only the final HTML pipeline can see the whole document,
+ * injected global assets, CSS imports, and user rehype transforms together.
+ */
 export type SlateHtmlFormat = "preserve" | "pretty" | "minify";
 
 export type SlateHtmlOptions = {
+  /** Keep output unchanged, pretty-print it, or minify whitespace. */
   format?: SlateHtmlFormat;
+  /** Additional rehype plugins run before the selected formatter/minifier. */
   rehypePlugins?: PluggableList;
 };
 

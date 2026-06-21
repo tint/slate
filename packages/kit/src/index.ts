@@ -1,17 +1,28 @@
+/** Function shape used by compiled components to render slot content. */
 export type SlotFn<T = unknown> = (data?: T) => string | Promise<string>;
 
+/** Runtime slot table passed from a parent component to a child component. */
 export type Slots = Record<string, SlotFn | undefined>;
 
+/**
+ * Shared render context passed through compiled component renders.
+ *
+ * `provides` stores `$provide`/`$inject` values. Values are intentionally shared
+ * by reference, so functions, class instances, registries, and mutable services
+ * can be passed through context.
+ */
 export type SlateContext = {
   provides?: Record<string, unknown>;
   assets?: SlateAssets;
 };
 
+/** Collected global assets emitted by `is:global` script/style blocks. */
 export type SlateAssets = {
   head: Map<string, string>;
   tail: Map<string, string>;
 };
 
+/** Original Slate source location attached to runtime render errors. */
 export type SlateSourceLocation = {
   filename: string;
   range: {
@@ -21,6 +32,10 @@ export type SlateSourceLocation = {
   kind: "script" | "template" | "slot" | "component";
 };
 
+/**
+ * Error wrapper used when generated render code can map an exception back to a
+ * `.slate` source range.
+ */
 export class SlateRenderError extends Error {
   readonly cause: unknown;
   readonly filename: string;
@@ -38,6 +53,7 @@ export class SlateRenderError extends Error {
   }
 }
 
+/** Evaluate a generated expression and wrap thrown errors with Slate metadata. */
 export function evaluateSlateExpression<T>(fn: () => T, location: SlateSourceLocation): T {
   try {
     return fn();
@@ -46,6 +62,7 @@ export function evaluateSlateExpression<T>(fn: () => T, location: SlateSourceLoc
   }
 }
 
+/** Escape a value for safe HTML text/attribute interpolation. */
 export function escapeHTML(value: unknown): string {
   return String(value)
     .replaceAll("&", "&amp;")
@@ -55,6 +72,13 @@ export function escapeHTML(value: unknown): string {
     .replaceAll("'", "&#39;");
 }
 
+/**
+ * Create a child render context.
+ *
+ * This is a shallow context fork: the `provides` table itself is copied so child
+ * providers do not overwrite parent keys, but provided values remain shared by
+ * reference. Asset collection is intentionally shared across the render tree.
+ */
 export function cloneContext(context: SlateContext = {}): SlateContext {
   return {
     ...context,
@@ -65,6 +89,7 @@ export function cloneContext(context: SlateContext = {}): SlateContext {
   };
 }
 
+/** Create an empty global asset collection for one render pass. */
 export function createSlateAssets(): SlateAssets {
   return {
     head: new Map<string, string>(),
@@ -72,6 +97,13 @@ export function createSlateAssets(): SlateAssets {
   };
 }
 
+/**
+ * Register global HTML emitted by an `is:global` block.
+ *
+ * Assets are deduplicated by their final HTML and injection position. The empty
+ * string return value lets generated code call this where inline HTML would
+ * otherwise be appended.
+ */
 export function addGlobalAsset(context: SlateContext, position: "head" | "tail", html: string): string {
   const assets = context.assets ?? (context.assets = createSlateAssets());
   const key = `${position}:${html}`;
@@ -79,6 +111,7 @@ export function addGlobalAsset(context: SlateContext, position: "head" | "tail",
   return "";
 }
 
+/** Inject all collected global assets into the final rendered HTML document. */
 export function injectCollectedAssets(html: string, context: SlateContext): string {
   const assets = context.assets;
 
@@ -122,6 +155,7 @@ export async function renderSlot(
   return slot ? await slot(data) : fallback;
 }
 
+/** clsx-compatible value accepted by Slate's `class={...}` serializer. */
 export type ClassValue =
   | string
   | number
@@ -131,12 +165,14 @@ export type ClassValue =
   | ClassValue[]
   | Record<string, unknown>;
 
+/** Serialize Slate `class={...}` values into a space-separated class string. */
 export function serializeClass(value: ClassValue): string {
   const classes: string[] = [];
   collectClass(value, classes);
   return classes.join(" ");
 }
 
+/** Value accepted by Slate's `style={...}` serializer. */
 export type StyleValue =
   | string
   | null
@@ -145,6 +181,7 @@ export type StyleValue =
   | Record<string, string | number | null | undefined | false>
   | StyleValue[];
 
+/** Serialize Slate `style={...}` values into a CSS declaration string. */
 export function serializeStyle(value: StyleValue): string {
   const declarations: string[] = [];
   collectStyle(value, declarations);

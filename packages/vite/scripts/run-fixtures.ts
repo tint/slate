@@ -136,6 +136,8 @@ if (!minifiedOk) {
 
 const minifiedHtml = await readFile(join(tmpDir, "minified.html"), "utf8");
 
+// Exercise the direct @slate/vite API path for html.format. CLI coverage lives
+// in packages/cli so both public entry points are protected.
 if (
   !minifiedHtml.includes("Slate Vite") ||
   !minifiedHtml.includes("configured by vite") ||

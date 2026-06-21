@@ -116,6 +116,8 @@ async function renderBuildInput(root: string, inputPath: string, tmpDir: string,
 
     return {
       ok: true,
+      // HTML postprocess is last so it sees the same document that will be
+      // written to disk, including collected global assets and bundled CSS.
       html: await processHtml(htmlWithStylesheets, htmlOptions),
     };
   } catch (error) {
