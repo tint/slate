@@ -1,8 +1,8 @@
-import { cloneContext, cloneData, escapeHTML, evaluateSlateExpression, renderSlot, serializeStyle } from "@slate/kit";
+import { cloneContext, escapeHTML, evaluateSlateExpression, renderSlot, serializeStyle } from "@slate/kit";
 export async function render(__props = {}, slots = {}, context = {}) {
   context = cloneContext(context);
-  const $provide = (name, value) => { context.provides[name] = cloneData(value); };
-  const $inject = (name, fallback) => Object.hasOwn(context.provides, name) ? cloneData(context.provides[name]) : cloneData(fallback);
+  const $provide = (name, value) => { context.provides[name] = value; };
+  const $inject = (name, fallback) => Object.hasOwn(context.provides, name) ? context.provides[name] : fallback;
   $provide("theme", {
       color: "red",
       spacing: 8,

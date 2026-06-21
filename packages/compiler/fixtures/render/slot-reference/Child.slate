@@ -1,0 +1,8 @@
+<script slate>
+  const data = {
+    count: 0,
+  };
+</script>
+
+<slot name="header" data={data} />
+<p>{data.count}</p>

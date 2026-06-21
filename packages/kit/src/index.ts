@@ -112,52 +112,6 @@ function injectAssetGroup(html: string, assets: string[], position: "head" | "ta
     : `${html}\n${content}`;
 }
 
-export function cloneData<T>(value: T): T {
-  assertCloneable(value);
-  return structuredClone(value);
-}
-
-export function assertCloneable(value: unknown, seen: Set<unknown> = new Set<unknown>()): void {
-  if (
-    value === null ||
-    typeof value === "string" ||
-    typeof value === "number" ||
-    typeof value === "boolean" ||
-    typeof value === "undefined"
-  ) {
-    return;
-  }
-
-  if (typeof value === "function" || typeof value === "symbol" || typeof value === "bigint") {
-    throw new TypeError("Slate context values must be cloneable data.");
-  }
-
-  if (typeof value !== "object") {
-    return;
-  }
-
-  if (seen.has(value)) {
-    throw new TypeError("Slate context values must not contain cycles.");
-  }
-
-  seen.add(value);
-
-  if (Array.isArray(value)) {
-    for (const item of value) {
-      assertCloneable(item, seen);
-    }
-    return;
-  }
-
-  if (Object.getPrototypeOf(value) !== Object.prototype) {
-    throw new TypeError("Slate context values must be plain objects or arrays.");
-  }
-
-  for (const item of Object.values(value)) {
-    assertCloneable(item, seen);
-  }
-}
-
 export async function renderSlot(
   slots: Slots,
   name = "default",
@@ -165,7 +119,7 @@ export async function renderSlot(
   data?: unknown,
 ): Promise<string> {
   const slot = slots[name];
-  return slot ? await slot(data === undefined ? undefined : cloneData(data)) : fallback;
+  return slot ? await slot(data) : fallback;
 }
 
 export type ClassValue =

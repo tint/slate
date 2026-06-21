@@ -11,7 +11,6 @@ Static checker for Slate files.
 - Validate component props and slot syntax rules.
 - Validate imported component props when the component exports a `Props` type.
 - Validate rune usage.
-- Validate obvious non-cloneable `$provide`, `$inject` fallback, and `<slot data>` values.
 - Validate compiler directives.
 
 ## Status
@@ -51,5 +50,4 @@ export function checkSource(options: CheckSourceOptions): CheckSourceResult;
 - `check` is a pure analysis phase: it does not emit HTML.
 - `<script slate>` and template expression diagnostics use `@slate/ts-plugin` virtual documents so CLI and editor tooling share the same TypeScript view.
 - Slot checks currently cover deprecated `slot="name"`, malformed `slot:name`, `<slot>` outlet `name`/`data` attribute forms, and accidental `slot:*` use on `<slot>` outlets.
-- Cloneable checks reject statically visible functions, classes, class instances, calls, bigint values, accessors, and methods. Runtime `cloneData` still validates dynamic values.
 - Component prop checks read imported `.slate` modules, preserve their type declarations, and type-check component attributes against an exported `Props` type when present.

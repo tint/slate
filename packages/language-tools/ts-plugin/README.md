@@ -27,7 +27,7 @@ and creates a virtual `.slate.ts` document:
 - `slot:name={pattern}` creates a generated binding scope for slot content
 - imported Slate component elements create generated props checks
 - generated expression ranges map back to the original `.slate` ranges
-- rune declarations provide editor type inference; cloneable validation is emitted by `@slate/compiler`/`@slate/check`
+- rune declarations provide editor type inference
 - imported `.slate` modules expose `Component<Props, Slots>` instead of internal helper types
 
 This keeps the important mapping simple:

@@ -134,8 +134,8 @@ function slateCompletionItems(document: TextDocument, position: Position): Compl
     return [
       slateSnippet("$prop", 'prop("${1:name}", ${2:defaultValue})', "Declare one component prop"),
       slateSnippet("$props", "props(${1:defaults})", "Declare multiple component props"),
-      slateSnippet("$inject", 'inject("${1:key}", ${2:fallback})', "Inject cloneable context data"),
-      slateSnippet("$provide", 'provide("${1:key}", ${2:value})', "Provide cloneable context data"),
+      slateSnippet("$inject", 'inject("${1:key}", ${2:fallback})', "Inject a context value"),
+      slateSnippet("$provide", 'provide("${1:key}", ${2:value})', "Provide a context value"),
     ];
   }
 
@@ -288,13 +288,13 @@ const RUNE_HOVER_DOCS: Record<string, SlateHoverDoc> = {
   $inject: {
     label: "$inject",
     signature: "$inject<T>(key: string | symbol, fallback?: T): T",
-    description: "Reads cloneable data provided by an ancestor component. Injected values are cloned copies.",
+    description: "Reads a context value provided by an ancestor component. Injected values are shared by reference.",
     example: 'const theme = $inject("theme", "light");',
   },
   $provide: {
     label: "$provide",
     signature: "$provide<T>(key: string | symbol, value: T): void",
-    description: "Provides cloneable data to descendant components through Slate context.",
+    description: "Provides a context value to descendant components. Values are shared by reference.",
     example: '$provide("theme", "dark");',
   },
 };
@@ -390,7 +390,7 @@ const SLOT_HOVER_DOCS: Record<string, SlateHoverDoc> = {
   "slot.data": {
     label: "slot data",
     signature: "data={{ title, icon }}",
-    description: "Passes cloneable outlet data to the slot content. Consumers receive it through `slot:name={...}` destructuring.",
+    description: "Passes outlet data to the slot content by reference. Consumers receive it through `slot:name={...}` destructuring.",
     example: '<slot name="header" data={{ title, icon }} />',
   },
   "slot.directive": {

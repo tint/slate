@@ -146,11 +146,11 @@
     },
     {
       "label": "$inject",
-      "detail": "Inject cloneable context data"
+      "detail": "Inject a context value"
     },
     {
       "label": "$provide",
-      "detail": "Provide cloneable context data"
+      "detail": "Provide a context value"
     }
   ],
   "slotCompletion": [

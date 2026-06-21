@@ -315,7 +315,7 @@ Rules:
 
 ### `$provide`
 
-Provides cloneable data to descendant Slate components.
+Provides a context value to descendant Slate components.
 
 ```slate
 <script slate>
@@ -332,13 +332,14 @@ Rules:
 
 - `$provide(key, value)` stores data in the current render context.
 - Descendant Slate components may read the value with `$inject`.
-- Provided values must be cloneable data.
-- Functions, classes, class instances, closures, and other side-effectful values are not supported.
-- Values are cloned before injection.
+- Keys may be strings or symbols.
+- Values are shared by reference.
+- Functions, class instances, and other non-serializable values are allowed.
+- Mutating a provided object through an injected reference mutates the shared context value.
 
 ### `$inject`
 
-Injects cloneable data from an ancestor provider.
+Injects a context value from an ancestor provider.
 
 ```slate
 <script slate>
@@ -360,36 +361,28 @@ Rules:
 
 - `$inject(key)` reads data from the nearest ancestor provider.
 - `$inject(key, fallback)` returns the fallback when no provider exists.
-- Injected values are cloned copies.
-- Mutating an injected value does not mutate the provider's source value.
-- Functions, classes, class instances, closures, and other side-effectful values are rejected.
+- Injected values are returned by reference.
+- Fallback values are returned as-is.
 
-### Cloneable data
+### Context value model
 
-`$provide` and `$inject` are for cross-component data sharing without shared mutable side effects.
+`$provide` and `$inject` intentionally use reference semantics.
 
-Supported values:
+This keeps context useful for advanced compile-time integrations, such as:
 
-- `null`
-- `boolean`
-- `number`
-- `string`
-- arrays of cloneable values
-- plain objects containing cloneable values
-
-Unsupported values:
-
+- shared registries
 - functions
-- classes
 - class instances
-- symbols
-- DOM nodes
-- promises
-- cyclic objects
-- values with custom prototypes
-- values that depend on identity or mutation side effects
+- memoized services
+- compiler or framework adapters
 
-The compiler or runtime should validate provided values in development mode. Production mode may use a cheaper clone strategy, but observable semantics must remain clone-by-value.
+Rules:
+
+- Context values are not serialized.
+- Context values are not cloned.
+- Slate does not protect callers from shared mutable state.
+- Component authors should treat context as an explicit shared channel, not as props.
+- User-facing component data should still prefer `$prop`, `$props`, and slots.
 
 ## Template syntax
 
@@ -740,12 +733,9 @@ header: async ({ title, icon, tail }) => {
 }
 ```
 
-Rules:
-
-- Slot data must be cloneable data.
-- Slot data follows the same clone-by-value safety model as `$provide` and `$inject`.
-- Functions, classes, class instances, closures, and other side-effectful values are rejected.
-- Mutating bound slot data does not mutate the child component source value.
+- Slot data is passed by reference.
+- Functions, classes, class instances, closures, and other non-serializable values are allowed.
+- Mutating bound slot data may mutate the child component source value.
 - `slot:name` is only interpreted inside Slate component children.
 - Outside a Slate component boundary, `slot:name` is emitted as a normal attribute unless a future HTML compatibility rule forbids it.
 

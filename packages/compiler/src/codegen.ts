@@ -33,7 +33,7 @@ export function generate(cst: SlateFileCst, _options: GenerateOptions = {}): Gen
   const scriptParts = script ? transpileSlateScript(script.body.text) : { imports: "", body: "" };
   const statements = generateStatements(bodyNodes, componentNames, "__html", filename);
   const usedRunes = collectUsedRunes([scriptParts.body, statements]);
-  const kitImports = collectKitImports(statements, usedRunes);
+  const kitImports = collectKitImports(statements);
   const runeHelpers = generateRuneHelpers(usedRunes);
   const code = [
     `import { ${kitImports.join(", ")} } from "@slate/kit";`,
@@ -92,12 +92,8 @@ function isRuneName(value: string): value is RuneName {
   return RUNE_NAMES.includes(value as RuneName);
 }
 
-function collectKitImports(statements: string, usedRunes: Set<RuneName>): string[] {
+function collectKitImports(statements: string): string[] {
   const imports = ["cloneContext"];
-
-  if (usedRunes.has("$provide") || usedRunes.has("$inject")) {
-    imports.push("cloneData");
-  }
 
   for (const helper of ["escapeHTML", "evaluateSlateExpression", "renderSlot", "serializeClass", "serializeStyle"]) {
     if (statements.includes(`${helper}(`)) {
@@ -124,11 +120,11 @@ function generateRuneHelpers(usedRunes: Set<RuneName>): string[] {
   }
 
   if (usedRunes.has("$provide")) {
-    helpers.push("const $provide = (name, value) => { context.provides[name] = cloneData(value); };");
+    helpers.push("const $provide = (name, value) => { context.provides[name] = value; };");
   }
 
   if (usedRunes.has("$inject")) {
-    helpers.push("const $inject = (name, fallback) => Object.hasOwn(context.provides, name) ? cloneData(context.provides[name]) : cloneData(fallback);");
+    helpers.push("const $inject = (name, fallback) => Object.hasOwn(context.provides, name) ? context.provides[name] : fallback;");
   }
 
   return helpers;

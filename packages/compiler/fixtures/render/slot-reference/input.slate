@@ -1,0 +1,7 @@
+<script slate>
+  import Child from "./Child.slate";
+</script>
+
+<Child>
+  <span slot:header={received}>{(received.count += 1, "")}</span>
+</Child>

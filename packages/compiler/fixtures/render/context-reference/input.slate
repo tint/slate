@@ -1,0 +1,17 @@
+<script slate>
+  const theme = {
+    count: 0,
+  };
+  const format = (value: string) => `#${value}`;
+
+  $provide("theme", theme);
+  $provide("format", format);
+
+  const injectedTheme = $inject<typeof theme>("theme");
+  const injectedFormat = $inject<typeof format>("format");
+
+  injectedTheme.count += 1;
+</script>
+
+<p>{theme.count}</p>
+<p>{injectedFormat("ok")}</p>

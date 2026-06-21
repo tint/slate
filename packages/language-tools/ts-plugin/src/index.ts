@@ -43,7 +43,6 @@ export type TypeScriptPluginModule = {
 export const RUNE_DECLARATIONS: string = [
   "",
   "export {};",
-  "type __SlateSerializable = null | boolean | number | string | __SlateSerializable[] | { [key: string]: __SlateSerializable };",
   "declare function $prop<T>(name: string, defaultValue?: T): T;",
   "declare function $props<T extends Record<string, unknown>>(defaults?: Partial<T>): T;",
   "declare function $inject<T = unknown>(key: string | symbol, fallback?: T): T;",
