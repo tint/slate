@@ -1,12 +1,14 @@
 import {
   cloneContext,
   injectCollectedAssets,
+  renderHTML,
+  type RenderResult,
   type SlateContext,
   type Slots,
 } from "@slate/kit";
 
 export type SlateRenderable<TProps = Record<string, unknown>, TSlots extends Slots = Slots> = {
-  render(props?: TProps, slots?: TSlots, context?: SlateContext): string | Promise<string>;
+  render(props?: TProps, slots?: TSlots, context?: SlateContext): RenderResult;
 };
 
 export type RenderSlateOptions<TProps = Record<string, unknown>, TSlots extends Slots = Slots> = {
@@ -30,6 +32,6 @@ export async function renderSlate<TProps = Record<string, unknown>, TSlots exten
   const context = cloneContext(options.context);
   const props = options.props ?? ({} as TProps);
   const slots = options.slots ?? ({} as TSlots);
-  const html = await component.render(props, slots, context);
+  const html = await renderHTML(await component.render(props, slots, context));
   return injectCollectedAssets(html, context);
 }

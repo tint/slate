@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import { resolve } from "node:path";
 import type { InlineConfig, ViteDevServer } from "vite";
 import { createServer as createViteServer, mergeConfig } from "vite";
-import { cloneContext, injectCollectedAssets } from "@slate/kit";
+import { cloneContext, injectCollectedAssets, renderHTML } from "@slate/kit";
 import { normalizeInputs, normalizeUserViteConfig, routeForPath } from "./config";
 import { collectSlateCssImports, cssImportDevUrls, injectStylesheets } from "./css-imports";
 import { errorPage, injectViteClient, stripViteClient } from "./errors";
@@ -46,7 +46,7 @@ export async function createSlateDevServer(options: SlateViteOptions): Promise<V
     try {
       const mod = await server.ssrLoadModule(input.path);
       const context = cloneContext();
-      const html = injectCollectedAssets(await mod.render({}, {}, context), context);
+      const html = injectCollectedAssets(await renderHTML(await mod.render({}, {}, context)), context);
       const stylesheetUrls = cssImportDevUrls(root, input.path, collectSlateCssImports(await readFile(input.path, "utf8")));
       const transformedHtml = await server.transformIndexHtml(url.pathname, injectStylesheets(String(html), stylesheetUrls));
       const htmlWithClient = options.reload === false
