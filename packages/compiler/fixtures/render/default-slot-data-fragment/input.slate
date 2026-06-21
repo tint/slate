@@ -1,0 +1,9 @@
+<script slate>
+import Card from "./Card.slate";
+</script>
+
+<Card>
+  <Fragment slot:default={{ title }}>
+    <h1>{title}</h1>
+  </Fragment>
+</Card>

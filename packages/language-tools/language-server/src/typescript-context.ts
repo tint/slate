@@ -1,4 +1,5 @@
 import ts from "typescript";
+import path from "node:path";
 import {
   CompletionItemKind,
   InsertTextFormat,
@@ -452,6 +453,12 @@ function slateSyntaxHover(document: TextDocument, position: Position): SlateHove
     return componentImportHover;
   }
 
+  const componentTagHover = slateComponentTagHover(document, offset);
+
+  if (componentTagHover) {
+    return componentTagHover;
+  }
+
   const token = slateHoverTokenAt(source, offset);
 
   if (!token) {
@@ -483,20 +490,11 @@ function slateSyntaxHover(document: TextDocument, position: Position): SlateHove
 
 function slateComponentImportHover(document: TextDocument, offset: number): SlateHover | null {
   const source = document.getText();
-  const importPattern = /import\s+([A-Za-z_$][\w$]*)\s+from\s+(["'])([^"']+\.slate)\2/g;
 
-  for (const match of source.matchAll(importPattern)) {
-    const name = match[1];
-    const specifier = match[3];
+  for (const item of importedTemplateComponents(source)) {
+    const { name, specifier, nameStart, nameEnd } = item;
 
-    if (!name || !specifier || match.index === undefined) {
-      continue;
-    }
-
-    const nameStart = match.index + match[0].indexOf(name);
-    const nameEnd = nameStart + name.length;
-
-    if (offset < nameStart || offset > nameEnd) {
+    if (offset < nameStart || offset > nameEnd || !specifier.endsWith(".slate")) {
       continue;
     }
 
@@ -519,6 +517,143 @@ function slateComponentImportHover(document: TextDocument, offset: number): Slat
   }
 
   return null;
+}
+
+function slateComponentTagHover(document: TextDocument, offset: number): SlateHover | null {
+  const source = document.getText();
+  const tag = templateTagNameAt(source, offset);
+
+  if (!tag || !isComponentTagName(tag.name)) {
+    return null;
+  }
+
+  const component = importedTemplateComponents(source).find((item) => item.name === tag.name);
+
+  if (!component) {
+    return null;
+  }
+
+  const label = component.specifier.endsWith(".slate") ? `Slate component ${component.name}` : `Imported component ${component.name}`;
+  const description = component.specifier.endsWith(".slate")
+    ? "Renders an imported `.slate` component. Pass props with attributes and provide slots with child content."
+    : "Renders an imported component-like value. Slate type checking is only specialized for `.slate` component imports.";
+
+  return {
+    slatePriority: "primary",
+    range: {
+      start: document.positionAt(tag.start),
+      end: document.positionAt(tag.end),
+    },
+    contents: {
+      kind: "markdown",
+      value: formatSlateHoverDoc({
+        label,
+        signature: `<${component.name}> ... </${component.name}>`,
+        description,
+        example: `<${component.name} title="Hello">\n  <p>Content</p>\n</${component.name}>`,
+      }),
+    },
+  };
+}
+
+type ImportedTemplateComponent = {
+  name: string;
+  specifier: string;
+  nameStart: number;
+  nameEnd: number;
+};
+
+function importedTemplateComponents(source: string): ImportedTemplateComponent[] {
+  const components: ImportedTemplateComponent[] = [];
+  const importPattern = /import\s+([^;]+?)\s+from\s+(["'])([^"']+)\2/g;
+
+  for (const match of source.matchAll(importPattern)) {
+    const clause = match[1];
+    const specifier = match[3];
+
+    if (!clause || !specifier || match.index === undefined) {
+      continue;
+    }
+
+    const clauseStart = match.index + match[0].indexOf(clause);
+    const defaultMatch = /^\s*([A-Za-z_$][\w$]*)/.exec(clause);
+
+    if (defaultMatch?.[1] && isComponentTagName(defaultMatch[1])) {
+      const nameStart = clauseStart + clause.indexOf(defaultMatch[1]);
+      components.push({
+        name: defaultMatch[1],
+        specifier,
+        nameStart,
+        nameEnd: nameStart + defaultMatch[1].length,
+      });
+    }
+
+    const namedMatch = /\{([^}]*)\}/.exec(clause);
+
+    if (!namedMatch?.[1]) {
+      continue;
+    }
+
+    const namedStart = clauseStart + clause.indexOf(namedMatch[1]);
+
+    for (const item of namedMatch[1].split(",")) {
+      const localMatch = /(?:^|\s)([A-Za-z_$][\w$]*)(?:\s+as\s+([A-Za-z_$][\w$]*))?\s*$/.exec(item);
+      const name = localMatch?.[2] ?? localMatch?.[1];
+
+      if (!name || !isComponentTagName(name)) {
+        continue;
+      }
+
+      const nameStartInNamed = namedMatch[1].indexOf(name, namedMatch[1].indexOf(item));
+
+      if (nameStartInNamed < 0) {
+        continue;
+      }
+
+      const nameStart = namedStart + nameStartInNamed;
+      components.push({
+        name,
+        specifier,
+        nameStart,
+        nameEnd: nameStart + name.length,
+      });
+    }
+  }
+
+  return components;
+}
+
+function templateTagNameAt(source: string, offset: number): { name: string; start: number; end: number } | undefined {
+  const tagStart = source.lastIndexOf("<", offset);
+  const tagEnd = source.indexOf(">", tagStart);
+
+  if (tagStart < 0 || tagEnd < offset || tagEnd < 0) {
+    return undefined;
+  }
+
+  const tag = source.slice(tagStart, tagEnd + 1);
+  const match = /^<\/?\s*([A-Za-z][\w:-]*)/.exec(tag);
+
+  if (!match?.[1]) {
+    return undefined;
+  }
+
+  const start = tagStart + tag.indexOf(match[1]);
+  const end = start + match[1].length;
+
+  if (offset < start || offset > end) {
+    return undefined;
+  }
+
+  return {
+    name: match[1],
+    start,
+    end,
+  };
+}
+
+function isComponentTagName(name: string): boolean {
+  return /^[A-Z]/.test(name);
 }
 
 function slateHoverTokenAt(source: string, offset: number): { text: string; start: number; end: number } | undefined {
@@ -819,13 +954,51 @@ export function definitionFromTypeScriptContext(
   const offset = virtualOffsetAt(context, document, position);
 
   if (offset === undefined) {
-    return null;
+    return definitionFromSlateComponentTag(document, position);
   }
 
   const definitions = context.service.getDefinitionAtPosition(context.virtualDocument.virtualFilename, offset) ?? [];
   const locations = definitions.flatMap((definition) => locationFromDefinition(context, document, definition));
 
-  return locations.length > 0 ? locations : null;
+  return locations.length > 0 ? locations : definitionFromSlateComponentTag(document, position);
+}
+
+function definitionFromSlateComponentTag(document: TextDocument, position: Position): Location[] | null {
+  const source = document.getText();
+  const offset = document.offsetAt(position);
+  const tag = templateTagNameAt(source, offset);
+
+  if (!tag || !isComponentTagName(tag.name)) {
+    return null;
+  }
+
+  const component = importedTemplateComponents(source).find((item) => item.name === tag.name);
+
+  if (!component) {
+    return null;
+  }
+
+  if (component.specifier.endsWith(".slate") && component.specifier.startsWith(".")) {
+    return [
+      {
+        uri: filenameToUri(path.resolve(path.dirname(uriToFilename(document.uri)), component.specifier)),
+        range: {
+          start: { line: 0, character: 0 },
+          end: { line: 0, character: 0 },
+        },
+      },
+    ];
+  }
+
+  return [
+    {
+      uri: document.uri,
+      range: {
+        start: document.positionAt(component.nameStart),
+        end: document.positionAt(component.nameEnd),
+      },
+    },
+  ];
 }
 
 export function scriptSymbolsFromTypeScript(document: TextDocument): SymbolEntry[] {

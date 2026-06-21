@@ -223,6 +223,40 @@ Mark scroll containers with a stable key:
 `dev:scroll` requires a static string value and is stripped from production
 build output.
 
+## Slate directives
+
+Slate supports compiler directives on normal inline scripts and styles:
+
+```slate
+<style is:global>
+  body {
+    margin: 0;
+  }
+</style>
+
+<script is:global="head">
+  document.documentElement.dataset.theme = localStorage.theme || "light";
+</script>
+
+<script is:global>
+  window.__SLATE_READY__ = true;
+</script>
+
+<script is:inline>
+  console.log("inline with this component instance");
+</script>
+```
+
+Rules:
+
+- `<style is:global>` is injected once before `</head>`.
+- `<script is:global="head">` is injected once before `</head>`.
+- `<script is:global="tail">` is injected once before `</body>`.
+- `<script is:global>` is equivalent to `<script is:global="tail">`.
+- `is:inline` keeps the script or style at its template location for every render.
+- `is:global` and `is:inline` are not allowed on `<script slate>`.
+- `is:global` and `is:inline` are not allowed on `<script src="...">`.
+
 Config values are resolved in this order:
 
 ```txt

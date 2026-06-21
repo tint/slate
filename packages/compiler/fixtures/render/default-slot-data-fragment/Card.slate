@@ -1,0 +1,7 @@
+<script slate>
+const title = "Default Title";
+</script>
+
+<section>
+  <slot data={{ title }} />
+</section>

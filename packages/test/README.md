@@ -49,6 +49,16 @@ const html = await renderSlate(App, {
 });
 ```
 
+Slot data and `$provide` / `$inject` context values use Slate runtime reference
+semantics. `renderSlate` does not clone them for tests, so mutations behave the
+same way they do during dev and build rendering.
+
+Collected assets from `is:global` are injected into the returned HTML:
+
+- global styles before `</head>`
+- `is:global="head"` scripts before `</head>`
+- `is:global` and `is:global="tail"` scripts before `</body>`
+
 ## Boundary
 
 `@slate/test` is framework-agnostic. It does not own `.slate` transforms.
@@ -70,6 +80,7 @@ test.beforeAll(async () => {
   server = await startSlateDevServer({
     root: new URL(".", import.meta.url).pathname,
     input: "src/App.slate",
+    preserveScroll: true,
   });
 });
 
@@ -82,3 +93,7 @@ test("renders in a browser", async ({ page }) => {
   await expect(page.locator("h1")).toHaveText("Hello");
 });
 ```
+
+`preserveScroll` enables the same development full-reload scroll restoration
+used by `@slate/vite`. Mark explicit scroll containers with
+`dev:scroll="stable-key"` in `.slate` templates.

@@ -900,6 +900,7 @@ Initial implementation should support:
 - `$provide`.
 - `$inject`.
 - Normal `<script>` and `<style>` passthrough.
+- `is:global` and `is:inline` for normal inline `<script>` and `<style>`.
 - `dev:scroll` in development output.
 
 Initial implementation may reserve or partially support:
@@ -907,7 +908,6 @@ Initial implementation may reserve or partially support:
 - `{#await}`.
 - `{@debug ...}`.
 - `{let/const ...}`.
-- `is:*`.
 
 Initial implementation should not support:
 

@@ -60,3 +60,84 @@ Covered expression kinds:
 - slot data expressions
 
 Standard source maps can be added later once compiler sidecar mappings are stable.
+
+## Compiler directives
+
+Slate compiler directives are parsed and validated by this package.
+
+### `is:global`
+
+`is:global` marks normal inline `<script>` and `<style>` blocks as shared
+page-level assets.
+
+```slate
+<style is:global>
+  body {
+    margin: 0;
+  }
+</style>
+
+<script is:global="head">
+  document.documentElement.dataset.theme = localStorage.theme || "light";
+</script>
+
+<script is:global>
+  window.__SLATE_READY__ = true;
+</script>
+```
+
+Rules:
+
+- `is:global` is allowed only on normal inline `<script>` and `<style>` blocks.
+- `is:global` is not allowed on `<script slate>`.
+- `is:global` is not allowed on `<script src="...">`.
+- `<style is:global>` must not have a value.
+- `<style is:global>` is collected once and injected before `</head>`.
+- `<script is:global="head">` is collected once and injected before `</head>`.
+- `<script is:global="tail">` is collected once and injected before `</body>`.
+- `<script is:global>` is equivalent to `<script is:global="tail">`.
+- Global assets are deduplicated by generated output and injection position.
+
+### `is:inline`
+
+`is:inline` marks normal inline `<script>` and `<style>` blocks as per-instance
+output.
+
+```slate
+<style is:inline>
+  .card {
+    color: red;
+  }
+</style>
+
+<script is:inline>
+  console.log("rendered with this component instance");
+</script>
+```
+
+Rules:
+
+- `is:inline` is allowed only on normal inline `<script>` and `<style>` blocks.
+- `is:inline` is not allowed on `<script slate>`.
+- `is:inline` is not allowed on `<script src="...">`.
+- `is:inline` must not have a value.
+- `is:global` and `is:inline` are mutually exclusive.
+- Inline assets are emitted at their template location every time the component renders.
+
+### `dev:scroll`
+
+`dev:scroll` marks a scroll container that can be restored after Vite full
+reload during development.
+
+```slate
+<aside dev:scroll="sidebar">
+  ...
+</aside>
+```
+
+Rules:
+
+- `dev:scroll` is allowed only on normal template elements.
+- `dev:scroll` requires a stable static string value.
+- In dev output, it becomes `data-slate-dev-scroll="sidebar"`.
+- In production build output, all `dev:*` directives are stripped.
