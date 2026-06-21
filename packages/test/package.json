@@ -1,6 +1,6 @@
 {
   "name": "@slate/test",
-  "version": "0.0.1-alpha.3",
+  "version": "0.0.1-alpha.4",
   "type": "module",
   "private": true,
   "exports": {
@@ -12,8 +12,8 @@
   },
   "types": "./src/index.ts",
   "dependencies": {
-    "@slate/kit": "^0.0.1-alpha.3",
-    "@slate/vite": "^0.0.1-alpha.3",
+    "@slate/kit": "^0.0.1-alpha.4",
+    "@slate/vite": "^0.0.1-alpha.4",
     "vite": "^8.0.16"
   },
   "devDependencies": {

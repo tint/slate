@@ -1,6 +1,6 @@
 {
   "name": "@slate/vite",
-  "version": "0.0.1-alpha.3",
+  "version": "0.0.1-alpha.4",
   "type": "module",
   "private": true,
   "exports": {
@@ -12,8 +12,8 @@
   },
   "types": "./src/index.ts",
   "dependencies": {
-    "@slate/compiler": "^0.0.1-alpha.3",
-    "@slate/kit": "^0.0.1-alpha.3",
+    "@slate/compiler": "^0.0.1-alpha.4",
+    "@slate/kit": "^0.0.1-alpha.4",
     "rehype-format": "^5.0.1",
     "rehype-minify-whitespace": "^6.0.2",
     "rehype-parse": "^9.0.1",
