@@ -32,6 +32,7 @@ import {
   definitionFromTypeScriptContext,
   hoverFromTypeScriptContext,
   scriptSymbolsFromTypeScript,
+  slateComponentTagRanges,
   type SymbolEntry,
   type TypeScriptContext,
 } from "./typescript-context";
@@ -258,6 +259,7 @@ function collectSemanticTokenEntries(source: string): SemanticTokenEntry[] {
   collectScriptSlateTokens(source, entries);
   collectTemplateKeywordTokens(source, entries);
   collectEachSemanticTokens(source, entries);
+  collectComponentTagTokens(source, entries);
 
   return entries;
 }
@@ -354,6 +356,16 @@ function collectEachSemanticTokens(source: string, entries: SemanticTokenEntry[]
         type: "parameter",
       });
     }
+  }
+}
+
+function collectComponentTagTokens(source: string, entries: SemanticTokenEntry[]): void {
+  for (const tag of slateComponentTagRanges(source)) {
+    entries.push({
+      start: tag.start,
+      end: tag.end,
+      type: "function",
+    });
   }
 }
 

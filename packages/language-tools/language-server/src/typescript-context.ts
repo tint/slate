@@ -563,6 +563,40 @@ type ImportedTemplateComponent = {
   nameEnd: number;
 };
 
+export type SlateComponentTagRange = {
+  name: string;
+  start: number;
+  end: number;
+};
+
+export function slateComponentTagRanges(source: string): SlateComponentTagRange[] {
+  const importedNames = new Set(importedTemplateComponents(source).map((component) => component.name));
+
+  if (!importedNames.size) {
+    return [];
+  }
+
+  const ranges: SlateComponentTagRange[] = [];
+  const tagPattern = /<\/?\s*([A-Z][\w$]*)\b[^>]*\/?>/g;
+
+  for (const match of source.matchAll(tagPattern)) {
+    const name = match[1];
+
+    if (!name || match.index === undefined || !importedNames.has(name)) {
+      continue;
+    }
+
+    const start = match.index + match[0].indexOf(name);
+    ranges.push({
+      name,
+      start,
+      end: start + name.length,
+    });
+  }
+
+  return ranges;
+}
+
 function importedTemplateComponents(source: string): ImportedTemplateComponent[] {
   const components: ImportedTemplateComponent[] = [];
   const importPattern = /import\s+([^;]+?)\s+from\s+(["'])([^"']+)\2/g;

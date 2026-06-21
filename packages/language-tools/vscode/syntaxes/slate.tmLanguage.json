@@ -172,6 +172,19 @@
             "1": { "name": "punctuation.definition.tag.end.html.slate" }
           },
           "patterns": [{ "include": "#attributes" }]
+        },
+        {
+          "name": "meta.tag.component.slate",
+          "begin": "(</?)([A-Z][A-Za-z0-9_$]*)\\b",
+          "beginCaptures": {
+            "1": { "name": "punctuation.definition.tag.begin.html.slate" },
+            "2": { "name": "entity.name.tag.component.slate" }
+          },
+          "end": "(/?>)",
+          "endCaptures": {
+            "1": { "name": "punctuation.definition.tag.end.html.slate" }
+          },
+          "patterns": [{ "include": "#attributes" }]
         }
       ]
     },

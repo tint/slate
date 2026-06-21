@@ -3,11 +3,11 @@
   "hover": {
     "range": {
       "start": {
-        "line": 10,
+        "line": 11,
         "character": 5
       },
       "end": {
-        "line": 10,
+        "line": 11,
         "character": 10
       }
     },
@@ -32,14 +32,62 @@
       "value": "### Slate component Card\n\n```slate\nimport Card from \"./Card.slate\"\n```\n\nImports a `.slate` component. Use it as a template element and pass props with attributes.\n\nExample:\n```slate\n<Card title=\"Hello\">\n  <p>Content</p>\n</Card>\n```\n\n---\n\n```ts\n(alias) const Card: Component<Props, __SlateInferredSlots>\nimport Card\n```"
     }
   },
+  "hoverComponentOpen": {
+    "range": {
+      "start": {
+        "line": 9,
+        "character": 1
+      },
+      "end": {
+        "line": 9,
+        "character": 5
+      }
+    },
+    "contents": {
+      "kind": "markdown",
+      "value": "### Slate component Card\n\n```slate\n<Card> ... </Card>\n```\n\nRenders an imported `.slate` component. Pass props with attributes and provide slots with child content.\n\nExample:\n```slate\n<Card title=\"Hello\">\n  <p>Content</p>\n</Card>\n```\n\n---\n\n```ts\n(alias) const Card: Component<Props, __SlateInferredSlots>\nimport Card\n```"
+    }
+  },
+  "hoverComponentClose": {
+    "range": {
+      "start": {
+        "line": 14,
+        "character": 2
+      },
+      "end": {
+        "line": 14,
+        "character": 6
+      }
+    },
+    "contents": {
+      "kind": "markdown",
+      "value": "### Slate component Card\n\n```slate\n<Card> ... </Card>\n```\n\nRenders an imported `.slate` component. Pass props with attributes and provide slots with child content.\n\nExample:\n```slate\n<Card title=\"Hello\">\n  <p>Content</p>\n</Card>\n```"
+    }
+  },
+  "hoverComponentSelfClosing": {
+    "range": {
+      "start": {
+        "line": 16,
+        "character": 1
+      },
+      "end": {
+        "line": 16,
+        "character": 13
+      }
+    },
+    "contents": {
+      "kind": "markdown",
+      "value": "### Slate component DropdownMenu\n\n```slate\n<DropdownMenu> ... </DropdownMenu>\n```\n\nRenders an imported `.slate` component. Pass props with attributes and provide slots with child content.\n\nExample:\n```slate\n<DropdownMenu title=\"Hello\">\n  <p>Content</p>\n</DropdownMenu>\n```"
+    }
+  },
   "hoverRune": {
     "range": {
       "start": {
-        "line": 4,
+        "line": 5,
         "character": 16
       },
       "end": {
-        "line": 4,
+        "line": 5,
         "character": 21
       }
     },
@@ -51,11 +99,11 @@
   "hoverEach": {
     "range": {
       "start": {
-        "line": 15,
+        "line": 18,
         "character": 1
       },
       "end": {
-        "line": 15,
+        "line": 18,
         "character": 6
       }
     },
@@ -67,11 +115,11 @@
   "hoverSlotDirective": {
     "range": {
       "start": {
-        "line": 9,
+        "line": 10,
         "character": 10
       },
       "end": {
-        "line": 9,
+        "line": 10,
         "character": 18
       }
     },
@@ -85,12 +133,57 @@
       "uri": "entry.slate",
       "range": {
         "start": {
-          "line": 3,
+          "line": 4,
           "character": 6
         },
         "end": {
-          "line": 3,
+          "line": 4,
           "character": 15
+        }
+      }
+    }
+  ],
+  "definitionComponentOpen": [
+    {
+      "uri": "Card.slate",
+      "range": {
+        "start": {
+          "line": 0,
+          "character": 0
+        },
+        "end": {
+          "line": 0,
+          "character": 0
+        }
+      }
+    }
+  ],
+  "definitionComponentClose": [
+    {
+      "uri": "Card.slate",
+      "range": {
+        "start": {
+          "line": 0,
+          "character": 0
+        },
+        "end": {
+          "line": 0,
+          "character": 0
+        }
+      }
+    }
+  ],
+  "definitionComponentSelfClosing": [
+    {
+      "uri": "DropdownMenu.slate",
+      "range": {
+        "start": {
+          "line": 0,
+          "character": 0
+        },
+        "end": {
+          "line": 0,
+          "character": 0
         }
       }
     }
@@ -133,6 +226,9 @@
     },
     {
       "label": "$provide"
+    },
+    {
+      "label": "$slot"
     }
   ],
   "runeCompletion": [
@@ -168,27 +264,27 @@
     }
   ],
   "semanticTokens": {
-    "dataLength": 40,
+    "dataLength": 55,
     "firstTokens": [
       0,
       8,
       5,
       0,
       0,
-      4,
+      5,
       16,
       5,
       1,
       0,
-      5,
+      4,
+      1,
+      4,
+      1,
+      0,
+      1,
       10,
       11,
       2,
-      0,
-      6,
-      1,
-      5,
-      0,
       0
     ]
   },
@@ -218,25 +314,49 @@
       }
     },
     {
+      "name": "DropdownMenu",
+      "kind": 2,
+      "range": {
+        "start": {
+          "line": 2,
+          "character": 7
+        },
+        "end": {
+          "line": 2,
+          "character": 19
+        }
+      },
+      "selectionRange": {
+        "start": {
+          "line": 2,
+          "character": 7
+        },
+        "end": {
+          "line": 2,
+          "character": 19
+        }
+      }
+    },
+    {
       "name": "pageTitle",
       "kind": 13,
       "range": {
         "start": {
-          "line": 3,
+          "line": 4,
           "character": 6
         },
         "end": {
-          "line": 3,
+          "line": 4,
           "character": 15
         }
       },
       "selectionRange": {
         "start": {
-          "line": 3,
+          "line": 4,
           "character": 6
         },
         "end": {
-          "line": 3,
+          "line": 4,
           "character": 15
         }
       }
@@ -246,21 +366,21 @@
       "kind": 13,
       "range": {
         "start": {
-          "line": 4,
+          "line": 5,
           "character": 6
         },
         "end": {
-          "line": 4,
+          "line": 5,
           "character": 13
         }
       },
       "selectionRange": {
         "start": {
-          "line": 4,
+          "line": 5,
           "character": 6
         },
         "end": {
-          "line": 4,
+          "line": 5,
           "character": 13
         }
       }
@@ -270,21 +390,21 @@
       "kind": 13,
       "range": {
         "start": {
-          "line": 5,
+          "line": 6,
           "character": 6
         },
         "end": {
-          "line": 5,
+          "line": 6,
           "character": 11
         }
       },
       "selectionRange": {
         "start": {
-          "line": 5,
+          "line": 6,
           "character": 6
         },
         "end": {
-          "line": 5,
+          "line": 6,
           "character": 11
         }
       }
@@ -294,21 +414,21 @@
       "kind": 13,
       "range": {
         "start": {
-          "line": 15,
+          "line": 18,
           "character": 15
         },
         "end": {
-          "line": 15,
+          "line": 18,
           "character": 19
         }
       },
       "selectionRange": {
         "start": {
-          "line": 15,
+          "line": 18,
           "character": 15
         },
         "end": {
-          "line": 15,
+          "line": 18,
           "character": 19
         }
       }
@@ -318,21 +438,21 @@
       "kind": 13,
       "range": {
         "start": {
-          "line": 15,
+          "line": 18,
           "character": 21
         },
         "end": {
-          "line": 15,
+          "line": 18,
           "character": 26
         }
       },
       "selectionRange": {
         "start": {
-          "line": 15,
+          "line": 18,
           "character": 21
         },
         "end": {
-          "line": 15,
+          "line": 18,
           "character": 26
         }
       }

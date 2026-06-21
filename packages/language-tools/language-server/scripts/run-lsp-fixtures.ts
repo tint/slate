@@ -68,6 +68,18 @@ async function main(): Promise<void> {
       textDocument: { uri },
       position: positionAt(source, source.indexOf("Card") + "Ca".length),
     });
+    const hoverComponentOpen = await client.request("textDocument/hover", {
+      textDocument: { uri },
+      position: positionAt(source, source.indexOf("<Card") + "<Ca".length),
+    });
+    const hoverComponentClose = await client.request("textDocument/hover", {
+      textDocument: { uri },
+      position: positionAt(source, source.indexOf("</Card") + "</Ca".length),
+    });
+    const hoverComponentSelfClosing = await client.request("textDocument/hover", {
+      textDocument: { uri },
+      position: positionAt(source, source.indexOf("<DropdownMenu") + "<Dropdown".length),
+    });
     const hoverRune = await client.request("textDocument/hover", {
       textDocument: { uri },
       position: positionAt(source, source.indexOf("$prop") + "$p".length),
@@ -79,6 +91,18 @@ async function main(): Promise<void> {
     const hoverSlotDirective = await client.request("textDocument/hover", {
       textDocument: { uri },
       position: positionAt(source, source.indexOf("slot:header") + "slot".length),
+    });
+    const definitionComponentOpen = await client.request("textDocument/definition", {
+      textDocument: { uri },
+      position: positionAt(source, source.indexOf("<Card") + "<Ca".length),
+    });
+    const definitionComponentClose = await client.request("textDocument/definition", {
+      textDocument: { uri },
+      position: positionAt(source, source.indexOf("</Card") + "</Ca".length),
+    });
+    const definitionComponentSelfClosing = await client.request("textDocument/definition", {
+      textDocument: { uri },
+      position: positionAt(source, source.indexOf("<DropdownMenu") + "<Dropdown".length),
     });
     const semanticTokens = await client.request("textDocument/semanticTokens/full", {
       textDocument: { uri },
@@ -93,10 +117,16 @@ async function main(): Promise<void> {
       diagnostics: normalizeDiagnostics(diagnostics.params),
       hover: normalizeHover(hover.result),
       hoverComponentImport: normalizeHover(hoverComponentImport.result),
+      hoverComponentOpen: normalizeHover(hoverComponentOpen.result),
+      hoverComponentClose: normalizeHover(hoverComponentClose.result),
+      hoverComponentSelfClosing: normalizeHover(hoverComponentSelfClosing.result),
       hoverRune: normalizeHover(hoverRune.result),
       hoverEach: normalizeHover(hoverEach.result),
       hoverSlotDirective: normalizeHover(hoverSlotDirective.result),
       definition: normalizeLocations(definition.result, fixtureDir),
+      definitionComponentOpen: normalizeLocations(definitionComponentOpen.result, fixtureDir),
+      definitionComponentClose: normalizeLocations(definitionComponentClose.result, fixtureDir),
+      definitionComponentSelfClosing: normalizeLocations(definitionComponentSelfClosing.result, fixtureDir),
       completion: normalizeCompletion(completion.result),
       slateBlockCompletion: normalizeCompletionLabels(slateBlockCompletion.result),
       runeCompletion: normalizeCompletionLabels(runeCompletion.result),

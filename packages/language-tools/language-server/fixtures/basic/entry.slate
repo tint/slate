@@ -1,5 +1,6 @@
 <script slate>
 import Card from "./Card.slate";
+import DropdownMenu from "./DropdownMenu.slate";
 
 const pageTitle = "Dashboard";
 const variant = $prop("variant", "primary");
@@ -12,6 +13,8 @@ const items = ["alpha", "beta"];
     {tail.toFixed()}
   </header>
 </Card>
+
+<DropdownMenu />
 
 {#each items as item, index}
   <p class={["item", variant]}>{index}: {item}</p>
