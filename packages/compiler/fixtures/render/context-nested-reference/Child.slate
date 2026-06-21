@@ -1,0 +1,15 @@
+<script slate>
+  import Grandchild from "./Grandchild.slate";
+
+  const parentState = $inject<{ count: number }>("state");
+  const childState = {
+    count: 100,
+  };
+
+  parentState.count += 1;
+  $provide("state", childState);
+</script>
+
+<Grandchild />
+<p>parent:{parentState.count}</p>
+<p>child:{childState.count}</p>

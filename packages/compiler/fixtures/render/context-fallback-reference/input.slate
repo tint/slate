@@ -1,0 +1,11 @@
+<script slate>
+  const fallback = {
+    count: 0,
+  };
+  const missing = $inject<typeof fallback>("missing", fallback);
+
+  missing.count += 1;
+</script>
+
+<p>{fallback.count}</p>
+<p>{missing === fallback}</p>

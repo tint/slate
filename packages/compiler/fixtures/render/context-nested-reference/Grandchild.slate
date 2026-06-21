@@ -1,0 +1,8 @@
+<script slate>
+  const state = $inject<{ count: number }>("state");
+  const format = $inject<(value: number) => string>("format");
+
+  state.count += 10;
+</script>
+
+<p>{format(state.count)}</p>

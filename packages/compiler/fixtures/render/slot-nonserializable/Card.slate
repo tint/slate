@@ -1,0 +1,14 @@
+<script slate>
+  class Model {
+    value: string;
+
+    constructor(value: string) {
+      this.value = value;
+    }
+  }
+
+  const model = new Model("ready");
+  const format = (value: string) => value.toUpperCase();
+</script>
+
+<slot name="header" data={{ model, format }} />

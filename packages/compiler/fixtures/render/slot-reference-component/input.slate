@@ -1,0 +1,8 @@
+<script slate>
+  import Card from "./Card.slate";
+  import Mutator from "./Mutator.slate";
+</script>
+
+<Card>
+  <Mutator slot:header={data} data={data} />
+</Card>

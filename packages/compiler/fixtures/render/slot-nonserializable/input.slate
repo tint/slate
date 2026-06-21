@@ -1,0 +1,7 @@
+<script slate>
+  import Card from "./Card.slate";
+</script>
+
+<Card>
+  <span slot:header={{ model, format }}>{format(model.value)}</span>
+</Card>

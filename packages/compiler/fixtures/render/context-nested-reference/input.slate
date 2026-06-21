@@ -1,0 +1,14 @@
+<script slate>
+  import Child from "./Child.slate";
+
+  const rootState = {
+    count: 0,
+  };
+  const format = (value: number) => `value:${value}`;
+
+  $provide("state", rootState);
+  $provide("format", format);
+</script>
+
+<Child />
+<p>root:{rootState.count}</p>

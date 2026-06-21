@@ -1,0 +1,7 @@
+<script slate>
+  const data = $prop<{ count: number }>("data");
+
+  data.count += 2;
+</script>
+
+<span>{data.count}</span>
