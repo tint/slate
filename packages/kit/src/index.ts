@@ -1,5 +1,37 @@
+/** Runtime brand used to mark HTML that Slate has already rendered safely. */
+export const SLATE_HTML: unique symbol = Symbol.for("slate.html") as never;
+
+/** HTML fragment that should be inserted without escaping. */
+export type SlateHTML = {
+  readonly [SLATE_HTML]: true;
+  readonly value: string;
+};
+
+/** Primitive values accepted by normal `{expression}` interpolation. */
+export type RenderPrimitive =
+  | string
+  | number
+  | bigint
+  | boolean
+  | null
+  | undefined;
+
+/** Value accepted by normal `{expression}` interpolation. */
+export type RenderValue =
+  | RenderPrimitive
+  | SlateHTML
+  | Promise<RenderValue>;
+
+/** Safe HTML result returned by components, slots, and render functions. */
+export type RenderResult = SlateHTML | Promise<SlateHTML>;
+
+/** Function shape used by components, slots, and future render runes. */
+export type RenderFunction<TInput = void> = [TInput] extends [void]
+  ? () => RenderResult
+  : (input: TInput) => RenderResult;
+
 /** Function shape used by compiled components to render slot content. */
-export type SlotFn<T = unknown> = (data?: T) => string | Promise<string>;
+export type SlotFn<T = unknown> = (data?: T) => RenderResult;
 
 /** Runtime slot table passed from a parent component to a child component. */
 export type Slots = Record<string, SlotFn | undefined>;
@@ -70,6 +102,59 @@ export function escapeHTML(value: unknown): string {
     .replaceAll(">", "&gt;")
     .replaceAll("\"", "&quot;")
     .replaceAll("'", "&#39;");
+}
+
+/** Mark a string as safe Slate-rendered HTML. */
+export function html(value: string): SlateHTML {
+  return Object.freeze({
+    [SLATE_HTML]: true,
+    value,
+  });
+}
+
+/** Check whether a value is a Slate-rendered HTML fragment. */
+export function isSlateHTML(value: unknown): value is SlateHTML {
+  return Boolean(
+    value &&
+    typeof value === "object" &&
+    (value as Record<PropertyKey, unknown>)[SLATE_HTML] === true,
+  );
+}
+
+/** Convert a normal interpolation value into HTML text. */
+export async function renderValue(value: RenderValue): Promise<string> {
+  const resolved = await value;
+
+  if (isSlateHTML(resolved)) {
+    return resolved.value;
+  }
+
+  if (resolved == null || typeof resolved === "boolean") {
+    return "";
+  }
+
+  return escapeHTML(resolved);
+}
+
+/** Convert an explicit raw HTML value into an HTML string. */
+export async function renderHTML(value: unknown): Promise<string> {
+  const resolved = await value;
+
+  if (isSlateHTML(resolved)) {
+    return resolved.value;
+  }
+
+  if (resolved == null || typeof resolved === "boolean") {
+    return "";
+  }
+
+  return String(resolved);
+}
+
+/** Normalize a render result into a branded Slate HTML fragment. */
+export async function resolveRenderResult(value: RenderResult): Promise<SlateHTML> {
+  const resolved = await value;
+  return isSlateHTML(resolved) ? resolved : html(await renderHTML(resolved));
 }
 
 /**
@@ -148,11 +233,79 @@ function injectAssetGroup(html: string, assets: string[], position: "head" | "ta
 export async function renderSlot(
   slots: Slots,
   name = "default",
-  fallback = "",
+  fallback: RenderResult = html(""),
   data?: unknown,
-): Promise<string> {
+): Promise<SlateHTML> {
   const slot = slots[name];
-  return slot ? await slot(data) : fallback;
+  return slot ? await resolveRenderResult(slot(data)) : await resolveRenderResult(fallback);
+}
+
+const BOOLEAN_ATTRIBUTES = new Set([
+  "allowfullscreen",
+  "async",
+  "autofocus",
+  "autoplay",
+  "checked",
+  "controls",
+  "default",
+  "defer",
+  "disabled",
+  "formnovalidate",
+  "hidden",
+  "inert",
+  "ismap",
+  "itemscope",
+  "loop",
+  "multiple",
+  "muted",
+  "nomodule",
+  "novalidate",
+  "open",
+  "playsinline",
+  "readonly",
+  "required",
+  "reversed",
+  "selected",
+]);
+
+const BOOLEANISH_STRING_ATTRIBUTES = new Set([
+  "contenteditable",
+  "draggable",
+  "spellcheck",
+]);
+
+/** Serialize an expression-backed HTML attribute. */
+export function serializeAttribute(name: string, value: unknown, quote = "\""): string {
+  if (value == null) {
+    return "";
+  }
+
+  const normalizedName = name.toLowerCase();
+  const attributeValue = isSlateHTML(value) ? value.value : value;
+
+  if (typeof attributeValue === "boolean") {
+    if (BOOLEAN_ATTRIBUTES.has(normalizedName)) {
+      return attributeValue ? ` ${name}` : "";
+    }
+
+    if (normalizedName === "translate") {
+      return ` ${name}=${quote}${attributeValue ? "yes" : "no"}${quote}`;
+    }
+
+    if (
+      normalizedName.startsWith("aria-") ||
+      normalizedName.startsWith("data-") ||
+      BOOLEANISH_STRING_ATTRIBUTES.has(normalizedName)
+    ) {
+      return ` ${name}=${quote}${attributeValue ? "true" : "false"}${quote}`;
+    }
+
+    if (!attributeValue) {
+      return "";
+    }
+  }
+
+  return ` ${name}=${quote}${escapeHTML(attributeValue)}${quote}`;
 }
 
 /** clsx-compatible value accepted by Slate's `class={...}` serializer. */
