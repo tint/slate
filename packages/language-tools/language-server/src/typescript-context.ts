@@ -137,6 +137,7 @@ function slateCompletionItems(document: TextDocument, position: Position): Compl
       slateSnippet("$props", "props(${1:defaults})", "Declare multiple component props"),
       slateSnippet("$inject", 'inject("${1:key}", ${2:fallback})', "Inject a context value"),
       slateSnippet("$provide", 'provide("${1:key}", ${2:value})', "Provide a context value"),
+      slateSnippet("$slot", 'slot${1:<{ title: string }>}("${2:name}")', "Declare a render function for one slot"),
     ];
   }
 
@@ -297,6 +298,12 @@ const RUNE_HOVER_DOCS: Record<string, SlateHoverDoc> = {
     signature: "$provide<T>(key: string | symbol, value: T): void",
     description: "Provides a context value to descendant components. Values are shared by reference.",
     example: '$provide("theme", "dark");',
+  },
+  $slot: {
+    label: "$slot",
+    signature: "$slot<T>(name: string, defaultData?: T): (data: T) => RenderResult",
+    description: "Declares a slot render function. Use a static slot name; write `$slot(\"default\")` for the default slot.",
+    example: 'const header = $slot<{ title: string }>("header");\n\n{header({ title })}',
   },
 };
 

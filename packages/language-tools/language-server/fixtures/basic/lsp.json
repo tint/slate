@@ -3,11 +3,11 @@
   "hover": {
     "range": {
       "start": {
-        "line": 11,
+        "line": 12,
         "character": 5
       },
       "end": {
-        "line": 11,
+        "line": 12,
         "character": 10
       }
     },
@@ -35,11 +35,11 @@
   "hoverComponentOpen": {
     "range": {
       "start": {
-        "line": 9,
+        "line": 10,
         "character": 1
       },
       "end": {
-        "line": 9,
+        "line": 10,
         "character": 5
       }
     },
@@ -51,11 +51,11 @@
   "hoverComponentClose": {
     "range": {
       "start": {
-        "line": 14,
+        "line": 15,
         "character": 2
       },
       "end": {
-        "line": 14,
+        "line": 15,
         "character": 6
       }
     },
@@ -67,11 +67,11 @@
   "hoverComponentSelfClosing": {
     "range": {
       "start": {
-        "line": 16,
+        "line": 17,
         "character": 1
       },
       "end": {
-        "line": 16,
+        "line": 17,
         "character": 13
       }
     },
@@ -96,14 +96,30 @@
       "value": "```ts\nfunction $prop<\"primary\">(name: string, defaultValue?: \"primary\" | undefined): \"primary\"\n```\n\n---\n\n### $prop\n\n```slate\n$prop<T>(name: string, defaultValue?: T): T\n```\n\nDeclares a single component prop and returns the provided value or the default value.\n\nExample:\n```slate\nconst title = $prop(\"title\", \"Untitled\");\n```"
     }
   },
+  "hoverSlotRune": {
+    "range": {
+      "start": {
+        "line": 7,
+        "character": 19
+      },
+      "end": {
+        "line": 7,
+        "character": 24
+      }
+    },
+    "contents": {
+      "kind": "markdown",
+      "value": "```ts\nfunction $slot<{\n    title: string;\n}>(name: string): (data: {\n    title: string;\n}) => __SlateRenderResult (+2 overloads)\n```\n\n---\n\n### $slot\n\n```slate\n$slot<T>(name: string, defaultData?: T): (data: T) => RenderResult\n```\n\nDeclares a slot render function. Use a static slot name; write `$slot(\"default\")` for the default slot.\n\nExample:\n```slate\nconst header = $slot<{ title: string }>(\"header\");\n\n{header({ title })}\n```"
+    }
+  },
   "hoverEach": {
     "range": {
       "start": {
-        "line": 18,
+        "line": 21,
         "character": 1
       },
       "end": {
-        "line": 18,
+        "line": 21,
         "character": 6
       }
     },
@@ -115,11 +131,11 @@
   "hoverSlotDirective": {
     "range": {
       "start": {
-        "line": 10,
+        "line": 11,
         "character": 10
       },
       "end": {
-        "line": 10,
+        "line": 11,
         "character": 18
       }
     },
@@ -247,6 +263,10 @@
     {
       "label": "$provide",
       "detail": "Provide a context value"
+    },
+    {
+      "label": "$slot",
+      "detail": "Declare a render function for one slot"
     }
   ],
   "slotCompletion": [
@@ -264,7 +284,7 @@
     }
   ],
   "semanticTokens": {
-    "dataLength": 55,
+    "dataLength": 60,
     "firstTokens": [
       0,
       8,
@@ -276,15 +296,15 @@
       5,
       1,
       0,
-      4,
-      1,
-      4,
+      2,
+      19,
+      5,
       1,
       0,
+      3,
       1,
-      10,
-      11,
-      2,
+      4,
+      1,
       0
     ]
   },
@@ -410,25 +430,49 @@
       }
     },
     {
+      "name": "headerSlot",
+      "kind": 13,
+      "range": {
+        "start": {
+          "line": 7,
+          "character": 6
+        },
+        "end": {
+          "line": 7,
+          "character": 16
+        }
+      },
+      "selectionRange": {
+        "start": {
+          "line": 7,
+          "character": 6
+        },
+        "end": {
+          "line": 7,
+          "character": 16
+        }
+      }
+    },
+    {
       "name": "item",
       "kind": 13,
       "range": {
         "start": {
-          "line": 18,
+          "line": 21,
           "character": 15
         },
         "end": {
-          "line": 18,
+          "line": 21,
           "character": 19
         }
       },
       "selectionRange": {
         "start": {
-          "line": 18,
+          "line": 21,
           "character": 15
         },
         "end": {
-          "line": 18,
+          "line": 21,
           "character": 19
         }
       }
@@ -438,21 +482,21 @@
       "kind": 13,
       "range": {
         "start": {
-          "line": 18,
+          "line": 21,
           "character": 21
         },
         "end": {
-          "line": 18,
+          "line": 21,
           "character": 26
         }
       },
       "selectionRange": {
         "start": {
-          "line": 18,
+          "line": 21,
           "character": 21
         },
         "end": {
-          "line": 18,
+          "line": 21,
           "character": 26
         }
       }

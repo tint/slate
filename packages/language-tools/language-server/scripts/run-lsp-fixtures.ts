@@ -84,6 +84,10 @@ async function main(): Promise<void> {
       textDocument: { uri },
       position: positionAt(source, source.indexOf("$prop") + "$p".length),
     });
+    const hoverSlotRune = await client.request("textDocument/hover", {
+      textDocument: { uri },
+      position: positionAt(source, source.indexOf("$slot") + "$s".length),
+    });
     const hoverEach = await client.request("textDocument/hover", {
       textDocument: { uri },
       position: positionAt(source, source.indexOf("#each") + "#e".length),
@@ -121,6 +125,7 @@ async function main(): Promise<void> {
       hoverComponentClose: normalizeHover(hoverComponentClose.result),
       hoverComponentSelfClosing: normalizeHover(hoverComponentSelfClosing.result),
       hoverRune: normalizeHover(hoverRune.result),
+      hoverSlotRune: normalizeHover(hoverSlotRune.result),
       hoverEach: normalizeHover(hoverEach.result),
       hoverSlotDirective: normalizeHover(hoverSlotDirective.result),
       definition: normalizeLocations(definition.result, fixtureDir),

@@ -252,7 +252,7 @@ function semanticTokensFromDocument(document: TextDocument): SemanticTokens {
 function collectSemanticTokenEntries(source: string): SemanticTokenEntry[] {
   const entries: SemanticTokenEntry[] = [];
 
-  collectRegexTokens(source, /\$(prop|props|inject|provide)\b/g, "function", entries);
+  collectRegexTokens(source, /\$(prop|props|inject|provide|slot)\b/g, "function", entries);
   collectRegexTokens(source, /\bslot:[A-Za-z_$][\w$-]*/g, "property", entries);
   collectRegexTokens(source, /\bis:[A-Za-z_$][\w$-]*/g, "property", entries);
   collectRegexTokens(source, /<\/?Fragment\b/g, "keyword", entries);
