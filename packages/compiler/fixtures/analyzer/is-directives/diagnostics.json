@@ -1,0 +1,58 @@
+[
+  {
+    "message": "`is:*` directives are not allowed on <script slate>.",
+    "severity": "error",
+    "range": {
+      "start": 301,
+      "end": 310
+    }
+  },
+  {
+    "message": "`is:global` on `<style>` must not have a value.",
+    "severity": "error",
+    "range": {
+      "start": 7,
+      "end": 23
+    }
+  },
+  {
+    "message": "`is:inline` must not have a value.",
+    "severity": "error",
+    "range": {
+      "start": 53,
+      "end": 69
+    }
+  },
+  {
+    "message": "`is:global` on `<script>` only accepts `head` or `tail`.",
+    "severity": "error",
+    "range": {
+      "start": 115,
+      "end": 133
+    }
+  },
+  {
+    "message": "`is:*` directives are not allowed on `<script src>`.",
+    "severity": "error",
+    "range": {
+      "start": 196,
+      "end": 212
+    }
+  },
+  {
+    "message": "`is:global` and `is:inline` cannot be used together.",
+    "severity": "error",
+    "range": {
+      "start": 242,
+      "end": 251
+    }
+  },
+  {
+    "message": "`is:inline` must not have a value.",
+    "severity": "error",
+    "range": {
+      "start": 353,
+      "end": 368
+    }
+  }
+]

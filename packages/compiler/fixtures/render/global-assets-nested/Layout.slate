@@ -1,0 +1,13 @@
+<script slate>
+  import Child from "./Child.slate";
+</script>
+
+<style is:global>
+  .layout {}
+</style>
+
+<section>
+  <Child />
+  <slot />
+  <Child />
+</section>

@@ -4,6 +4,12 @@ export type Slots = Record<string, SlotFn | undefined>;
 
 export type SlateContext = {
   provides?: Record<string, unknown>;
+  assets?: SlateAssets;
+};
+
+export type SlateAssets = {
+  head: Map<string, string>;
+  tail: Map<string, string>;
 };
 
 export type SlateSourceLocation = {
@@ -55,7 +61,55 @@ export function cloneContext(context: SlateContext = {}): SlateContext {
     provides: {
       ...(context.provides ?? {}),
     },
+    assets: context.assets ?? createSlateAssets(),
   };
+}
+
+export function createSlateAssets(): SlateAssets {
+  return {
+    head: new Map<string, string>(),
+    tail: new Map<string, string>(),
+  };
+}
+
+export function addGlobalAsset(context: SlateContext, position: "head" | "tail", html: string): string {
+  const assets = context.assets ?? (context.assets = createSlateAssets());
+  const key = `${position}:${html}`;
+  assets[position].set(key, html);
+  return "";
+}
+
+export function injectCollectedAssets(html: string, context: SlateContext): string {
+  const assets = context.assets;
+
+  if (!assets) {
+    return html;
+  }
+
+  const head = Array.from(assets.head.values());
+  const tail = Array.from(assets.tail.values());
+  let output = injectAssetGroup(html, head, "head");
+
+  output = injectAssetGroup(output, tail, "tail");
+  return output;
+}
+
+function injectAssetGroup(html: string, assets: string[], position: "head" | "tail"): string {
+  if (!assets.length) {
+    return html;
+  }
+
+  const content = assets.join("\n");
+
+  if (position === "head") {
+    return /<\/head>/i.test(html)
+      ? html.replace(/<\/head>/i, `${content}\n</head>`)
+      : `${content}\n${html}`;
+  }
+
+  return /<\/body>/i.test(html)
+    ? html.replace(/<\/body>/i, `${content}\n</body>`)
+    : `${html}\n${content}`;
 }
 
 export function cloneData<T>(value: T): T {

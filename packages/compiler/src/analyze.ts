@@ -1,6 +1,7 @@
 import type {
   AttributeCst,
   ElementCst,
+  RawTextElementCst,
   SlateFileCst,
   SlateScriptElementCst,
   TemplateCstNode,
@@ -191,6 +192,10 @@ function validateTemplateNode(node: TemplateCstNode, context: AnalyzeContext): D
     diagnostics.push(...validateElement(node, context));
   }
 
+  if (node.kind === "RawTextElement") {
+    diagnostics.push(...validateRawTextElement(node));
+  }
+
   if (node.kind === "IfBlock") {
     for (const child of node.then) {
       diagnostics.push(...validateTemplateNode(child, context));
@@ -209,6 +214,51 @@ function validateTemplateNode(node: TemplateCstNode, context: AnalyzeContext): D
     for (const child of node.else ?? []) {
       diagnostics.push(...validateTemplateNode(child, context));
     }
+  }
+
+  return diagnostics;
+}
+
+function validateRawTextElement(element: RawTextElementCst): Diagnostic[] {
+  const diagnostics: Diagnostic[] = [];
+  const globalAttr = findDirective(element.openTag.attributes, "is", "global");
+  const inlineAttr = findDirective(element.openTag.attributes, "is", "inline");
+  const srcAttr = element.openTag.attributes.find((attr) => attr.name === "src");
+
+  if (globalAttr && inlineAttr) {
+    diagnostics.push(error("`is:global` and `is:inline` cannot be used together.", inlineAttr.range));
+  }
+
+  if (element.tagName === "script" && srcAttr && (globalAttr || inlineAttr)) {
+    diagnostics.push(error("`is:*` directives are not allowed on `<script src>`.", (globalAttr ?? inlineAttr)!.range));
+  }
+
+  if (inlineAttr?.valueKind) {
+    diagnostics.push(error("`is:inline` must not have a value.", inlineAttr.range));
+  }
+
+  if (!globalAttr) {
+    return diagnostics;
+  }
+
+  if (element.tagName === "style") {
+    if (globalAttr.valueKind) {
+      diagnostics.push(error("`is:global` on `<style>` must not have a value.", globalAttr.range));
+    }
+    return diagnostics;
+  }
+
+  if (!globalAttr.valueKind) {
+    return diagnostics;
+  }
+
+  if (globalAttr.valueKind !== "string") {
+    diagnostics.push(error("`is:global` on `<script>` must use a static string value.", globalAttr.range));
+    return diagnostics;
+  }
+
+  if (globalAttr.value !== "head" && globalAttr.value !== "tail") {
+    diagnostics.push(error("`is:global` on `<script>` only accepts `head` or `tail`.", globalAttr.range));
   }
 
   return diagnostics;
@@ -254,6 +304,15 @@ function validateAttributes(attributes: AttributeCst[]): Diagnostic[] {
   }
 
   return diagnostics;
+}
+
+function findDirective(attributes: AttributeCst[], namespace: string, directiveName: string): Extract<AttributeCst, { kind: "DirectiveAttribute" }> | undefined {
+  return attributes.find(
+    (attr): attr is Extract<AttributeCst, { kind: "DirectiveAttribute" }> =>
+      attr.kind === "DirectiveAttribute" &&
+      attr.namespace === namespace &&
+      attr.directiveName === directiveName,
+  );
 }
 
 function validateSlotOutlet(element: ElementCst, context: AnalyzeContext): Diagnostic[] {

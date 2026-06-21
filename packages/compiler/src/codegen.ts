@@ -105,6 +105,10 @@ function collectKitImports(statements: string, usedRunes: Set<RuneName>): string
     }
   }
 
+  if (statements.includes("addGlobalAsset(")) {
+    imports.push("addGlobalAsset");
+  }
+
   return imports;
 }
 
@@ -429,11 +433,41 @@ function generatePropsObject(attributes: AttributeCst[], filename: string): stri
 
 function generateRawTextElement(node: RawTextElementCst, filename: string): string {
   const close = node.closeTag ? `</${node.closeTag.rawTagName}>` : "";
-  return generateJoined([
+  const html = generateJoined([
     ...generateOpenTagParts(node.rawTagName, node.openTag.attributes, false, filename).map((part) => `  ${part},`),
     `  ${JSON.stringify(node.body.text)},`,
     `  ${JSON.stringify(close)}`,
   ]);
+  const position = globalAssetPosition(node);
+
+  if (position) {
+    return `addGlobalAsset(context, ${JSON.stringify(position)}, ${html})`;
+  }
+
+  return html;
+}
+
+function globalAssetPosition(node: RawTextElementCst): "head" | "tail" | undefined {
+  const globalAttr = node.openTag.attributes.find(
+    (attr): attr is Extract<AttributeCst, { kind: "DirectiveAttribute" }> =>
+      attr.kind === "DirectiveAttribute" &&
+      attr.namespace === "is" &&
+      attr.directiveName === "global",
+  );
+
+  if (!globalAttr) {
+    return undefined;
+  }
+
+  if (node.tagName === "style") {
+    return "head";
+  }
+
+  if (globalAttr.valueKind === "string" && globalAttr.value === "head") {
+    return "head";
+  }
+
+  return "tail";
 }
 
 function escapeAttributeLiteral(value: string): string {

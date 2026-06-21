@@ -1,0 +1,15 @@
+<style is:global>
+  .global {}
+</style>
+
+<script is:global="head">
+  globalThis.head = true;
+</script>
+
+<script is:global>
+  globalThis.tail = true;
+</script>
+
+<style is:inline>
+  .inline {}
+</style>

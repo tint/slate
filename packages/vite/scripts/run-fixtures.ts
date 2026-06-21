@@ -41,7 +41,17 @@ try {
   const page = await getText(`${baseUrl}/`);
   const favicon = await getText(`${baseUrl}/favicon.svg`);
 
-  if (page.statusCode !== 200 || !page.body.includes("Slate Vite") || !page.body.includes("configured by vite") || !page.body.includes("alt=\"Slate logo\"") || !page.body.includes("/@vite/client")) {
+  if (
+    page.statusCode !== 200 ||
+    !page.body.includes("Slate Vite") ||
+    !page.body.includes("configured by vite") ||
+    !page.body.includes("alt=\"Slate logo\"") ||
+    !page.body.includes("/@vite/client") ||
+    !page.body.includes("<link rel=\"stylesheet\" href=\"/style.css\">") ||
+    !appearsBefore(page.body, "<style>\n  body {\n    margin: 0;\n  }\n</style>", "</head>") ||
+    !appearsBefore(page.body, "<script>\n  globalThis.__SLATE_HEAD__ = true;\n</script>", "</head>") ||
+    !appearsBefore(page.body, "<script>\n  globalThis.__SLATE_TAIL__ = true;\n</script>", "</body>")
+  ) {
     throw new Error(`Unexpected Slate Vite page response.\nStatus: ${page.statusCode}\nBody:\n${page.body}`);
   }
 
@@ -77,8 +87,24 @@ const html = await readFile(join(tmpDir, "index.html"), "utf8");
 const favicon = await readFile(join(tmpDir, "favicon.svg"), "utf8");
 const logo = await readFile(join(tmpDir, "logo.svg"), "utf8");
 
-if (!html.includes("Slate Vite") || !html.includes("configured by vite") || !html.includes("alt=\"Slate logo\"") || built.length !== 1) {
+if (
+  !html.includes("Slate Vite") ||
+  !html.includes("configured by vite") ||
+  !html.includes("alt=\"Slate logo\"") ||
+  !html.includes("<link rel=\"stylesheet\" href=\"assets/") ||
+  !appearsBefore(html, "<style>\n  body {\n    margin: 0;\n  }\n</style>", "</head>") ||
+  !appearsBefore(html, "<script>\n  globalThis.__SLATE_HEAD__ = true;\n</script>", "</head>") ||
+  !appearsBefore(html, "<script>\n  globalThis.__SLATE_TAIL__ = true;\n</script>", "</body>") ||
+  built.length !== 1
+) {
   throw new Error(`Unexpected buildSlate HTML output.\n${html}`);
+}
+
+function appearsBefore(source: string, needle: string, marker: string): boolean {
+  const needleIndex = source.indexOf(needle);
+  const markerIndex = source.indexOf(marker);
+
+  return needleIndex !== -1 && markerIndex !== -1 && needleIndex < markerIndex;
 }
 
 if (!favicon.includes("<svg")) {

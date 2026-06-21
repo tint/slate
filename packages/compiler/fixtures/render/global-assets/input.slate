@@ -1,0 +1,35 @@
+<style is:global>
+  .base {
+    color: red;
+  }
+</style>
+
+<style is:global>
+  .base {
+    color: red;
+  }
+</style>
+
+<script is:global="head">
+  globalThis.order = ["head"];
+</script>
+
+<script is:global="tail">
+  globalThis.order.push("tail-explicit");
+</script>
+
+<script is:global>
+  globalThis.order.push("tail-default");
+</script>
+
+<style is:inline>
+  .inline {
+    color: blue;
+  }
+</style>
+
+<script is:inline>
+  globalThis.inlineCount = (globalThis.inlineCount ?? 0) + 1;
+</script>
+
+<main>Global assets</main>

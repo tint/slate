@@ -1,0 +1,121 @@
+{
+  "script": {
+    "kind": "SlateScriptElement",
+    "range": {
+      "start": 287,
+      "end": 344
+    },
+    "openTag": {
+      "kind": "Tag",
+      "range": {
+        "start": 287,
+        "end": 311
+      },
+      "tagName": "script",
+      "rawTagName": "script",
+      "attributes": [
+        {
+          "range": {
+            "start": 295,
+            "end": 301
+          },
+          "name": "slate",
+          "rawName": "slate",
+          "kind": "BooleanAttribute"
+        },
+        {
+          "range": {
+            "start": 301,
+            "end": 310
+          },
+          "name": "is:global",
+          "rawName": "is:global",
+          "kind": "DirectiveAttribute",
+          "namespace": "is",
+          "directiveName": "global"
+        }
+      ],
+      "selfClosing": false,
+      "closing": false
+    },
+    "body": {
+      "kind": "RawText",
+      "range": {
+        "start": 311,
+        "end": 335
+      },
+      "text": "\n  const title = \"bad\";\n"
+    },
+    "closeTag": {
+      "kind": "Tag",
+      "range": {
+        "start": 335,
+        "end": 344
+      },
+      "tagName": "script",
+      "rawTagName": "script",
+      "attributes": [],
+      "selfClosing": false,
+      "closing": true
+    }
+  },
+  "components": [],
+  "diagnostics": [
+    {
+      "message": "`is:*` directives are not allowed on <script slate>.",
+      "severity": "error",
+      "range": {
+        "start": 301,
+        "end": 310
+      }
+    },
+    {
+      "message": "`is:global` on `<style>` must not have a value.",
+      "severity": "error",
+      "range": {
+        "start": 7,
+        "end": 23
+      }
+    },
+    {
+      "message": "`is:inline` must not have a value.",
+      "severity": "error",
+      "range": {
+        "start": 53,
+        "end": 69
+      }
+    },
+    {
+      "message": "`is:global` on `<script>` only accepts `head` or `tail`.",
+      "severity": "error",
+      "range": {
+        "start": 115,
+        "end": 133
+      }
+    },
+    {
+      "message": "`is:*` directives are not allowed on `<script src>`.",
+      "severity": "error",
+      "range": {
+        "start": 196,
+        "end": 212
+      }
+    },
+    {
+      "message": "`is:global` and `is:inline` cannot be used together.",
+      "severity": "error",
+      "range": {
+        "start": 242,
+        "end": 251
+      }
+    },
+    {
+      "message": "`is:inline` must not have a value.",
+      "severity": "error",
+      "range": {
+        "start": 353,
+        "end": 368
+      }
+    }
+  ]
+}

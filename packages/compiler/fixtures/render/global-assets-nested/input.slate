@@ -1,0 +1,20 @@
+<script slate>
+  import Layout from "./Layout.slate";
+</script>
+
+<html>
+  <head>
+    <title>Nested</title>
+  </head>
+  <body>
+    <style is:global>
+      .app {}
+    </style>
+
+    <Layout>
+      <style is:global>
+        .slot {}
+      </style>
+    </Layout>
+  </body>
+</html>

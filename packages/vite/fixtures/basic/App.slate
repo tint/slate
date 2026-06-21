@@ -1,4 +1,5 @@
 <script slate>
+import "./style.css";
 import logoUrl from "./logo.svg";
 
 const title = "Slate Vite";
@@ -6,6 +7,25 @@ const items = ["plugin", "dev", "reload"];
 const configured = __SLATE_VITE_FIXTURE__;
 </script>
 
+<style is:global>
+  body {
+    margin: 0;
+  }
+</style>
+
+<script is:global="head">
+  globalThis.__SLATE_HEAD__ = true;
+</script>
+
+<script is:global>
+  globalThis.__SLATE_TAIL__ = true;
+</script>
+
+<html>
+  <head>
+    <title>{title}</title>
+  </head>
+  <body>
 <main>
   <h1>{title}</h1>
   <img src={logoUrl} alt="Slate logo" />
@@ -16,3 +36,5 @@ const configured = __SLATE_VITE_FIXTURE__;
     {/each}
   </ul>
 </main>
+</body>
+</html>

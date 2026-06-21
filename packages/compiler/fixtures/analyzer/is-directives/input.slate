@@ -1,0 +1,25 @@
+<style is:global="head">
+  body {}
+</style>
+
+<script is:inline="true">
+  console.log("inline");
+</script>
+
+<script is:global="middle">
+  console.log("middle");
+</script>
+
+<script src="./entry.ts" is:global="head"></script>
+
+<script is:global is:inline>
+  console.log("both");
+</script>
+
+<script slate is:global>
+  const title = "bad";
+</script>
+
+<style is:inline="yes">
+  body {}
+</style>

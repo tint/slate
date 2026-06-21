@@ -4,6 +4,7 @@ import { pathToFileURL } from "node:url";
 import type { InlineConfig } from "vite";
 import { build as viteBuild, mergeConfig } from "vite";
 import { formatDiagnostic } from "@slate/compiler";
+import { cloneContext, injectCollectedAssets } from "@slate/kit";
 import { normalizeInputs, normalizeUserViteConfig } from "./config";
 import { buildSlateCssImports, collectSlateCssImports, injectStylesheets } from "./css-imports";
 import { isSlateRenderError } from "./errors";
@@ -108,9 +109,12 @@ async function renderBuildInput(root: string, inputPath: string, tmpDir: string,
   const mod = await import(`${pathToFileURL(resolve(tmpDir, "entry.mjs")).href}?t=${Date.now()}`);
 
   try {
+    const context = cloneContext();
+    const html = injectCollectedAssets(await mod.render({}, {}, context), context);
+
     return {
       ok: true,
-      html: injectStylesheets(await mod.render(), stylesheetHrefs),
+      html: injectStylesheets(html, stylesheetHrefs),
     };
   } catch (error) {
     if (isSlateRenderError(error)) {

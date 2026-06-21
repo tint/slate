@@ -557,7 +557,7 @@ In Slate, these directives are about build output and tree shaking, not CSS scop
 
 #### `is:global`
 
-Marks a normal `<script>` or `<style>` block as global build output.
+Marks a normal `<script>` or `<style>` block as shared page-level output.
 
 ```slate
 <style is:global>
@@ -568,22 +568,36 @@ Marks a normal `<script>` or `<style>` block as global build output.
 ```
 
 ```slate
+<script is:global="head">
+  document.documentElement.dataset.theme = localStorage.theme || "light";
+</script>
+```
+
+```slate
 <script is:global>
-  window.__SLATE_GLOBAL__ = true;
+  window.__SLATE_READY__ = true;
 </script>
 ```
 
 Rules:
 
-- `is:global` may apply to normal `<script>` and `<style>`.
+- `is:global` may apply only to normal inline `<script>` and `<style>` blocks.
 - `is:global` must not apply to `<script slate>`.
-- The block is treated as globally reachable output.
-- The compiler must not remove the block just because local template analysis cannot prove it is used.
-- Bundlers may still deduplicate or optimize the block when it is semantically safe.
+- `is:global` must not apply to `<script src="...">`.
+- `is:global` and `is:inline` are mutually exclusive.
+- `<style is:global>` must not have a value.
+- `<style is:global>` is extracted and injected once before `</head>`.
+- `<script is:global="head">` is extracted and injected once before `</head>`.
+- `<script is:global="tail">` is extracted and injected once before `</body>`.
+- `<script is:global>` is equivalent to `<script is:global="tail">`.
+- `<script is:global="...">` only accepts `head` or `tail`.
+- Global blocks are deduplicated by their generated output and injection position.
+- If no `<head>` exists, head assets are prepended to the document.
+- If no `</body>` exists, tail assets are appended to the document.
 
 #### `is:inline`
 
-Marks a normal `<script>` or `<style>` block as inline-only output.
+Marks a normal `<script>` or `<style>` block as per-instance inline output.
 
 ```slate
 <style is:inline>
@@ -603,10 +617,12 @@ Rules:
 
 - `is:inline` may apply to normal `<script>` and `<style>`.
 - `is:inline` must not apply to `<script slate>`.
-- `<script slate is:inline>` is a compile error.
+- `is:inline` must not apply to `<script src="...">`.
+- `is:inline` must not have a value.
+- `is:global` and `is:inline` are mutually exclusive.
 - The block is emitted at its template location.
-- The block is not promoted into a shared global asset.
-- The block may be tree-shaken when the template branch containing it is not rendered.
+- The block is emitted every time the component instance is rendered.
+- The block is not promoted into a shared page-level asset and is not deduplicated.
 
 ### `Fragment`
 

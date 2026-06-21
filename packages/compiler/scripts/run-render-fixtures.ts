@@ -2,6 +2,7 @@ import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync
 import { basename, dirname, join } from "node:path";
 import { pathToFileURL, fileURLToPath } from "node:url";
 import { compile } from "../src/index";
+import { cloneContext, injectCollectedAssets } from "../../kit/src/index";
 
 const root = dirname(fileURLToPath(import.meta.url));
 const fixturesDir = join(root, "../fixtures/render");
@@ -75,7 +76,8 @@ for (const fixtureName of readdirSync(fixturesDir)) {
 
   try {
     const mod = await import(`${pathToFileURL(modulePath).href}?t=${Date.now()}`);
-    const actual = await mod.render();
+    const context = cloneContext();
+    const actual = injectCollectedAssets(await mod.render({}, {}, context), context);
 
     if (expectedError) {
       failed = true;
