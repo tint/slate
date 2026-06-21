@@ -1,4 +1,4 @@
-import { cloneContext, escapeHTML, evaluateSlateExpression, renderSlot } from "@slate/kit";
+import { cloneContext, html as __slateHtml, evaluateSlateExpression, renderHTML, renderSlot, renderValue } from "@slate/kit";
 export async function render(__props = {}, slots = {}, context = {}) {
   context = cloneContext(context);
   const title = "Fallback title";
@@ -12,9 +12,9 @@ export async function render(__props = {}, slots = {}, context = {}) {
     "<header",
     ">",
     "\n    ",
-    await renderSlot(slots, "title", [
-        escapeHTML(evaluateSlateExpression(() => (title), {"filename":"component.slate","range":{"start":113,"end":118},"kind":"template"}))
-      ].join(""), undefined),
+    await renderHTML(await renderSlot(slots, "title", __slateHtml([
+        await renderValue(evaluateSlateExpression(() => (title), {"filename":"component.slate","range":{"start":113,"end":118},"kind":"template"}))
+      ].join("")), undefined)),
     "\n  ",
     "</header>"
   ].join(""),
@@ -23,7 +23,7 @@ export async function render(__props = {}, slots = {}, context = {}) {
     "<main",
     ">",
     "\n    ",
-    await renderSlot(slots, "default", "", undefined),
+    await renderHTML(await renderSlot(slots, "default", __slateHtml(""), undefined)),
     "\n  ",
     "</main>"
   ].join(""),
@@ -31,6 +31,6 @@ export async function render(__props = {}, slots = {}, context = {}) {
     "</section>"
   ].join("");
   __html += "\n";
-  return __html;
+  return __slateHtml(__html);
 }
 export default { render };

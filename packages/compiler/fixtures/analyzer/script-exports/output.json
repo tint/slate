@@ -49,6 +49,7 @@
     }
   },
   "components": [],
+  "slots": [],
   "diagnostics": [
     {
       "message": "Only TypeScript type exports are allowed in <script slate>.",

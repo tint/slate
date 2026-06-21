@@ -60,6 +60,7 @@
     }
   },
   "components": [],
+  "slots": [],
   "diagnostics": [
     {
       "message": "`is:*` directives are not allowed on <script slate>.",

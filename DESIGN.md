@@ -313,6 +313,35 @@ Rules:
 - An optional defaults object may be provided.
 - Defaults are applied when the caller does not provide a prop.
 
+### `$slot`
+
+Declares a slot render function.
+
+```slate
+<script slate>
+  const children = $slot("default");
+  const header = $slot<{ title: string }>("header");
+  const footer = $slot("footer", { text: "Fallback footer" });
+</script>
+
+<section>
+  <header>{header({ title: "Hello" })}</header>
+  <main>{children()}</main>
+  <footer>{footer()}</footer>
+</section>
+```
+
+Rules:
+
+- `$slot` must be assigned to a top-level `const` identifier.
+- `$slot` requires a static string slot name.
+- The default slot must be declared as `$slot("default")`.
+- `$slot()` with no name is not supported.
+- `$slot<T>("name")` returns a render function that requires `data: T`.
+- `$slot<T>("name", defaultData)` returns a render function with optional data.
+- `$slot("name", defaultData)` infers data from `defaultData`.
+- The render function returns `RenderResult`, so `{slot(data)}` inserts rendered HTML without escaping.
+
 ### `$provide`
 
 Provides a context value to descendant Slate components.
@@ -383,6 +412,76 @@ Rules:
 - Slate does not protect callers from shared mutable state.
 - Component authors should treat context as an explicit shared channel, not as props.
 - User-facing component data should still prefer `$prop`, `$props`, and slots.
+
+## Render type system
+
+Slate render output uses an explicit HTML boundary instead of treating every
+rendered value as a plain string.
+
+Core types:
+
+```ts
+export const SLATE_HTML = Symbol.for("slate.html");
+
+export type SlateHTML = {
+  readonly value: string;
+};
+
+export type RenderPrimitive =
+  | string
+  | number
+  | bigint
+  | boolean
+  | null
+  | undefined;
+
+export type RenderValue =
+  | RenderPrimitive
+  | SlateHTML
+  | Promise<RenderValue>;
+
+export type RenderResult = SlateHTML | Promise<SlateHTML>;
+
+export type RenderFunction<TInput = void> =
+  [TInput] extends [void]
+    ? () => RenderResult
+    : (input: TInput) => RenderResult;
+```
+
+Rules:
+
+- Components return `RenderResult`.
+- Slot functions return `RenderResult`.
+- Normal `{expression}` uses `renderValue(expression)`.
+- `renderValue` escapes strings, numbers, and bigints.
+- `renderValue` inserts `SlateHTML` without escaping.
+- `renderValue` renders `null`, `undefined`, `true`, and `false` as empty output.
+- `{@html expression}` uses `renderHTML(expression)`.
+- `renderHTML` inserts strings as raw HTML.
+- `renderHTML` inserts `SlateHTML` without unwrapping through string coercion.
+- `renderHTML` renders `null`, `undefined`, `true`, and `false` as empty output.
+
+`SlateHTML` is runtime-branded with `SLATE_HTML`. The brand is a Slate-owned
+symbol, not `Symbol.toStringTag`; `Symbol.toStringTag` is display metadata and
+must not be used as the safety boundary.
+
+HTML attributes use attribute-specific rendering:
+
+- `null` and `undefined` remove expression attributes.
+- `true` on known boolean attributes emits the bare attribute.
+- `false` on known boolean attributes removes the attribute.
+- booleans on `aria-*` attributes are serialized as `"true"` or `"false"`.
+- booleans on `data-*` attributes are serialized as `"true"` or `"false"`.
+- booleans on boolean-like enumerated attributes such as `contenteditable`,
+  `draggable`, and `spellcheck` are serialized as `"true"` or `"false"`.
+- booleans on `translate` are serialized as `"yes"` or `"no"`.
+- `true` on normal attributes emits `"true"`.
+- `false` on normal attributes removes the attribute.
+- `class=` and `style=` keep their dedicated serializers.
+
+This model exists so component results, slot results, and future render runes
+can pass through `{expression}` without accidentally escaping already-rendered
+HTML.
 
 ## Template syntax
 

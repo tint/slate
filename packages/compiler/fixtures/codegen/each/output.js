@@ -1,4 +1,4 @@
-import { cloneContext, escapeHTML, evaluateSlateExpression } from "@slate/kit";
+import { cloneContext, html as __slateHtml, evaluateSlateExpression, renderValue } from "@slate/kit";
 export async function render(__props = {}, slots = {}, context = {}) {
   context = cloneContext(context);
   const items = ["a", "b"];
@@ -8,18 +8,20 @@ export async function render(__props = {}, slots = {}, context = {}) {
     "<ul",
     ">",
     "\n  ",
-    Array.from(evaluateSlateExpression(() => (items), {"filename":"component.slate","range":{"start":77,"end":82},"kind":"template"})).length ? Array.from(evaluateSlateExpression(() => (items), {"filename":"component.slate","range":{"start":77,"end":82},"kind":"template"})).map((item, index) => [
+    await (async () => {
+          const __items = Array.from(evaluateSlateExpression(() => (items), {"filename":"component.slate","range":{"start":77,"end":82},"kind":"template"}));
+          return __items.length ? (await Promise.all(__items.map(async (item, index) => [
             "\n    ",
             [
     "<li",
     ">",
-    escapeHTML(evaluateSlateExpression(() => (index), {"filename":"component.slate","range":{"start":109,"end":114},"kind":"template"})),
+    await renderValue(evaluateSlateExpression(() => (index), {"filename":"component.slate","range":{"start":109,"end":114},"kind":"template"})),
     ": ",
-    escapeHTML(evaluateSlateExpression(() => (item), {"filename":"component.slate","range":{"start":118,"end":122},"kind":"template"})),
+    await renderValue(evaluateSlateExpression(() => (item), {"filename":"component.slate","range":{"start":118,"end":122},"kind":"template"})),
     "</li>"
   ].join(""),
             "\n  "
-          ].join("")).join("") : [
+          ].join("")))).join("") : [
           "\n    ",
           [
     "<li",
@@ -28,11 +30,12 @@ export async function render(__props = {}, slots = {}, context = {}) {
     "</li>"
   ].join(""),
           "\n  "
-        ].join(""),
+        ].join("");
+        })(),
     "\n",
     "</ul>"
   ].join("");
   __html += "\n";
-  return __html;
+  return __slateHtml(__html);
 }
 export default { render };

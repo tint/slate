@@ -1,0 +1,11 @@
+<script slate>
+const children = $slot("default");
+const header = $slot<{ title: string }>("header");
+const footer = $slot("footer", { text: "Fallback footer" });
+</script>
+
+<section>
+  <header>{header({ title: "Hello" })}</header>
+  <main>{children()}</main>
+  <footer>{footer()}</footer>
+</section>

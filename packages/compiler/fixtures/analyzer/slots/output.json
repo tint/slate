@@ -1,5 +1,6 @@
 {
   "components": [],
+  "slots": [],
   "diagnostics": [
     {
       "message": "Use `slot:name` for Slate slot assignment, not `slot=\"name\"`.",

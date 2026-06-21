@@ -1,4 +1,4 @@
-import { cloneContext, escapeHTML, evaluateSlateExpression } from "@slate/kit";
+import { cloneContext, html as __slateHtml, evaluateSlateExpression, renderValue } from "@slate/kit";
 export async function render(__props = {}, slots = {}, context = {}) {
   context = cloneContext(context);
   const name = "Slate";
@@ -11,17 +11,17 @@ export async function render(__props = {}, slots = {}, context = {}) {
   __html += [
     "<h1",
     ">",
-    escapeHTML(evaluateSlateExpression(() => (title), {"filename":"component.slate","range":{"start":115,"end":120},"kind":"template"})),
+    await renderValue(evaluateSlateExpression(() => (title), {"filename":"component.slate","range":{"start":115,"end":120},"kind":"template"})),
     "</h1>"
   ].join("");
   __html += "\n";
   __html += [
     "<p",
     ">",
-    escapeHTML(evaluateSlateExpression(() => (count), {"filename":"component.slate","range":{"start":131,"end":136},"kind":"template"})),
+    await renderValue(evaluateSlateExpression(() => (count), {"filename":"component.slate","range":{"start":131,"end":136},"kind":"template"})),
     "</p>"
   ].join("");
   __html += "\n";
-  return __html;
+  return __slateHtml(__html);
 }
 export default { render };

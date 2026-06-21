@@ -1,4 +1,4 @@
-import { cloneContext, escapeHTML, evaluateSlateExpression, serializeClass, serializeStyle } from "@slate/kit";
+import { cloneContext, html as __slateHtml, evaluateSlateExpression, serializeAttribute, serializeClass, serializeStyle } from "@slate/kit";
 export async function render(__props = {}, slots = {}, context = {}) {
   context = cloneContext(context);
   const active = true;
@@ -7,20 +7,16 @@ export async function render(__props = {}, slots = {}, context = {}) {
   __html += "\n\n";
   __html += [
     "<div",
-    " class=\"",
-    escapeHTML(serializeClass(evaluateSlateExpression(() => (["card", active && "active", { hidden: !visible }]), {"filename":"component.slate","range":{"start":106,"end":156},"kind":"template"}))),
-    "\"",
-    " style=\"",
-    escapeHTML(serializeStyle(evaluateSlateExpression(() => ([
+    serializeAttribute("class", serializeClass(evaluateSlateExpression(() => (["card", active && "active", { hidden: !visible }]), {"filename":"component.slate","range":{"start":106,"end":156},"kind":"template"}))),
+    serializeAttribute("style", serializeStyle(evaluateSlateExpression(() => ([
       "color: red",
       { marginTop: "8px", display: visible ? "block" : "none" },
     ]), {"filename":"component.slate","range":{"start":167,"end":253},"kind":"template"}))),
-    "\"",
     ">",
     "\n  Content\n",
     "</div>"
   ].join("");
   __html += "\n";
-  return __html;
+  return __slateHtml(__html);
 }
 export default { render };

@@ -1,0 +1,13 @@
+<script slate>
+import { html } from "@slate/kit";
+
+const raw = html("<strong>safe</strong>");
+const text = "<em>escaped</em>";
+</script>
+
+<p>{raw}</p>
+<p>{text}</p>
+<p>{true}</p>
+<p>{false}</p>
+<p>{@html false}</p>
+<div title={raw} data-raw={raw} aria-label={false}></div>

@@ -1,4 +1,4 @@
-import { cloneContext, evaluateSlateExpression } from "@slate/kit";
+import { cloneContext, html as __slateHtml, evaluateSlateExpression, renderHTML } from "@slate/kit";
 export async function render(__props = {}, slots = {}, context = {}) {
   context = cloneContext(context);
   const content = "<strong>Raw</strong>";
@@ -7,10 +7,10 @@ export async function render(__props = {}, slots = {}, context = {}) {
   __html += [
     "<div",
     ">",
-    String(evaluateSlateExpression(() => (content), {"filename":"component.slate","range":{"start":87,"end":95},"kind":"template"})),
+    await renderHTML(evaluateSlateExpression(() => (content), {"filename":"component.slate","range":{"start":87,"end":95},"kind":"template"})),
     "</div>"
   ].join("");
   __html += "\n";
-  return __html;
+  return __slateHtml(__html);
 }
 export default { render };
