@@ -20,7 +20,7 @@ export type RenderPrimitive =
 export type RenderValue =
   | RenderPrimitive
   | SlateHTML
-  | Promise<RenderValue>;
+  | Promise<RenderPrimitive | SlateHTML>;
 
 /** Safe HTML result returned by components, slots, and render functions. */
 export type RenderResult = SlateHTML | Promise<SlateHTML>;
@@ -107,9 +107,9 @@ export function escapeHTML(value: unknown): string {
 /** Mark a string as safe Slate-rendered HTML. */
 export function html(value: string): SlateHTML {
   return Object.freeze({
-    [SLATE_HTML]: true,
+    [SLATE_HTML]: true as const,
     value,
-  });
+  }) as SlateHTML;
 }
 
 /** Check whether a value is a Slate-rendered HTML fragment. */
