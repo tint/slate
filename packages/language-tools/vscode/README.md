@@ -1,115 +1,156 @@
-# slate-vscode
+# Slatejs for VS Code
 
-VS Code extension for Slate `.slate` files.
+Language support for Slate `.slate` files.
 
 ## Features
 
-- Registers `.slate` as the Slate language.
-- Provides TextMate syntax highlighting for Slate templates.
-- Embeds TypeScript highlighting inside `<script slate>`.
-- Embeds CSS highlighting inside `<style>`.
-- Starts the Slate language server over stdio.
-- Provides diagnostics, completion, hover, definition, document symbols, and semantic tokens through LSP.
+- Syntax highlighting for `.slate` templates.
+- TypeScript highlighting inside `<script slate>`.
+- CSS highlighting inside `<style>`.
+- Diagnostics for Slate parser, template, rune, and TypeScript issues.
+- Completion for Slate blocks, directives, runes, slots, and common template attributes.
+- Hover documentation for Slate syntax and runtime runes.
+- Go to definition for symbols that can be resolved by the Slate language server.
+- Document symbols for scripts, template bindings, and block scopes.
+- Semantic highlighting for Slate-owned syntax.
 
-## Language features
+## Supported syntax
 
-Hover:
+Template blocks:
 
-- TypeScript hover for script and template expressions.
-- Slate docs for `$prop`, `$props`, `$inject`, and `$provide`.
-- Slate docs for `{#if}`, `{#each}`, `{#await}`, `{@html}`, `{@debug}`, `{const}`, and `{let}`.
-- Slate docs for `<slot>`, `slot:*`, `<script slate>`, `is:*`, `class`, `style`, and `<Fragment>`.
-- `.slate` component imports are shown as Slate components before raw TypeScript details.
+```slate
+{#if visible}
+  <p>Visible</p>
+{:else}
+  <p>Hidden</p>
+{/if}
 
-Completion:
+{#each items as item, index}
+  <p>{index}: {item}</p>
+{/each}
+```
 
-- `{#` block snippets.
-- `{@` directive snippets.
-- `$` rune snippets.
-- `slot:` slot directive snippets.
-- `is:` compiler directive snippets.
-- `class=` and `style=` Slate attribute snippets.
-- `<` snippets for `Fragment`, `slot`, and `script slate`.
+Runes:
 
-Semantic tokens:
+```slate
+<script slate>
+const title = $prop("title", "Untitled");
+const values = $props<{ count?: number }>();
 
-- Runes.
-- Template keywords.
+$provide("theme", {
+  color: "blue",
+});
+</script>
+```
+
+Slots:
+
+```slate
+<slot name="header" data={{ title }} />
+
+<Card>
+  <header slot:header={{ title }}>Header</header>
+</Card>
+```
+
+Compiler directives:
+
+```slate
+<style is:global>
+  body {
+    margin: 0;
+  }
+</style>
+
+<script is:global="head">
+  document.documentElement.dataset.theme = "light";
+</script>
+
+<script is:global>
+  window.__SLATE_READY__ = true;
+</script>
+
+<script is:inline>
+  console.log("inline with this component instance");
+</script>
+```
+
+Development-only directives:
+
+```slate
+<aside dev:scroll="sidebar">
+  ...
+</aside>
+```
+
+## Completions
+
+The extension provides snippets for:
+
+- `{#if}`
+- `{#each}`
+- `{#await}`
+- `{@html}`
+- `{@debug}`
+- `$prop`
+- `$props`
+- `$inject`
+- `$provide`
+- `slot:`
+- `is:`
+- `dev:scroll`
+- `class=`
+- `style=`
+- `<Fragment>`
+- `<slot>`
+- `<script slate>`
+
+## Hover
+
+Hover works for:
+
+- TypeScript symbols in `<script slate>`.
+- Template expressions.
 - Each block bindings.
-- Slot directives.
-- `is:*` directives.
-- `<script slate>`.
-- `<Fragment>`.
+- Slate runes such as `$prop` and `$provide`.
+- Slate template keywords such as `{#if}` and `{#each}`.
+- Slots and slot directives.
+- Compiler directives such as `is:global` and `is:inline`.
+- Development directives such as `dev:scroll`.
+- Imported `.slate` components.
 
-## Repository development
+When possible, Slate-specific documentation is shown before raw TypeScript details.
 
-From the repository root:
+## Settings
 
-```sh
-bun install
-bun run vscode:dev
+The extension starts the bundled Slate language server by default.
+
+You usually do not need to configure anything.
+
+Available settings:
+
+```json
+{
+  "slate.languageServer.command": "",
+  "slate.languageServer.args": []
+}
 ```
 
-This builds the workspace and opens this extension package in VS Code.
-
-Then press `F5` in VS Code. The Extension Development Host will start with the local Slate extension enabled.
-
-The debug configuration opens `examples/workspace` automatically. Open `App.slate` there to test syntax highlighting and language server features.
-
-## Local VSIX package
-
-From the repository root:
-
-```sh
-bun run vscode:package
-```
-
-This creates:
-
-```txt
-packages/language-tools/vscode/slate-vscode.vsix
-```
-
-The VSIX includes a bundled Slate language server at `dist/server.mjs`, so local testing does not require publishing `@slate/*` packages to npm.
-
-The TypeScript package is kept as a runtime dependency instead of being bundled, because the language server needs TypeScript's default `lib.*.d.ts` files for correct semantic diagnostics.
-
-Install it manually with:
-
-```sh
-code --install-extension packages/language-tools/vscode/slate-vscode.vsix --force
-```
-
-## Configuration
-
-Settings:
-
-- `slate.languageServer.command`
-- `slate.languageServer.args`
-
-By default, `slate.languageServer.command` is empty. In that mode the extension starts the bundled server from `dist/server.mjs`.
-
-Set `slate.languageServer.command` only when you want to override the server runtime manually.
+Use these settings only when you want to run a custom language server.
 
 Example:
 
 ```json
 {
-  "slate.languageServer.command": "bun",
+  "slate.languageServer.command": "node",
   "slate.languageServer.args": [
-    "/absolute/path/to/packages/language-tools/language-server/src/index.ts",
+    "/absolute/path/to/language-server.js",
     "--stdio"
   ]
 }
 ```
 
-## Package boundary
+## Notes
 
-This package owns VS Code integration only.
-
-Slate language semantics live in:
-
-- `@slate/compiler`
-- `@slate/check`
-- `@slate/ts-plugin`
-- `@slate/language-server`
+The extension includes a bundled Slate language server. You do not need to
+install `@slate/language-server` separately.
