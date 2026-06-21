@@ -27,6 +27,7 @@ export default defineConfig({
   publicDir: "public",
   dev: {
     port: 0,
+    preserveScroll: true,
     tmpDir: "../.tmp/config-dev-modules",
   },
   build: {

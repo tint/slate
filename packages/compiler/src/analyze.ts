@@ -83,6 +83,10 @@ function validateSlateScript(script: SlateScriptElementCst): Diagnostic[] {
     if (attr.kind === "DirectiveAttribute" && attr.namespace === "is") {
       diagnostics.push(error("`is:*` directives are not allowed on <script slate>.", attr.range));
     }
+
+    if (attr.kind === "DirectiveAttribute" && attr.namespace === "dev") {
+      diagnostics.push(error("`dev:*` directives are not allowed on <script slate>.", attr.range));
+    }
   }
 
   diagnostics.push(...validateTypeOnlyExports(script));
@@ -211,6 +215,12 @@ function validateRawTextElement(element: RawTextElementCst): Diagnostic[] {
   const inlineAttr = findDirective(element.openTag.attributes, "is", "inline");
   const srcAttr = element.openTag.attributes.find((attr) => attr.name === "src");
 
+  for (const attr of element.openTag.attributes) {
+    if (attr.kind === "DirectiveAttribute" && attr.namespace === "dev") {
+      diagnostics.push(error("`dev:*` directives are only allowed on normal template elements.", attr.range));
+    }
+  }
+
   if (globalAttr && inlineAttr) {
     diagnostics.push(error("`is:global` and `is:inline` cannot be used together.", inlineAttr.range));
   }
@@ -267,7 +277,7 @@ function validateElement(element: ElementCst): Diagnostic[] {
 }
 
 function validateAttributes(attributes: AttributeCst[]): Diagnostic[] {
-  const diagnostics: Diagnostic[] = [];
+  const diagnostics: Diagnostic[] = validateDevDirectives(attributes);
 
   for (const attr of attributes) {
     if ((attr.kind === "StringAttribute" || attr.kind === "BooleanAttribute") && attr.name === "slot") {
@@ -286,6 +296,27 @@ function validateAttributes(attributes: AttributeCst[]): Diagnostic[] {
 
     if (attr.valueKind === "string") {
       diagnostics.push(error("Use `slot:name={pattern}` to bind slot data, not a string value.", attr.range));
+    }
+  }
+
+  return diagnostics;
+}
+
+function validateDevDirectives(attributes: AttributeCst[]): Diagnostic[] {
+  const diagnostics: Diagnostic[] = [];
+
+  for (const attr of attributes) {
+    if (attr.kind !== "DirectiveAttribute" || attr.namespace !== "dev") {
+      continue;
+    }
+
+    if (attr.directiveName !== "scroll") {
+      diagnostics.push(error("Unknown `dev:*` directive. Only `dev:scroll` is supported.", attr.range));
+      continue;
+    }
+
+    if (attr.valueKind !== "string") {
+      diagnostics.push(error("`dev:scroll` must use a stable static string value.", attr.range));
     }
   }
 

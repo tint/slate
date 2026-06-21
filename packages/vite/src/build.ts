@@ -70,6 +70,7 @@ async function renderBuildInput(root: string, inputPath: string, tmpDir: string,
       publicDir: false,
       plugins: [...plugins, slate({
         kitSpecifier,
+        dev: false,
       })],
       build: {
         ssr: inputPath,

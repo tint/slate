@@ -11,8 +11,11 @@ export function sendHtml(response: import("node:http").ServerResponse, status: n
   response.end(html);
 }
 
-export function injectViteClient(html: string): string {
-  const script = "<script type=\"module\" src=\"/@vite/client\"></script>";
+export function injectViteClient(html: string, preserveScroll = true): string {
+  const script = [
+    "<script type=\"module\" src=\"/@vite/client\"></script>",
+    preserveScroll ? slateScrollClientScript() : "",
+  ].filter(Boolean).join("");
 
   if (html.includes(script)) {
     return html;
@@ -30,7 +33,104 @@ export function injectViteClient(html: string): string {
 }
 
 export function stripViteClient(html: string): string {
-  return html.replace(/<script type="module" src="\/@vite\/client"><\/script>\n?/g, "");
+  return html
+    .replace(/<script type="module" src="\/@vite\/client"><\/script>\n?/g, "")
+    .replace(/<script data-slate-dev-client>[\s\S]*?<\/script>\n?/g, "");
+}
+
+function slateScrollClientScript(): string {
+  return `<script data-slate-dev-client>${String.raw`
+(() => {
+  const key = "__slate_scroll:" + location.pathname + location.search;
+  const marker = "data-slate-dev-scroll";
+  const saved = read();
+
+  if ("scrollRestoration" in history) {
+    history.scrollRestoration = "manual";
+  }
+
+  function read() {
+    try {
+      const raw = sessionStorage.getItem(key);
+      sessionStorage.removeItem(key);
+      return raw ? JSON.parse(raw) : undefined;
+    } catch {
+      return undefined;
+    }
+  }
+
+  function save() {
+    const scrollingElement = document.scrollingElement || document.documentElement;
+    const elements = [];
+
+    for (const element of document.querySelectorAll("[" + marker + "]")) {
+      const id = element.getAttribute(marker);
+
+      if (id) {
+        elements.push({
+          id,
+          left: element.scrollLeft,
+          top: element.scrollTop,
+        });
+      }
+    }
+
+    try {
+      sessionStorage.setItem(key, JSON.stringify({
+        window: {
+          left: window.scrollX,
+          top: window.scrollY,
+        },
+        document: scrollingElement ? {
+          left: scrollingElement.scrollLeft,
+          top: scrollingElement.scrollTop,
+        } : undefined,
+        elements,
+      }));
+    } catch {
+    }
+  }
+
+  function findScrollElement(id) {
+    for (const element of document.querySelectorAll("[" + marker + "]")) {
+      if (element.getAttribute(marker) === id) {
+        return element;
+      }
+    }
+  }
+
+  function restore() {
+    if (!saved) {
+      return;
+    }
+
+    const scrollingElement = document.scrollingElement || document.documentElement;
+
+    if (saved.document && scrollingElement) {
+      scrollingElement.scrollLeft = saved.document.left || 0;
+      scrollingElement.scrollTop = saved.document.top || 0;
+    }
+
+    if (saved.window) {
+      window.scrollTo(saved.window.left || 0, saved.window.top || 0);
+    }
+
+    for (const item of saved.elements || []) {
+      const element = findScrollElement(item.id);
+
+      if (element) {
+        element.scrollLeft = item.left || 0;
+        element.scrollTop = item.top || 0;
+      }
+    }
+  }
+
+  addEventListener("beforeunload", save, { capture: true });
+  addEventListener("pagehide", save, { capture: true });
+  requestAnimationFrame(() => requestAnimationFrame(restore));
+  setTimeout(restore, 80);
+})();
+`}</script>`;
 }
 
 export function errorPage(message: string): string {

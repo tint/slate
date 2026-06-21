@@ -25,6 +25,8 @@ export async function run(argv: string[] = process.argv.slice(2)): Promise<void>
     .option("--publicDir <path>", "Public assets directory")
     .option("--reload", "Enable browser reload")
     .option("--no-reload", "Disable browser reload")
+    .option("--preserveScroll", "Restore scroll positions after browser reload")
+    .option("--no-preserveScroll", "Disable scroll position restoration")
     .option("--kit <specifier>", "Runtime kit import specifier")
     .action((input: string | undefined, options: {
       config?: string;
@@ -32,6 +34,7 @@ export async function run(argv: string[] = process.argv.slice(2)): Promise<void>
       host?: string;
       publicDir?: string;
       reload?: boolean;
+      preserveScroll?: boolean;
       kit?: string;
     }) => {
       task = () => runDev({

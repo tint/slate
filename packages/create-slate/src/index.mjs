@@ -190,6 +190,7 @@ export default defineConfig({
     host: "127.0.0.1",
     port: 5173,
     reload: true,
+    preserveScroll: true,
   },
   build: {
     output: "dist/index.html",

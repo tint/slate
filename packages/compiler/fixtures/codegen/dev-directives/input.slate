@@ -1,0 +1,3 @@
+<main dev:scroll="main">
+  <section dev:scroll="panel">Panel</section>
+</main>

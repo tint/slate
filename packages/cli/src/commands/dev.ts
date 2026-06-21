@@ -11,6 +11,7 @@ export type DevOptions = {
   host?: string;
   publicDir?: string;
   reload?: boolean;
+  preserveScroll?: boolean;
   kit?: string;
 };
 
@@ -25,6 +26,7 @@ export async function runDev(options: DevOptions = {}): Promise<void> {
   const host = options.host ?? config.dev.host;
   const publicDir = options.publicDir ?? config.publicDir;
   const reload = options.reload ?? config.dev.reload;
+  const preserveScroll = options.preserveScroll ?? config.dev.preserveScroll;
   const kitSpecifier = options.kit ?? config.kit.specifier;
 
   if (!input.length) {
@@ -40,6 +42,7 @@ export async function runDev(options: DevOptions = {}): Promise<void> {
     input: Object.fromEntries(input.map((item) => [item.name, item.path])),
     publicDir: publicDir ? resolve(publicDir) : undefined,
     reload,
+    preserveScroll,
     kitSpecifier,
     plugins: config.plugins,
     vite: config.vite,

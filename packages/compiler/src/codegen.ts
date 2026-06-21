@@ -18,6 +18,7 @@ import ts from "typescript";
 export type GenerateOptions = {
   filename?: string;
   module?: SlateModule;
+  dev?: boolean;
 };
 
 export type GenerateResult = {
@@ -27,11 +28,12 @@ export type GenerateResult = {
 
 export function generate(cst: SlateFileCst, _options: GenerateOptions = {}): GenerateResult {
   const filename = _options.filename ?? "component.slate";
+  const dev = _options.dev ?? false;
   const script = cst.children.find((child): child is SlateScriptElementCst => child.kind === "SlateScriptElement");
   const componentNames = new Set(_options.module?.components.map((component) => component.localName) ?? []);
   const bodyNodes = cst.children.filter((child) => child.kind !== "SlateScriptElement");
   const scriptParts = script ? transpileSlateScript(script.body.text) : { imports: "", body: "" };
-  const statements = generateStatements(bodyNodes, componentNames, "__html", filename);
+  const statements = generateStatements(bodyNodes, componentNames, "__html", filename, dev);
   const usedRunes = collectUsedRunes([scriptParts.body, statements]);
   const kitImports = collectKitImports(statements);
   const runeHelpers = generateRuneHelpers(usedRunes);
@@ -130,36 +132,36 @@ function generateRuneHelpers(usedRunes: Set<RuneName>): string[] {
   return helpers;
 }
 
-function generateStatements(nodes: TemplateCstNode[], componentNames: Set<string>, target: string, filename: string): string {
-  return nodes.map((node) => generateStatement(node, componentNames, target, filename)).filter(Boolean).join("\n");
+function generateStatements(nodes: TemplateCstNode[], componentNames: Set<string>, target: string, filename: string, dev: boolean): string {
+  return nodes.map((node) => generateStatement(node, componentNames, target, filename, dev)).filter(Boolean).join("\n");
 }
 
-function generateStatement(node: TemplateCstNode, componentNames: Set<string>, target: string, filename: string): string {
+function generateStatement(node: TemplateCstNode, componentNames: Set<string>, target: string, filename: string, dev: boolean): string {
   switch (node.kind) {
     case "ConstTag":
     case "LetTag":
       return `${node.statement.text};`;
     case "IfBlock":
-      return generateIfStatement(node, componentNames, target, filename);
+      return generateIfStatement(node, componentNames, target, filename, dev);
     case "EachBlock":
-      return generateEachStatement(node, componentNames, target, filename);
+      return generateEachStatement(node, componentNames, target, filename, dev);
     case "DebugDirective":
     case "Error":
     case "SlateScriptElement":
       return "";
     default:
-      return `${target} += ${generateNode(node, componentNames, filename)};`;
+      return `${target} += ${generateNode(node, componentNames, filename, dev)};`;
   }
 }
 
-function generateNode(node: TemplateCstNode, componentNames: Set<string>, filename: string): string {
+function generateNode(node: TemplateCstNode, componentNames: Set<string>, filename: string, dev: boolean): string {
   switch (node.kind) {
     case "Text":
       return generateText(node);
     case "Comment":
       return JSON.stringify(`<!--${node.text}${node.closed ? "-->" : ""}`);
     case "Element":
-      return generateElement(node, componentNames, filename);
+      return generateElement(node, componentNames, filename, dev);
     case "RawTextElement":
       return generateRawTextElement(node, filename);
     case "Interpolation":
@@ -167,9 +169,9 @@ function generateNode(node: TemplateCstNode, componentNames: Set<string>, filena
     case "HtmlDirective":
       return generateHtmlDirective(node, filename);
     case "IfBlock":
-      return generateIfBlock(node, componentNames, filename);
+      return generateIfBlock(node, componentNames, filename, dev);
     case "EachBlock":
-      return generateEachBlock(node, componentNames, filename);
+      return generateEachBlock(node, componentNames, filename, dev);
     case "ConstTag":
     case "LetTag":
       return "\"\"";
@@ -180,10 +182,10 @@ function generateNode(node: TemplateCstNode, componentNames: Set<string>, filena
   }
 }
 
-function generateIfStatement(node: IfBlockCst, componentNames: Set<string>, target: string, filename: string): string {
+function generateIfStatement(node: IfBlockCst, componentNames: Set<string>, target: string, filename: string, dev: boolean): string {
   const condition = node.open.expression ? wrapExpression(node.open.expression.text, filename, node.open.expression.range, "template") : "false";
-  const thenBody = generateStatements(node.then, componentNames, target, filename);
-  const elseBody = node.else ? generateStatements(node.else, componentNames, target, filename) : "";
+  const thenBody = generateStatements(node.then, componentNames, target, filename, dev);
+  const elseBody = node.else ? generateStatements(node.else, componentNames, target, filename, dev) : "";
 
   if (!node.else) {
     return `if (${condition}) {\n${indent(thenBody, 2)}\n}`;
@@ -192,11 +194,11 @@ function generateIfStatement(node: IfBlockCst, componentNames: Set<string>, targ
   return `if (${condition}) {\n${indent(thenBody, 2)}\n} else {\n${indent(elseBody, 2)}\n}`;
 }
 
-function generateEachStatement(node: EachBlockCst, componentNames: Set<string>, target: string, filename: string): string {
+function generateEachStatement(node: EachBlockCst, componentNames: Set<string>, target: string, filename: string, dev: boolean): string {
   const list = `Array.from(${wrapExpression(node.expression.text, filename, node.expression.range, "template")})`;
   const item = node.item;
-  const body = generateStatements(node.children, componentNames, target, filename);
-  const elseBody = node.else ? generateStatements(node.else, componentNames, target, filename) : "";
+  const body = generateStatements(node.children, componentNames, target, filename, dev);
+  const elseBody = node.else ? generateStatements(node.else, componentNames, target, filename, dev) : "";
   const entry = node.index ? `${node.index}, ${item}` : `_, ${item}`;
 
   if (!node.else) {
@@ -206,11 +208,11 @@ function generateEachStatement(node: EachBlockCst, componentNames: Set<string>, 
   return `const __items = ${list};\nif (__items.length) {\n  for (const [${entry}] of __items.entries()) {\n${indent(body, 4)}\n  }\n} else {\n${indent(elseBody, 2)}\n}`;
 }
 
-function generateEachBlock(node: EachBlockCst, componentNames: Set<string>, filename: string): string {
+function generateEachBlock(node: EachBlockCst, componentNames: Set<string>, filename: string, dev: boolean): string {
   const item = node.item;
   const index = node.index ? `, ${node.index}` : "";
-  const body = node.children.map((child) => generateNode(child, componentNames, filename)).filter(Boolean).join(",\n          ");
-  const elseBody = node.else?.map((child) => generateNode(child, componentNames, filename)).filter(Boolean).join(",\n        ");
+  const body = node.children.map((child) => generateNode(child, componentNames, filename, dev)).filter(Boolean).join(",\n          ");
+  const elseBody = node.else?.map((child) => generateNode(child, componentNames, filename, dev)).filter(Boolean).join(",\n        ");
   const eachExpression = `Array.from(${wrapExpression(node.expression.text, filename, node.expression.range, "template")})`;
   const rendered = `${eachExpression}.length ? ${eachExpression}.map((${item}${index}) => [\n          ${body}\n        ].join("")).join("")`;
 
@@ -221,10 +223,10 @@ function generateEachBlock(node: EachBlockCst, componentNames: Set<string>, file
   return `${rendered} : [\n        ${elseBody ?? ""}\n      ].join("")`;
 }
 
-function generateIfBlock(node: IfBlockCst, componentNames: Set<string>, filename: string): string {
+function generateIfBlock(node: IfBlockCst, componentNames: Set<string>, filename: string, dev: boolean): string {
   const condition = node.open.expression ? wrapExpression(node.open.expression.text, filename, node.open.expression.range, "template") : "false";
-  const thenBody = node.then.map((child) => generateNode(child, componentNames, filename)).filter(Boolean).join(",\n        ");
-  const elseBody = node.else?.map((child) => generateNode(child, componentNames, filename)).filter(Boolean).join(",\n        ");
+  const thenBody = node.then.map((child) => generateNode(child, componentNames, filename, dev)).filter(Boolean).join(",\n        ");
+  const elseBody = node.else?.map((child) => generateNode(child, componentNames, filename, dev)).filter(Boolean).join(",\n        ");
 
   return `(${condition}) ? [\n        ${thenBody}\n      ].join("") : [\n        ${elseBody ?? ""}\n      ].join("")`;
 }
@@ -241,43 +243,50 @@ function generateHtmlDirective(node: HtmlDirectiveCst, filename: string): string
   return `String(${wrapExpression(node.expression.text, filename, node.expression.range, "template")})`;
 }
 
-function generateElement(node: ElementCst, componentNames: Set<string>, filename: string): string {
+function generateElement(node: ElementCst, componentNames: Set<string>, filename: string, dev: boolean): string {
   if (componentNames.has(node.rawTagName)) {
-    return generateComponent(node, filename);
+    return generateComponent(node, filename, dev);
   }
 
   if (node.tagName === "slot") {
-    return generateSlotOutlet(node, componentNames, filename);
+    return generateSlotOutlet(node, componentNames, filename, dev);
   }
 
   if (node.selfClosing) {
-    return `[${generateOpenTagParts(node.rawTagName, node.openTag.attributes, true, filename).join(", ")}].join("")`;
+    return `[${generateOpenTagParts(node.rawTagName, node.openTag.attributes, true, filename, dev).join(", ")}].join("")`;
   }
 
-  const children = node.children.map((child) => generateNode(child, componentNames, filename)).filter(Boolean);
+  const children = node.children.map((child) => generateNode(child, componentNames, filename, dev)).filter(Boolean);
   const close = node.closeTag ? `</${node.closeTag.rawTagName}>` : "";
 
   return [
     "[",
-    ...generateOpenTagParts(node.rawTagName, node.openTag.attributes, false, filename).map((part) => `  ${part},`),
+    ...generateOpenTagParts(node.rawTagName, node.openTag.attributes, false, filename, dev).map((part) => `  ${part},`),
     ...children.map((child) => `  ${child},`),
     `  ${JSON.stringify(close)}`,
     "].join(\"\")",
   ].join("\n");
 }
 
-function generateOpenTagParts(rawTagName: string, attributes: AttributeCst[], selfClosing: boolean, filename: string): string[] {
+function generateOpenTagParts(rawTagName: string, attributes: AttributeCst[], selfClosing: boolean, filename: string, dev: boolean): string[] {
   return [
     JSON.stringify(`<${rawTagName}`),
-    ...generateAttributeParts(attributes, filename),
+    ...generateAttributeParts(attributes, filename, dev),
     JSON.stringify(selfClosing ? " />" : ">"),
   ];
 }
 
-function generateAttributeParts(attributes: AttributeCst[], filename: string): string[] {
+function generateAttributeParts(attributes: AttributeCst[], filename: string, dev: boolean): string[] {
   const chunks: string[] = [];
 
   for (const attr of attributes) {
+    if (attr.kind === "DirectiveAttribute" && attr.namespace === "dev") {
+      if (dev && attr.directiveName === "scroll" && attr.valueKind === "string" && typeof attr.value === "string") {
+        chunks.push(JSON.stringify(` data-slate-dev-scroll="${escapeAttributeLiteral(attr.value)}"`));
+      }
+      continue;
+    }
+
     if (attr.kind === "BooleanAttribute") {
       chunks.push(JSON.stringify(` ${attr.rawName}`));
       continue;
@@ -321,7 +330,7 @@ function generateJoined(children: string[]): string {
   ].join("\n");
 }
 
-function generateSlotOutlet(node: ElementCst, componentNames: Set<string>, filename: string): string {
+function generateSlotOutlet(node: ElementCst, componentNames: Set<string>, filename: string, dev: boolean): string {
   const nameAttr = node.openTag.attributes.find(
     (attr) => attr.kind === "StringAttribute" && attr.name === "name",
   );
@@ -330,7 +339,7 @@ function generateSlotOutlet(node: ElementCst, componentNames: Set<string>, filen
   );
   const name = nameAttr?.kind === "StringAttribute" ? nameAttr.value : "default";
   const fallback = node.children.length
-    ? `[\n      ${node.children.map((child) => generateNode(child, componentNames, filename)).filter(Boolean).join(",\n      ")}\n    ].join("")`
+    ? `[\n      ${node.children.map((child) => generateNode(child, componentNames, filename, dev)).filter(Boolean).join(",\n      ")}\n    ].join("")`
     : "\"\"";
   const data = dataAttr?.kind === "ExpressionAttribute"
     ? wrapExpression(dataAttr.expression.text, filename, dataAttr.expression.range, "slot")
@@ -339,11 +348,11 @@ function generateSlotOutlet(node: ElementCst, componentNames: Set<string>, filen
   return `await renderSlot(slots, ${JSON.stringify(name)}, ${fallback}, ${data})`;
 }
 
-function generateComponent(node: ElementCst, filename: string): string {
-  return `await ${node.rawTagName}.render(${generatePropsObject(node.openTag.attributes, filename)}, ${generateSlotsObject(node, filename)}, context)`;
+function generateComponent(node: ElementCst, filename: string, dev: boolean): string {
+  return `await ${node.rawTagName}.render(${generatePropsObject(node.openTag.attributes, filename)}, ${generateSlotsObject(node, filename, dev)}, context)`;
 }
 
-function generateSlotsObject(node: ElementCst, filename: string): string {
+function generateSlotsObject(node: ElementCst, filename: string, dev: boolean): string {
   const slotGroups = new Map<string, { pattern?: string; children: TemplateCstNode[] }>();
   slotGroups.set("default", {
     children: [],
@@ -386,7 +395,7 @@ function generateSlotsObject(node: ElementCst, filename: string): string {
   const slots = entries.map(([name, slot]) => {
     const params = slot.pattern ? slot.pattern : "";
 
-    return `${JSON.stringify(name)}: async (${params}) => {\n      let __html = \"\";\n${indent(generateStatements(slot.children, new Set(), "__html", filename), 6)}\n      return __html;\n    }`;
+    return `${JSON.stringify(name)}: async (${params}) => {\n      let __html = \"\";\n${indent(generateStatements(slot.children, new Set(), "__html", filename, dev), 6)}\n      return __html;\n    }`;
   });
 
   return `{\n    ${slots.join(",\n    ")}\n  }`;
@@ -430,7 +439,7 @@ function generatePropsObject(attributes: AttributeCst[], filename: string): stri
 function generateRawTextElement(node: RawTextElementCst, filename: string): string {
   const close = node.closeTag ? `</${node.closeTag.rawTagName}>` : "";
   const html = generateJoined([
-    ...generateOpenTagParts(node.rawTagName, node.openTag.attributes, false, filename).map((part) => `  ${part},`),
+    ...generateOpenTagParts(node.rawTagName, node.openTag.attributes, false, filename, false).map((part) => `  ${part},`),
     `  ${JSON.stringify(node.body.text)},`,
     `  ${JSON.stringify(close)}`,
   ]);

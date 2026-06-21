@@ -16,6 +16,7 @@ packages/
 |- compiler                 @slate/compiler
 |- kit                      @slate/kit
 |- vite                     @slate/vite
+|- test                     @slate/test
 |- cli                      @slate/cli
 |- language-tools/
 |  |- check                 @slate/check
@@ -86,6 +87,19 @@ Responsibilities:
 - Provide programmatic helpers that `@slate/cli` can call.
 
 This package should own Vite-specific behavior. The CLI should call into this package instead of reimplementing Vite features.
+
+### `@slate/test`
+
+Testing helper package.
+
+Responsibilities:
+
+- Provide framework-agnostic test helpers for compiled Slate components.
+- Provide `renderSlate()` for rendering a component with props, slots, and a test context.
+- Inject collected global assets so test output matches build/dev render output.
+- Document Vitest usage through `@slate/vite`.
+
+This package should not own `.slate` transforms. Test runner integration should use bundler packages such as `@slate/vite`.
 
 ### `@slate/cli`
 
@@ -208,6 +222,9 @@ Recommended dependency direction:
   <- @slate/vite
   <- @slate/cli
 
+@slate/kit
+  <- @slate/test
+
 @slate/check
   <- @slate/cli
   <- @slate/language-server
@@ -233,12 +250,13 @@ Recommended order:
 1. `@slate/compiler`
 2. `@slate/kit`
 3. `@slate/vite`
-4. `@slate/cli`
-5. `@slate/check`
-6. `@slate/language-server`
-7. `@slate/ts-plugin`
-8. `slate-vscode`
-9. `slate-zed`
+4. `@slate/test`
+5. `@slate/cli`
+6. `@slate/check`
+7. `@slate/language-server`
+8. `@slate/ts-plugin`
+9. `slate-vscode`
+10. `slate-zed`
 
 The compiler should come first because every other package depends on its syntax model and diagnostics.
 

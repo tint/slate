@@ -1,0 +1,318 @@
+{
+  "kind": "SlateFile",
+  "range": {
+    "start": 0,
+    "end": 159
+  },
+  "children": [
+    {
+      "kind": "Element",
+      "range": {
+        "start": 0,
+        "end": 22
+      },
+      "tagName": "div",
+      "rawTagName": "div",
+      "openTag": {
+        "kind": "Tag",
+        "range": {
+          "start": 0,
+          "end": 16
+        },
+        "tagName": "div",
+        "rawTagName": "div",
+        "attributes": [
+          {
+            "range": {
+              "start": 5,
+              "end": 15
+            },
+            "name": "dev:scroll",
+            "rawName": "dev:scroll",
+            "kind": "DirectiveAttribute",
+            "namespace": "dev",
+            "directiveName": "scroll"
+          }
+        ],
+        "selfClosing": false,
+        "closing": false
+      },
+      "children": [],
+      "closeTag": {
+        "kind": "Tag",
+        "range": {
+          "start": 16,
+          "end": 22
+        },
+        "tagName": "div",
+        "rawTagName": "div",
+        "attributes": [],
+        "selfClosing": false,
+        "closing": true
+      },
+      "selfClosing": false
+    },
+    {
+      "kind": "Text",
+      "range": {
+        "start": 22,
+        "end": 23
+      },
+      "text": "\n"
+    },
+    {
+      "kind": "Element",
+      "range": {
+        "start": 23,
+        "end": 51
+      },
+      "tagName": "div",
+      "rawTagName": "div",
+      "openTag": {
+        "kind": "Tag",
+        "range": {
+          "start": 23,
+          "end": 45
+        },
+        "tagName": "div",
+        "rawTagName": "div",
+        "attributes": [
+          {
+            "range": {
+              "start": 28,
+              "end": 44
+            },
+            "name": "dev:scroll",
+            "rawName": "dev:scroll",
+            "kind": "DirectiveAttribute",
+            "namespace": "dev",
+            "directiveName": "scroll",
+            "value": {
+              "range": {
+                "start": 40,
+                "end": 43
+              },
+              "text": "key"
+            },
+            "valueKind": "expression",
+            "closed": true
+          }
+        ],
+        "selfClosing": false,
+        "closing": false
+      },
+      "children": [],
+      "closeTag": {
+        "kind": "Tag",
+        "range": {
+          "start": 45,
+          "end": 51
+        },
+        "tagName": "div",
+        "rawTagName": "div",
+        "attributes": [],
+        "selfClosing": false,
+        "closing": true
+      },
+      "selfClosing": false
+    },
+    {
+      "kind": "Text",
+      "range": {
+        "start": 51,
+        "end": 52
+      },
+      "text": "\n"
+    },
+    {
+      "kind": "Element",
+      "range": {
+        "start": 52,
+        "end": 79
+      },
+      "tagName": "div",
+      "rawTagName": "div",
+      "openTag": {
+        "kind": "Tag",
+        "range": {
+          "start": 52,
+          "end": 73
+        },
+        "tagName": "div",
+        "rawTagName": "div",
+        "attributes": [
+          {
+            "range": {
+              "start": 57,
+              "end": 72
+            },
+            "name": "dev:unknown",
+            "rawName": "dev:unknown",
+            "kind": "DirectiveAttribute",
+            "namespace": "dev",
+            "directiveName": "unknown",
+            "value": "x",
+            "valueKind": "string"
+          }
+        ],
+        "selfClosing": false,
+        "closing": false
+      },
+      "children": [],
+      "closeTag": {
+        "kind": "Tag",
+        "range": {
+          "start": 73,
+          "end": 79
+        },
+        "tagName": "div",
+        "rawTagName": "div",
+        "attributes": [],
+        "selfClosing": false,
+        "closing": true
+      },
+      "selfClosing": false
+    },
+    {
+      "kind": "Text",
+      "range": {
+        "start": 79,
+        "end": 80
+      },
+      "text": "\n"
+    },
+    {
+      "kind": "RawTextElement",
+      "range": {
+        "start": 80,
+        "end": 114
+      },
+      "tagName": "style",
+      "rawTagName": "style",
+      "openTag": {
+        "kind": "Tag",
+        "range": {
+          "start": 80,
+          "end": 106
+        },
+        "tagName": "style",
+        "rawTagName": "style",
+        "attributes": [
+          {
+            "range": {
+              "start": 87,
+              "end": 105
+            },
+            "name": "dev:scroll",
+            "rawName": "dev:scroll",
+            "kind": "DirectiveAttribute",
+            "namespace": "dev",
+            "directiveName": "scroll",
+            "value": "style",
+            "valueKind": "string"
+          }
+        ],
+        "selfClosing": false,
+        "closing": false
+      },
+      "body": {
+        "kind": "RawText",
+        "range": {
+          "start": 106,
+          "end": 106
+        },
+        "text": ""
+      },
+      "closeTag": {
+        "kind": "Tag",
+        "range": {
+          "start": 106,
+          "end": 114
+        },
+        "tagName": "style",
+        "rawTagName": "style",
+        "attributes": [],
+        "selfClosing": false,
+        "closing": true
+      }
+    },
+    {
+      "kind": "Text",
+      "range": {
+        "start": 114,
+        "end": 115
+      },
+      "text": "\n"
+    },
+    {
+      "kind": "SlateScriptElement",
+      "range": {
+        "start": 115,
+        "end": 158
+      },
+      "openTag": {
+        "kind": "Tag",
+        "range": {
+          "start": 115,
+          "end": 149
+        },
+        "tagName": "script",
+        "rawTagName": "script",
+        "attributes": [
+          {
+            "range": {
+              "start": 123,
+              "end": 129
+            },
+            "name": "slate",
+            "rawName": "slate",
+            "kind": "BooleanAttribute"
+          },
+          {
+            "range": {
+              "start": 129,
+              "end": 148
+            },
+            "name": "dev:scroll",
+            "rawName": "dev:scroll",
+            "kind": "DirectiveAttribute",
+            "namespace": "dev",
+            "directiveName": "scroll",
+            "value": "script",
+            "valueKind": "string"
+          }
+        ],
+        "selfClosing": false,
+        "closing": false
+      },
+      "body": {
+        "kind": "RawText",
+        "range": {
+          "start": 149,
+          "end": 149
+        },
+        "text": ""
+      },
+      "closeTag": {
+        "kind": "Tag",
+        "range": {
+          "start": 149,
+          "end": 158
+        },
+        "tagName": "script",
+        "rawTagName": "script",
+        "attributes": [],
+        "selfClosing": false,
+        "closing": true
+      }
+    },
+    {
+      "kind": "Text",
+      "range": {
+        "start": 158,
+        "end": 159
+      },
+      "text": "\n"
+    }
+  ]
+}

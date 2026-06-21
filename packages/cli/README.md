@@ -122,7 +122,7 @@ Starts the development server.
 
 ```sh
 slate dev
-slate dev src/App.slate --port 5173 --host 127.0.0.1
+slate dev src/App.slate --port 5173 --host 127.0.0.1 --preserveScroll
 ```
 
 By default, `.slate` changes trigger a full page reload through Vite.
@@ -184,6 +184,7 @@ export default defineConfig({
     host: "127.0.0.1",
     port: 5173,
     reload: true,
+    preserveScroll: true,
   },
   build: {
     output: "dist/index.html",
@@ -205,6 +206,22 @@ Top-level options:
 - `build`: Static build options.
 - `preview`: Preview server options.
 - `vite`: Additional non-plugin Vite options.
+
+During dev, Slate keeps full page reload as the default update strategy because
+compiled `.slate` output does not currently have a browser-side component
+runtime that can safely patch arbitrary DOM. `dev.preserveScroll` keeps window,
+document, and explicitly marked scroll containers stable across those reloads.
+
+Mark scroll containers with a stable key:
+
+```slate
+<aside dev:scroll="sidebar">
+  ...
+</aside>
+```
+
+`dev:scroll` requires a static string value and is stripped from production
+build output.
 
 Config values are resolved in this order:
 

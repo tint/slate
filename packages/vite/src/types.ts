@@ -38,6 +38,8 @@ export type SlateViteOptions = {
   input: SlateViteInput;
   publicDir?: string | false;
   reload?: boolean;
+  /** Preserve window, document, and `data-slate-dev-scroll` positions across full reloads. */
+  preserveScroll?: boolean;
   kitSpecifier?: string;
   plugins?: SlatePlugin[];
   vite?: SlateViteUserConfig;
@@ -72,6 +74,7 @@ export type SlatePreviewOptions = {
 /** Options for the internal `.slate` Vite transform plugin. */
 export type SlatePluginOptions = {
   kitSpecifier?: string;
+  dev?: boolean;
 };
 
 /** Internal normalized input used by dev/build routing. */

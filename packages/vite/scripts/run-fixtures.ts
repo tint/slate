@@ -47,6 +47,8 @@ try {
     !page.body.includes("configured by vite") ||
     !page.body.includes("alt=\"Slate logo\"") ||
     !page.body.includes("/@vite/client") ||
+    !page.body.includes("data-slate-dev-client") ||
+    !page.body.includes("data-slate-dev-scroll=\"main\"") ||
     !page.body.includes("<link rel=\"stylesheet\" href=\"/style.css\">") ||
     !appearsBefore(page.body, "<style>\n  body {\n    margin: 0;\n  }\n</style>", "</head>") ||
     !appearsBefore(page.body, "<script>\n  globalThis.__SLATE_HEAD__ = true;\n</script>", "</head>") ||
@@ -91,6 +93,7 @@ if (
   !html.includes("Slate Vite") ||
   !html.includes("configured by vite") ||
   !html.includes("alt=\"Slate logo\"") ||
+  html.includes("data-slate-dev-scroll") ||
   !html.includes("<link rel=\"stylesheet\" href=\"assets/") ||
   !appearsBefore(html, "<style>\n  body {\n    margin: 0;\n  }\n</style>", "</head>") ||
   !appearsBefore(html, "<script>\n  globalThis.__SLATE_HEAD__ = true;\n</script>", "</head>") ||

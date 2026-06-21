@@ -27,6 +27,7 @@ export type SlateConfig = {
     host?: string;
     port?: number;
     reload?: boolean;
+    preserveScroll?: boolean;
   };
   build?: {
     output?: string;
@@ -58,6 +59,7 @@ export type ResolvedSlateConfig = {
     host: string;
     port: number;
     reload: boolean;
+    preserveScroll: boolean;
   };
   build: {
     output?: string;
@@ -86,6 +88,7 @@ const DEFAULT_CONFIG: Omit<ResolvedSlateConfig, "configPath" | "input"> = {
     host: "127.0.0.1",
     port: 5173,
     reload: true,
+    preserveScroll: true,
   },
   build: {
     tmpDir: "node_modules/.slate-tmp",
@@ -121,6 +124,7 @@ export async function loadConfig(configFile: string | undefined, context: SlateC
       host: userConfig.dev?.host ?? DEFAULT_CONFIG.dev.host,
       port: userConfig.dev?.port ?? DEFAULT_CONFIG.dev.port,
       reload: userConfig.dev?.reload ?? DEFAULT_CONFIG.dev.reload,
+      preserveScroll: userConfig.dev?.preserveScroll ?? DEFAULT_CONFIG.dev.preserveScroll,
     },
     build: {
       output: userConfig.build?.output ? resolveConfigPath(baseDir, userConfig.build.output) : DEFAULT_CONFIG.build.output,

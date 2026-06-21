@@ -37,6 +37,7 @@ export type CompileResult = {
 
 export type CompileOptions = {
   filename?: string;
+  dev?: boolean;
 };
 
 import type { Diagnostic } from "./diagnostics";
@@ -50,6 +51,7 @@ export function compile(source: string, options: CompileOptions = {}): CompileRe
   const generated = generate(parsed.cst, {
     filename: options.filename,
     module: analyzed.module,
+    dev: options.dev,
   });
 
   return {

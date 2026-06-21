@@ -617,6 +617,42 @@ Rules:
 - The block is emitted every time the component instance is rendered.
 - The block is not promoted into a shared page-level asset and is not deduplicated.
 
+### `dev:`
+
+`dev:` is Slate's development-only directive namespace.
+
+Development directives are never emitted in production build output. They exist
+to improve local DX without becoming part of the public HTML contract.
+
+#### `dev:scroll`
+
+Marks a scroll container whose position should be restored after a development
+full reload.
+
+```slate
+<aside dev:scroll="sidebar">
+  ...
+</aside>
+```
+
+Rules:
+
+- `dev:scroll` may apply only to normal template elements.
+- `dev:scroll` must use a static string value.
+- `dev:scroll` without a value is invalid.
+- `dev:scroll={expr}` is invalid.
+- The string value must be stable across template edits.
+- In dev output, `dev:scroll="sidebar"` becomes `data-slate-dev-scroll="sidebar"`.
+- In production build output, `dev:*` directives are stripped.
+
+Slate intentionally keeps full page reload as the default dev update strategy.
+The current runtime renders HTML at compile/build time and does not maintain a
+browser-side component instance tree. DOM diffing or component-level patching
+would risk deleting user-managed DOM, third-party widget output, canvas/chart
+state, editor state, and event listener ownership. Full reload preserves
+correctness; `dev:scroll` recovers the most common lost state without pretending
+Slate owns arbitrary browser-side DOM.
+
 ### `Fragment`
 
 `Fragment` groups multiple nodes without producing a wrapper element.
@@ -864,6 +900,7 @@ Initial implementation should support:
 - `$provide`.
 - `$inject`.
 - Normal `<script>` and `<style>` passthrough.
+- `dev:scroll` in development output.
 
 Initial implementation may reserve or partially support:
 

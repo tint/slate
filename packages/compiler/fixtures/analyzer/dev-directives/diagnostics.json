@@ -1,0 +1,42 @@
+[
+  {
+    "message": "`dev:*` directives are not allowed on <script slate>.",
+    "severity": "error",
+    "range": {
+      "start": 129,
+      "end": 148
+    }
+  },
+  {
+    "message": "`dev:scroll` must use a stable static string value.",
+    "severity": "error",
+    "range": {
+      "start": 5,
+      "end": 15
+    }
+  },
+  {
+    "message": "`dev:scroll` must use a stable static string value.",
+    "severity": "error",
+    "range": {
+      "start": 28,
+      "end": 44
+    }
+  },
+  {
+    "message": "Unknown `dev:*` directive. Only `dev:scroll` is supported.",
+    "severity": "error",
+    "range": {
+      "start": 57,
+      "end": 72
+    }
+  },
+  {
+    "message": "`dev:*` directives are only allowed on normal template elements.",
+    "severity": "error",
+    "range": {
+      "start": 87,
+      "end": 105
+    }
+  }
+]

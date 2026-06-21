@@ -23,6 +23,7 @@ export function slate(options: SlatePluginOptions = {}): Plugin {
       const source = await readFile(filename, "utf8");
       const result = compile(source, {
         filename,
+        dev: options.dev,
       });
 
       if (result.diagnostics.length) {
