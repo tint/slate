@@ -47,7 +47,13 @@ export const RUNE_DECLARATIONS: string = [
   "declare function $props<T extends Record<string, unknown>>(defaults?: Partial<T>): T;",
   "declare function $inject<T = unknown>(key: string | symbol, fallback?: T): T;",
   "declare function $provide<T>(key: string | symbol, value: T): void;",
+  "declare function $slot(name: string): () => __SlateRenderResult;",
+  "declare function $slot<T>(name: string): (data: T) => __SlateRenderResult;",
+  "declare function $slot<T>(name: string, defaultData: T): (data?: T) => __SlateRenderResult;",
   "declare function __slateEach<T>(value: Iterable<T> | ArrayLike<T>): Iterable<[number, T]>;",
+  "declare const __SLATE_HTML: unique symbol;",
+  "type __SlateHTML = { readonly [__SLATE_HTML]: true; readonly value: string };",
+  "type __SlateRenderResult = __SlateHTML | Promise<__SlateHTML>;",
   "type __SlatePropsOf<T> = T extends { render: (...args: any[]) => unknown } ? NonNullable<Parameters<T[\"render\"]>[0]> : Record<string, unknown>;",
   "type __SlateSlotsOf<T> = T extends { render: (...args: any[]) => unknown } ? NonNullable<Parameters<T[\"render\"]>[1]> : Record<string, unknown>;",
   "type __SlatePropValue<T, K extends PropertyKey> = K extends keyof __SlatePropsOf<T> ? __SlatePropsOf<T>[K] : unknown;",
@@ -133,7 +139,10 @@ export function createSlateModuleSource(source: string, filename: string): strin
   const inferredPropsSource = createInferredPropsSource(typeModule.runtimeSource);
   const propsExport = typeModule.hasPropsType ? "" : "export type Props = __SlateInferredProps;";
   const slotsExport = typeModule.hasSlotsType ? "" : "export type Slots = __SlateInferredSlots;";
-  const slotOutlets = collectSlotOutlets(parsed.cst.children);
+  const slotOutlets = [
+    ...collectSlotOutlets(parsed.cst.children),
+    ...collectSlotRunes(typeModule.runtimeSource),
+  ];
 
   return [
     typeModule.source,
@@ -144,7 +153,7 @@ export function createSlateModuleSource(source: string, filename: string): strin
     propsExport,
     slotsExport,
     "export type Component<TProps = Record<string, unknown>, TSlots = Record<string, unknown>> = {",
-    "  render(props?: TProps, slots?: TSlots, context?: unknown): Promise<string>;",
+    "  render(props?: TProps, slots?: TSlots, context?: unknown): __SlateRenderResult;",
     "};",
     "declare const component: Component<Props, Slots>;",
     "export default component;",
@@ -158,8 +167,9 @@ export function createUnknownSlateModuleSource(): string {
   return [
     "export type Props = Record<string, unknown>;",
     "export type Slots = Record<string, unknown>;",
+    RUNE_DECLARATIONS,
     "export type Component<TProps = Record<string, unknown>, TSlots = Record<string, unknown>> = {",
-    "  render(props?: TProps, slots?: TSlots, context?: unknown): Promise<string>;",
+    "  render(props?: TProps, slots?: TSlots, context?: unknown): __SlateRenderResult;",
     "};",
     "declare const component: Component<Props, Slots>;",
     "export default component;",
@@ -488,7 +498,36 @@ function propTypeFromCall(call: ts.CallExpression, source: string): string {
 type SlotOutlet = {
   name: string;
   dataExpression?: string;
+  dataType?: string;
 };
+
+function collectSlotRunes(source: string): SlotOutlet[] {
+  const outlets: SlotOutlet[] = [];
+  const sourceFile = ts.createSourceFile("component.slate.ts", source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+
+  function visit(node: ts.Node): void {
+    if (
+      ts.isCallExpression(node) &&
+      ts.isIdentifier(node.expression) &&
+      node.expression.text === "$slot" &&
+      node.arguments[0] &&
+      ts.isStringLiteralLike(node.arguments[0])
+    ) {
+      const typeArgument = node.typeArguments?.[0];
+      const defaultData = node.arguments[1];
+      outlets.push({
+        name: node.arguments[0].text || "default",
+        dataExpression: defaultData ? source.slice(defaultData.getStart(sourceFile), defaultData.getEnd()) : undefined,
+        dataType: typeArgument ? source.slice(typeArgument.getStart(sourceFile), typeArgument.getEnd()) : undefined,
+      });
+    }
+
+    ts.forEachChild(node, visit);
+  }
+
+  visit(sourceFile);
+  return outlets;
+}
 
 function collectSlotOutlets(nodes: TemplateCstNode[], outlets: SlotOutlet[] = []): SlotOutlet[] {
   for (const node of nodes) {
@@ -556,6 +595,11 @@ function createSlotTypesSource(outlets: SlotOutlet[]): string {
   outlets.forEach((outlet) => {
     const types = slotDataTypes.get(outlet.name) ?? [];
     slotDataTypes.set(outlet.name, types);
+
+    if (outlet.dataType) {
+      types.push(outlet.dataType);
+      return;
+    }
 
     if (!outlet.dataExpression) {
       types.push("undefined");

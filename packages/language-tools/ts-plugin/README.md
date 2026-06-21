@@ -46,8 +46,14 @@ The public shape is:
 export type Props = {};
 export type Slots = {};
 
+export type SlateHTML = {
+  readonly value: string;
+};
+
+export type RenderResult = SlateHTML | Promise<SlateHTML>;
+
 export type Component<TProps, TSlots> = {
-  render(props?: TProps, slots?: TSlots, context?: unknown): Promise<string>;
+  render(props?: TProps, slots?: TSlots, context?: unknown): RenderResult;
 };
 
 declare const component: Component<Props, Slots>;
@@ -61,6 +67,8 @@ Inference rules:
 - `$prop("title", "Untitled")` infers `title?: string`.
 - `$prop<number>("count")` infers `count: number`.
 - `$props<T>()` intersects `T` into inferred props.
+- `$slot<T>("action")` infers `action?: (data: T) => unknown`.
+- `$slot("footer", { text: "Footer" })` infers `footer?: (data: { text: string }) => unknown`.
 - `<slot name="header" data={{ title, count }} />` infers `header?: (data: { title: typeof title; count: typeof count }) => unknown`.
 - `<slot />` infers the default slot with `data?: undefined`.
 
