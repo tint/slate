@@ -546,11 +546,12 @@ function wrapExpression(
   kind: "script" | "template" | "slot" | "component",
   sourceMapHints: SourceMapHint[],
 ): string {
+  const expression = transpileExpression(text);
   sourceMapHints.push({
-    generatedText: text,
+    generatedText: expression,
     original: range,
   });
-  return `evaluateSlateExpression(() => (${text}), ${sourceLocation(filename, range, kind)})`;
+  return `evaluateSlateExpression(() => (${expression}), ${sourceLocation(filename, range, kind)})`;
 }
 
 function sourceLocation(
@@ -718,4 +719,25 @@ function stripTypeOnlyExports(text: string): string {
 
 function createSlateScriptSourceFile(text: string): ts.SourceFile {
   return ts.createSourceFile("component.slate.tsx", text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
+}
+
+function transpileExpression(text: string): string {
+  if (!text.includes("<")) {
+    return text;
+  }
+
+  const source = `const __slateExpression = (${text});`;
+  const result = ts.transpileModule(source, {
+    fileName: "component.slate.tsx",
+    compilerOptions: {
+      module: ts.ModuleKind.ESNext,
+      target: ts.ScriptTarget.ES2022,
+      jsx: ts.JsxEmit.React,
+      jsxFactory: "__slateJsx",
+      jsxFragmentFactory: "__slateFragment",
+      removeComments: false,
+    },
+  });
+  const match = /^const __slateExpression = \(([\s\S]*)\);\s*$/.exec(result.outputText.trim());
+  return match?.[1] ?? text;
 }

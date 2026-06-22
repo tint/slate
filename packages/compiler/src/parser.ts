@@ -490,7 +490,7 @@ class Parser {
   ): ConstTagCst | LetTagCst {
     this.pos += prefix.length;
     const statementStart = start + 1;
-    const close = this.findBraceClose(this.pos);
+    const close = this.findExpressionClose(start);
     const statementEnd = close === -1 ? this.source.length : close;
     const closed = close !== -1;
     this.pos = closed ? close + 1 : this.source.length;
@@ -621,7 +621,7 @@ class Parser {
     const start = this.pos;
     this.pos += name.length + 1;
     const expressionStart = this.pos;
-    const close = this.findBraceClose(this.pos);
+    const close = this.findExpressionClose(start);
     const expressionEnd = close === -1 ? this.source.length : close;
     const closed = close !== -1;
     this.pos = closed ? close + 1 : this.source.length;
@@ -648,7 +648,7 @@ class Parser {
   ): HtmlDirectiveCst | DebugDirectiveCst {
     this.pos += prefix.length;
     const expressionStart = this.pos;
-    const close = this.findBraceClose(this.pos);
+    const close = this.findExpressionClose(start);
     const expressionEnd = close === -1 ? this.source.length : close;
     const closed = close !== -1;
     this.pos = closed ? close + 1 : this.source.length;
@@ -711,60 +711,19 @@ class Parser {
 
   private readBalancedBraces(): { island: { range: Range; text: string }; closed: boolean } {
     const start = this.pos;
-    let depth = 0;
-    let index = this.pos;
-    let quote: "\"" | "'" | "`" | undefined;
+    const close = this.findExpressionClose(start);
 
-    while (index < this.source.length) {
-      const char = this.source[index]!;
-
-      if (quote) {
-        if (char === "\\") {
-          index += 2;
-          continue;
-        }
-
-        if (char === quote) {
-          quote = undefined;
-        }
-
-        index++;
-        continue;
-      }
-
-      if (char === "\"" || char === "'" || char === "`") {
-        quote = char;
-        index++;
-        continue;
-      }
-
-      if (char === "{") {
-        depth++;
-        index++;
-        continue;
-      }
-
-      if (char === "}") {
-        depth--;
-        index++;
-
-        if (depth === 0) {
-          const expressionStart = start + 1;
-          const expressionEnd = index - 1;
-          this.pos = index;
-          return {
-            island: {
-              range: this.range(expressionStart, expressionEnd),
-              text: this.source.slice(expressionStart, expressionEnd).trim(),
-            },
-            closed: true,
-          };
-        }
-
-        continue;
-      }
-
-      index++;
+    if (close !== -1) {
+      const expressionStart = start + 1;
+      const expressionEnd = close;
+      this.pos = close + 1;
+      return {
+        island: {
+          range: this.range(expressionStart, expressionEnd),
+          text: this.source.slice(expressionStart, expressionEnd).trim(),
+        },
+        closed: true,
+      };
     }
 
     this.pos = this.source.length;
@@ -777,9 +736,13 @@ class Parser {
     };
   }
 
-  private findBraceClose(start: number): number {
-    let index = start;
+  private findExpressionClose(openBrace: number): number {
+    let index = openBrace;
+    let braceDepth = 0;
+    let parenDepth = 0;
+    let bracketDepth = 0;
     let quote: "\"" | "'" | "`" | undefined;
+    const jsxStack: string[] = [];
 
     while (index < this.source.length) {
       const char = this.source[index]!;
@@ -798,20 +761,190 @@ class Parser {
         continue;
       }
 
+      if (jsxStack.length > 0) {
+        if (char === "{") {
+          const close = this.findExpressionClose(index);
+
+          if (close === -1) {
+            return -1;
+          }
+
+          index = close + 1;
+          continue;
+        }
+
+        if (char === "<") {
+          const tag = this.readJsxTagAt(index);
+
+          if (tag) {
+            if (!tag.closing && !tag.selfClosing) {
+              jsxStack.push(tag.name);
+            } else if (tag.closing) {
+              jsxStack.pop();
+            }
+
+            index = tag.end;
+            continue;
+          }
+        }
+
+        index++;
+        continue;
+      }
+
       if (char === "\"" || char === "'" || char === "`") {
         quote = char;
         index++;
         continue;
       }
 
+      if (char === "<" && this.looksLikeJsxStart(index)) {
+        const tag = this.readJsxTagAt(index);
+
+        if (tag) {
+          if (!tag.closing && !tag.selfClosing) {
+            jsxStack.push(tag.name);
+          }
+
+          index = tag.end;
+          continue;
+        }
+      }
+
+      if (char === "{") {
+        braceDepth++;
+        index++;
+        continue;
+      }
+
       if (char === "}") {
-        return index;
+        braceDepth--;
+
+        if (braceDepth === 0 && parenDepth === 0 && bracketDepth === 0) {
+          return index;
+        }
+
+        index++;
+        continue;
+      }
+
+      if (char === "(") {
+        parenDepth++;
+        index++;
+        continue;
+      }
+
+      if (char === ")") {
+        parenDepth = Math.max(0, parenDepth - 1);
+        index++;
+        continue;
+      }
+
+      if (char === "[") {
+        bracketDepth++;
+        index++;
+        continue;
+      }
+
+      if (char === "]") {
+        bracketDepth = Math.max(0, bracketDepth - 1);
+        index++;
+        continue;
       }
 
       index++;
     }
 
     return -1;
+  }
+
+  private looksLikeJsxStart(index: number): boolean {
+    const next = this.source[index + 1];
+    return next === ">" || Boolean(next && /[A-Za-z]/.test(next));
+  }
+
+  private readJsxTagAt(index: number): { name: string; closing: boolean; selfClosing: boolean; end: number } | undefined {
+    if (this.source[index] !== "<") {
+      return undefined;
+    }
+
+    let cursor = index + 1;
+    let closing = false;
+
+    if (this.source[cursor] === "/") {
+      closing = true;
+      cursor++;
+    }
+
+    let name = "";
+
+    if (this.source[cursor] === ">") {
+      name = "Fragment";
+    } else {
+      const nameStart = cursor;
+
+      while (cursor < this.source.length && /[A-Za-z0-9_$:.-]/.test(this.source[cursor]!)) {
+        cursor++;
+      }
+
+      name = this.source.slice(nameStart, cursor);
+
+      if (!name) {
+        return undefined;
+      }
+    }
+
+    let quote: "\"" | "'" | "`" | undefined;
+    let braceDepth = 0;
+
+    while (cursor < this.source.length) {
+      const char = this.source[cursor]!;
+
+      if (quote) {
+        if (char === "\\") {
+          cursor += 2;
+          continue;
+        }
+
+        if (char === quote) {
+          quote = undefined;
+        }
+
+        cursor++;
+        continue;
+      }
+
+      if (char === "\"" || char === "'" || char === "`") {
+        quote = char;
+        cursor++;
+        continue;
+      }
+
+      if (char === "{") {
+        braceDepth++;
+        cursor++;
+        continue;
+      }
+
+      if (char === "}") {
+        braceDepth = Math.max(0, braceDepth - 1);
+        cursor++;
+        continue;
+      }
+
+      if (char === ">" && braceDepth === 0) {
+        return {
+          name,
+          closing,
+          selfClosing: !closing && this.source[cursor - 1] === "/",
+          end: cursor + 1,
+        };
+      }
+
+      cursor++;
+    }
+
+    return undefined;
   }
 
   private createAttribute(start: number, end: number, rawName: string, name: string): AttributeCst {

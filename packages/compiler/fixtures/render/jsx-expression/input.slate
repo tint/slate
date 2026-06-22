@@ -1,0 +1,9 @@
+<script slate>
+const visible = true;
+const items = ["<A>", "B"];
+</script>
+
+<div>{<strong class="mark">{"<Slate>"}</strong>}</div>
+<p>{visible ? <span>Yes</span> : <span>No</span>}</p>
+<ul>{items.map(item => <li>{item}</li>)}</ul>
+<section>{<>{"A"}<span>B</span></>}</section>
