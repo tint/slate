@@ -336,6 +336,13 @@ function validateRuneConflicts(script: SlateScriptElementCst): Diagnostic[] {
       }
 
       if (call.expression.text === "$prop") {
+        if (isUndefinedTypeArgument(call)) {
+          diagnostics.push(error(
+            "`$prop<undefined>` is not meaningful. Use a real value type, or a union such as `T | undefined` for optional props.",
+            absoluteRange(bodyStart, call.typeArguments![0]!, sourceFile),
+          ));
+        }
+
         const propName = staticStringArgument(call, 0);
 
         if (propName) {
@@ -407,6 +414,10 @@ function duplicateRuneDiagnostics(declarations: RuneDeclaration[], label: "prop"
 function staticStringArgument(call: ts.CallExpression, index: number): string | undefined {
   const argument = call.arguments[index];
   return argument && ts.isStringLiteralLike(argument) ? argument.text : undefined;
+}
+
+function isUndefinedTypeArgument(call: ts.CallExpression): boolean {
+  return call.typeArguments?.[0]?.kind === ts.SyntaxKind.UndefinedKeyword;
 }
 
 function uniqueStaticPropsKeys(

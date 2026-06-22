@@ -3,6 +3,7 @@ const title = $prop("title");
 const duplicateTitle = $prop("title", "Untitled");
 const propsFromType = $props<{ title: string; count?: number }>();
 const propsFromDefaults = $props({ count: 0, variant: "primary" });
+const invalidUndefined = $prop<undefined>("invalid");
 const header = $slot("header");
 const duplicateHeader = $slot("header");
 </script>

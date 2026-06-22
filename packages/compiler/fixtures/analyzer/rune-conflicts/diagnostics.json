@@ -1,5 +1,13 @@
 [
   {
+    "message": "`$prop<undefined>` is not meaningful. Use a real value type, or a union such as `T | undefined` for optional props.",
+    "severity": "error",
+    "range": {
+      "start": 262,
+      "end": 271
+    }
+  },
+  {
     "message": "Duplicate prop rune declaration for `title`. First declared with $prop.",
     "severity": "error",
     "range": {
@@ -27,16 +35,16 @@
     "message": "Duplicate slot rune declaration for `header`. First declared with $slot.",
     "severity": "error",
     "range": {
-      "start": 293,
-      "end": 301
+      "start": 347,
+      "end": 355
     }
   },
   {
     "message": "Slot `header` is already consumed by $slot. Use either $slot or <slot> for the same slot name.",
     "severity": "error",
     "range": {
-      "start": 335,
-      "end": 357
+      "start": 389,
+      "end": 411
     }
   }
 ]

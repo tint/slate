@@ -3,7 +3,7 @@
     "kind": "SlateScriptElement",
     "range": {
       "start": 0,
-      "end": 313
+      "end": 367
     },
     "openTag": {
       "kind": "Tag",
@@ -31,15 +31,15 @@
       "kind": "RawText",
       "range": {
         "start": 14,
-        "end": 304
+        "end": 358
       },
-      "text": "\nconst title = $prop(\"title\");\nconst duplicateTitle = $prop(\"title\", \"Untitled\");\nconst propsFromType = $props<{ title: string; count?: number }>();\nconst propsFromDefaults = $props({ count: 0, variant: \"primary\" });\nconst header = $slot(\"header\");\nconst duplicateHeader = $slot(\"header\");\n"
+      "text": "\nconst title = $prop(\"title\");\nconst duplicateTitle = $prop(\"title\", \"Untitled\");\nconst propsFromType = $props<{ title: string; count?: number }>();\nconst propsFromDefaults = $props({ count: 0, variant: \"primary\" });\nconst invalidUndefined = $prop<undefined>(\"invalid\");\nconst header = $slot(\"header\");\nconst duplicateHeader = $slot(\"header\");\n"
     },
     "closeTag": {
       "kind": "Tag",
       "range": {
-        "start": 304,
-        "end": 313
+        "start": 358,
+        "end": 367
       },
       "tagName": "script",
       "rawTagName": "script",
@@ -54,20 +54,28 @@
       "localName": "header",
       "name": "header",
       "range": {
-        "start": 237,
-        "end": 261
+        "start": 291,
+        "end": 315
       }
     },
     {
       "localName": "duplicateHeader",
       "name": "header",
       "range": {
-        "start": 269,
-        "end": 302
+        "start": 323,
+        "end": 356
       }
     }
   ],
   "diagnostics": [
+    {
+      "message": "`$prop<undefined>` is not meaningful. Use a real value type, or a union such as `T | undefined` for optional props.",
+      "severity": "error",
+      "range": {
+        "start": 262,
+        "end": 271
+      }
+    },
     {
       "message": "Duplicate prop rune declaration for `title`. First declared with $prop.",
       "severity": "error",
@@ -96,16 +104,16 @@
       "message": "Duplicate slot rune declaration for `header`. First declared with $slot.",
       "severity": "error",
       "range": {
-        "start": 293,
-        "end": 301
+        "start": 347,
+        "end": 355
       }
     },
     {
       "message": "Slot `header` is already consumed by $slot. Use either $slot or <slot> for the same slot name.",
       "severity": "error",
       "range": {
-        "start": 335,
-        "end": 357
+        "start": 389,
+        "end": 411
       }
     }
   ]
