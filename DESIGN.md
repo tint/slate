@@ -138,6 +138,8 @@ Rules:
 - Only TypeScript type exports are allowed from `<script slate>`.
 - TypeScript types, interfaces, generics, and annotations are supported.
 - JSX is supported inside `<script slate>` and produces Slate-rendered HTML. Runtime event handler attributes such as `onClick` are not supported.
+- JSX inside template expressions is supported for intrinsic HTML elements and fragments.
+- Slate component JSX is supported only for imported `.slate` components without children in the first implementation.
 - The code runs at compile time.
 - The block is not emitted to final HTML.
 - Template syntax is not parsed inside the block.

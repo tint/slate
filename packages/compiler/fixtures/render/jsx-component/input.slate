@@ -1,0 +1,8 @@
+<script slate>
+import Card from "./Card.slate";
+
+const scriptCard = <Card title="From script" />;
+</script>
+
+<main>{scriptCard}</main>
+<section>{<Card title="From template" />}</section>

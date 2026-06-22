@@ -33,7 +33,7 @@ export type RenderFunction<TInput = void> = [TInput] extends [void]
 
 declare global {
   namespace JSX {
-    type Element = SlateHTML;
+    type Element = RenderResult;
 
     interface ElementChildrenAttribute {
       children: {};
@@ -269,18 +269,18 @@ export type JsxProps = Record<string, unknown> & {
 };
 
 /** Create a Slate HTML fragment from TSX used inside `<script slate>`. */
-export function jsx(type: string | typeof Fragment, props: JsxProps | null, ...children: unknown[]): SlateHTML {
+export async function jsx(type: string | typeof Fragment, props: JsxProps | null, ...children: unknown[]): Promise<SlateHTML> {
   const normalizedChildren = children.length > 0 ? children : [props?.children];
 
   if (type === Fragment) {
-    return html(normalizedChildren.map(renderJsxChild).join(""));
+    return html((await Promise.all(normalizedChildren.map(renderJsxChild))).join(""));
   }
 
   const attributes = Object.entries(props ?? {})
     .filter(([name]) => name !== "children")
     .map(([name, value]) => renderJsxAttribute(name, value))
     .join("");
-  const body = normalizedChildren.map(renderJsxChild).join("");
+  const body = (await Promise.all(normalizedChildren.map(renderJsxChild))).join("");
 
   if (!body && VOID_ELEMENTS.has(type)) {
     return html(`<${type}${attributes}>`);
@@ -310,20 +310,22 @@ function renderJsxAttribute(name: string, value: unknown): string {
   return serializeAttribute(name, value);
 }
 
-function renderJsxChild(value: unknown): string {
-  if (Array.isArray(value)) {
-    return value.map(renderJsxChild).join("");
+async function renderJsxChild(value: unknown): Promise<string> {
+  const resolved = await value;
+
+  if (Array.isArray(resolved)) {
+    return (await Promise.all(resolved.map(renderJsxChild))).join("");
   }
 
-  if (isSlateHTML(value)) {
-    return value.value;
+  if (isSlateHTML(resolved)) {
+    return resolved.value;
   }
 
-  if (value == null || typeof value === "boolean") {
+  if (resolved == null || typeof resolved === "boolean") {
     return "";
   }
 
-  return escapeHTML(value);
+  return escapeHTML(resolved);
 }
 
 const VOID_ELEMENTS = new Set([

@@ -1,6 +1,18 @@
-import { cloneContext, html as __slateHtml, evaluateSlateExpression, renderValue, jsx as __slateJsx, Fragment as __slateFragment } from "@slate/kit";
+import { cloneContext, html as __slateHtml, evaluateSlateExpression, renderValue, jsx as __slateElement, Fragment as __slateFragment } from "@slate/kit";
 export async function render(__props = {}, slots = {}, context = {}) {
   context = cloneContext(context);
+  const __slateJsx = (type, props, ...children) => {
+    if (typeof type === "string" || type === __slateFragment) {
+      return __slateElement(type, props, ...children);
+    }
+    if (type && typeof type.render === "function") {
+      if (children.length > 0 || props?.children !== undefined) {
+        throw new Error("Slate component JSX children are not supported yet.");
+      }
+      return type.render(props ?? {}, {}, context);
+    }
+    throw new Error("Unsupported Slate JSX component.");
+  };
   const visible = true;
   const items = ["<A>", "B"];
   let __html = "";

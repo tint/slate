@@ -44,12 +44,14 @@ export function generate(cst: SlateFileCst, _options: GenerateOptions = {}): Gen
   const usedRunes = collectUsedRunes([scriptParts.body, statements]);
   const kitImports = collectKitImports([scriptParts.body, statements]);
   const runeHelpers = generateRuneHelpers(usedRunes, slotBindings);
+  const jsxHelper = generateJsxHelper([scriptParts.body, statements]);
   let code = [
     `import { ${kitImports.join(", ")} } from "@slate/kit";`,
     scriptParts.imports.trim(),
     "",
     "export async function render(__props = {}, slots = {}, context = {}) {",
     "  context = cloneContext(context);",
+    jsxHelper ? indent(jsxHelper, 2) : "",
     runeHelpers.length ? indent(runeHelpers.join("\n"), 2) : "",
     scriptParts.body.trim() ? indent(scriptParts.body.trim(), 2) : "",
     "  let __html = \"\";",
@@ -129,14 +131,36 @@ function collectKitImports(chunks: string[]): string[] {
   }
 
   if (source.includes("__slateJsx(")) {
-    imports.push("jsx as __slateJsx");
-  }
-
-  if (source.includes("__slateFragment")) {
+    imports.push("jsx as __slateElement");
+    imports.push("Fragment as __slateFragment");
+  } else if (source.includes("__slateFragment")) {
     imports.push("Fragment as __slateFragment");
   }
 
   return imports;
+}
+
+function generateJsxHelper(chunks: string[]): string {
+  const source = chunks.join("\n");
+
+  if (!source.includes("__slateJsx(")) {
+    return "";
+  }
+
+  return [
+    "const __slateJsx = (type, props, ...children) => {",
+    "  if (typeof type === \"string\" || type === __slateFragment) {",
+    "    return __slateElement(type, props, ...children);",
+    "  }",
+    "  if (type && typeof type.render === \"function\") {",
+    "    if (children.length > 0 || props?.children !== undefined) {",
+    "      throw new Error(\"Slate component JSX children are not supported yet.\");",
+    "    }",
+    "    return type.render(props ?? {}, {}, context);",
+    "  }",
+    "  throw new Error(\"Unsupported Slate JSX component.\");",
+    "};",
+  ].join("\n");
 }
 
 function generateRuneHelpers(usedRunes: Set<RuneName>, slots: SlateModule["slots"]): string[] {
