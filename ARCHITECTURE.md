@@ -49,7 +49,7 @@ Core compiler package.
 Responsibilities:
 
 - Parse `.slate` files.
-- Parse and transform `<script slate>` TypeScript.
+- Parse and transform `<script slate>` TSX.
 - Build Slate template AST.
 - Analyze component imports.
 - Compile template syntax.
@@ -157,8 +157,8 @@ TypeScript plugin package.
 Responsibilities:
 
 - Improve TypeScript editor integration for `.slate` files.
-- Provide virtual TypeScript documents.
-- Support type checking for `<script slate>`.
+- Provide virtual TSX documents.
+- Support type checking for `<script slate>` TSX.
 - Support type inference for props, slots, and runes.
 - Expose `.slate` component modules as user-facing `Component<Props, Slots>` types.
 - Coordinate with `@slate/check` where possible.
@@ -286,7 +286,7 @@ Initial `@slate/vite` MVP:
 The VS Code extension currently supports:
 
 - TextMate highlighting for `.slate` templates.
-- Embedded TypeScript highlighting inside `<script slate>`.
+- Embedded TSX highlighting inside `<script slate>`.
 - Embedded CSS highlighting inside `<style>`.
 - Diagnostics from `@slate/check`.
 - TypeScript-powered hover, completion, and definition.
@@ -350,7 +350,7 @@ Slate has two different error channels:
 - Compile-time diagnostics: parser, analyzer, and TypeScript diagnostics.
 - Runtime render errors: exceptions thrown while executing generated render modules.
 
-Compile-time diagnostics are mapped through CST ranges and virtual TypeScript document mappings. Runtime render errors use structured source metadata because JavaScript stack traces naturally point at generated `.mjs` files.
+Compile-time diagnostics are mapped through CST ranges and virtual TSX document mappings. Runtime render errors use structured source metadata because JavaScript stack traces naturally point at generated `.mjs` files.
 
 ### Diagnostic formatting
 

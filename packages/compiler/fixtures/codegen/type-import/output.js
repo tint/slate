@@ -7,7 +7,8 @@ export async function render(__props = {}, slots = {}, context = {}) {
   };
   let __html = "";
   __html += "\n\n";
-  __html += await renderHTML(await Card.render({ "title": evaluateSlateExpression(() => (props.title), {"filename":"component.slate","range":{"start":185,"end":196},"kind":"component"}) }, {}, context));
+  __html += await renderHTML(await Card.render({ "title": evaluateSlateExpression(() => (props.title), {"filename":"component.slate","range":{"start":190,"end":201},"kind":"component"}) }, {}, context));
+  __html += "\n";
   return __slateHtml(__html);
 }
 export default { render };

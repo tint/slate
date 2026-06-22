@@ -128,6 +128,14 @@ function collectKitImports(chunks: string[]): string[] {
     imports.push("addGlobalAsset");
   }
 
+  if (source.includes("__slateJsx(")) {
+    imports.push("jsx as __slateJsx");
+  }
+
+  if (source.includes("__slateFragment")) {
+    imports.push("Fragment as __slateFragment");
+  }
+
   return imports;
 }
 
@@ -568,17 +576,25 @@ function indent(text: string, spaces: number): string {
 function transpileSlateScript(text: string): { imports: string; body: string } {
   const { imports, body } = splitSlateScript(text);
   const importResult = ts.transpileModule(imports, {
+    fileName: "component.slate.tsx",
     compilerOptions: {
       module: ts.ModuleKind.ESNext,
       target: ts.ScriptTarget.ES2022,
+      jsx: ts.JsxEmit.React,
+      jsxFactory: "__slateJsx",
+      jsxFragmentFactory: "__slateFragment",
       removeComments: false,
       verbatimModuleSyntax: true,
     },
   });
   const result = ts.transpileModule(body, {
+    fileName: "component.slate.tsx",
     compilerOptions: {
       module: ts.ModuleKind.ESNext,
       target: ts.ScriptTarget.ES2022,
+      jsx: ts.JsxEmit.React,
+      jsxFactory: "__slateJsx",
+      jsxFragmentFactory: "__slateFragment",
       removeComments: false,
     },
   });
@@ -590,13 +606,18 @@ function transpileSlateScript(text: string): { imports: string; body: string } {
 }
 
 function splitSlateScript(text: string): { imports: string; body: string } {
-  const sourceFile = ts.createSourceFile("component.slate.ts", text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  const sourceFile = createSlateScriptSourceFile(text);
   const imports: string[] = [];
   const removals: Array<[number, number]> = [];
 
   for (const statement of sourceFile.statements) {
     if (ts.isImportDeclaration(statement)) {
-      imports.push(text.slice(statement.getFullStart(), statement.getEnd()).trim());
+      const runtimeImport = runtimeImportText(statement);
+
+      if (runtimeImport) {
+        imports.push(runtimeImport);
+      }
+
       removals.push([statement.getFullStart(), statement.getEnd()]);
       continue;
     }
@@ -622,8 +643,58 @@ function splitSlateScript(text: string): { imports: string; body: string } {
   };
 }
 
+function runtimeImportText(statement: ts.ImportDeclaration): string | undefined {
+  const moduleSpecifier = ts.isStringLiteralLike(statement.moduleSpecifier)
+    ? JSON.stringify(statement.moduleSpecifier.text)
+    : statement.moduleSpecifier.getText();
+  const clause = statement.importClause;
+
+  if (!clause) {
+    return `import ${moduleSpecifier};`;
+  }
+
+  if (clause.isTypeOnly) {
+    return undefined;
+  }
+
+  const defaultImport = clause.name?.text;
+  const bindings = clause.namedBindings ? runtimeNamedBindingsText(clause.namedBindings) : undefined;
+
+  if (defaultImport && bindings) {
+    return `import ${defaultImport}, ${bindings} from ${moduleSpecifier};`;
+  }
+
+  if (defaultImport) {
+    return `import ${defaultImport} from ${moduleSpecifier};`;
+  }
+
+  if (bindings) {
+    return `import ${bindings} from ${moduleSpecifier};`;
+  }
+
+  return undefined;
+}
+
+function runtimeNamedBindingsText(bindings: ts.NamedImportBindings): string | undefined {
+  if (ts.isNamespaceImport(bindings)) {
+    return `* as ${bindings.name.text}`;
+  }
+
+  const elements = bindings.elements
+    .filter((element) => !element.isTypeOnly)
+    .map((element) => {
+      if (element.propertyName) {
+        return `${element.propertyName.text} as ${element.name.text}`;
+      }
+
+      return element.name.text;
+    });
+
+  return elements.length ? `{ ${elements.join(", ")} }` : undefined;
+}
+
 function stripTypeOnlyExports(text: string): string {
-  const sourceFile = ts.createSourceFile("component.slate.ts", text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  const sourceFile = createSlateScriptSourceFile(text);
   const removals: Array<[number, number]> = [];
 
   for (const statement of sourceFile.statements) {
@@ -643,4 +714,8 @@ function stripTypeOnlyExports(text: string): string {
   }
 
   return output;
+}
+
+function createSlateScriptSourceFile(text: string): ts.SourceFile {
+  return ts.createSourceFile("component.slate.tsx", text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 }

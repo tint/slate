@@ -16,7 +16,7 @@ Slate uses `.slate` files as both components and pages. A `.slate` file is a tem
 <div>{name}</div>
 ```
 
-`<script slate>` is TypeScript-only. It is parsed, transformed, and executed at compile time. It is never emitted to the final HTML.
+`<script slate>` is TSX-only. It is parsed, transformed, and executed at compile time. It is never emitted to the final HTML.
 
 Normal `<script>` and `<style>` tags are ordinary template content:
 
@@ -76,7 +76,7 @@ Rules:
 - A single root element is not required.
 - Any HTML tag, custom element, or Web Component tag may be written.
 - Slate components are identified by imports from `<script slate>`, not by tag casing.
-- `<script slate>` is compile-time TypeScript.
+- `<script slate>` is compile-time TSX.
 - Normal `<script>` is emitted as browser script content.
 - Normal `<style>` is emitted as style content.
 - Template syntax is not parsed inside normal `<script>` or `<style>`.
@@ -131,13 +131,13 @@ In this example, `Button` is a Slate component because it is imported from `<scr
 
 Rules:
 
-- Only TypeScript mode is supported.
+- Only TSX mode is supported.
 - JavaScript mode is not supported.
-- Plain JavaScript syntax is accepted only when it is valid TypeScript.
+- Plain JavaScript syntax is accepted only when it is valid TSX.
 - ESM `import` and `export` are supported.
 - Only TypeScript type exports are allowed from `<script slate>`.
 - TypeScript types, interfaces, generics, and annotations are supported.
-- JSX is not supported unless a future version explicitly enables it.
+- JSX is supported inside `<script slate>` and produces Slate-rendered HTML. Runtime event handler attributes such as `onClick` are not supported.
 - The code runs at compile time.
 - The block is not emitted to final HTML.
 - Template syntax is not parsed inside the block.

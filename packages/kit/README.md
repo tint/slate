@@ -115,6 +115,23 @@ Compiled expression attributes use `serializeAttribute()`:
 - `false` on normal attributes removes the attribute.
 - `class=` and `style=` keep their dedicated serializers before attribute serialization.
 
+## JSX runtime
+
+`<script slate>` supports TSX through Slate's own JSX runtime. JSX expressions
+produce branded `SlateHTML`, so they can be inserted through normal
+`{expression}` interpolation without escaping the generated HTML structure.
+
+```slate
+<script slate>
+const icon = <strong class="mark">Ready</strong>;
+</script>
+
+<p>{icon}</p>
+```
+
+JSX is for compile-time HTML composition only. Runtime event handler attributes
+such as `onClick` are intentionally ignored.
+
 ## Boundary
 
 `@slate/kit` should not own compiler behavior. Compiler logic belongs in `@slate/compiler`.

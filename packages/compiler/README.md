@@ -5,7 +5,7 @@ Core Slate compiler.
 ## Responsibility
 
 - Parse `.slate` files.
-- Extract and analyze `<script slate>` TypeScript.
+- Extract and analyze `<script slate>` TSX.
 - Parse Slate template syntax.
 - Build the Slate AST.
 - Resolve imported Slate components.

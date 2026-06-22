@@ -115,7 +115,7 @@ function validateTypeOnlyExports(script: SlateScriptElementCst): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];
   const text = script.body.text;
   const bodyStart = script.body.range.start;
-  const sourceFile = ts.createSourceFile("component.slate.ts", text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  const sourceFile = createSlateScriptSourceFile(text);
 
   for (const statement of sourceFile.statements) {
     if (!hasExportModifier(statement)) {
@@ -141,7 +141,7 @@ function collectComponentImports(script: SlateScriptElementCst): ComponentBindin
   const components: ComponentBinding[] = [];
   const text = script.body.text;
   const bodyStart = script.body.range.start;
-  const sourceFile = ts.createSourceFile("component.slate.ts", text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  const sourceFile = createSlateScriptSourceFile(text);
 
   for (const statement of sourceFile.statements) {
     if (!ts.isImportDeclaration(statement) || !ts.isStringLiteral(statement.moduleSpecifier)) {
@@ -177,7 +177,7 @@ function collectSlotBindings(script: SlateScriptElementCst, diagnostics: Diagnos
   const slots: SlotBinding[] = [];
   const text = script.body.text;
   const bodyStart = script.body.range.start;
-  const sourceFile = ts.createSourceFile("component.slate.ts", text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  const sourceFile = createSlateScriptSourceFile(text);
 
   for (const statement of sourceFile.statements) {
     if (!ts.isVariableStatement(statement)) {
@@ -315,7 +315,7 @@ function validateRuneConflicts(script: SlateScriptElementCst): Diagnostic[] {
   const diagnostics: Diagnostic[] = [];
   const text = script.body.text;
   const bodyStart = script.body.range.start;
-  const sourceFile = ts.createSourceFile("component.slate.ts", text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  const sourceFile = createSlateScriptSourceFile(text);
   const propDeclarations: RuneDeclaration[] = [];
   const slotDeclarations: RuneDeclaration[] = [];
 
@@ -418,6 +418,10 @@ function staticStringArgument(call: ts.CallExpression, index: number): string | 
 
 function isUndefinedTypeArgument(call: ts.CallExpression): boolean {
   return call.typeArguments?.[0]?.kind === ts.SyntaxKind.UndefinedKeyword;
+}
+
+function createSlateScriptSourceFile(text: string): ts.SourceFile {
+  return ts.createSourceFile("component.slate.tsx", text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 }
 
 function uniqueStaticPropsKeys(

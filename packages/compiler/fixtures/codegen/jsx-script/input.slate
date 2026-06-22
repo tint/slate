@@ -1,0 +1,5 @@
+<script slate>
+const icon = <strong class={["mark", { active: true }]}>Ready</strong>;
+</script>
+
+<p>{icon}</p>

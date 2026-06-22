@@ -1,0 +1,8 @@
+<script slate>
+const name = "<Slate>";
+const icon = <strong class={["mark", { active: true }]} data-ready={true}>{name}</strong>;
+const inline = <><span>A</span>{" & "}<span>B</span></>;
+</script>
+
+<div>{icon}</div>
+<p>{inline}</p>

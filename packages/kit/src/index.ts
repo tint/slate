@@ -31,6 +31,20 @@ export type RenderFunction<TInput = void> = [TInput] extends [void]
   ? () => RenderResult
   : (input: TInput) => RenderResult;
 
+declare global {
+  namespace JSX {
+    type Element = SlateHTML;
+
+    interface ElementChildrenAttribute {
+      children: {};
+    }
+
+    interface IntrinsicElements {
+      [name: string]: JsxProps;
+    }
+  }
+}
+
 /** Function shape used by compiled components to render slot content. */
 export type SlotFn<T = unknown> = (data?: T) => RenderResult;
 
@@ -245,6 +259,89 @@ export async function renderSlot(
   const slot = slots[name];
   return slot ? await resolveRenderResult(slot(data)) : await resolveRenderResult(fallback);
 }
+
+/** Fragment marker used by Slate's JSX runtime. */
+export const Fragment: unique symbol = Symbol.for("slate.fragment") as never;
+
+/** Props accepted by Slate's JSX runtime. */
+export type JsxProps = Record<string, unknown> & {
+  children?: unknown;
+};
+
+/** Create a Slate HTML fragment from TSX used inside `<script slate>`. */
+export function jsx(type: string | typeof Fragment, props: JsxProps | null, ...children: unknown[]): SlateHTML {
+  const normalizedChildren = children.length > 0 ? children : [props?.children];
+
+  if (type === Fragment) {
+    return html(normalizedChildren.map(renderJsxChild).join(""));
+  }
+
+  const attributes = Object.entries(props ?? {})
+    .filter(([name]) => name !== "children")
+    .map(([name, value]) => renderJsxAttribute(name, value))
+    .join("");
+  const body = normalizedChildren.map(renderJsxChild).join("");
+
+  if (!body && VOID_ELEMENTS.has(type)) {
+    return html(`<${type}${attributes}>`);
+  }
+
+  return html(`<${type}${attributes}>${body}</${type}>`);
+}
+
+/** Alias used by TypeScript when a JSX node has multiple static children. */
+export const jsxs = jsx;
+
+function renderJsxAttribute(name: string, value: unknown): string {
+  if (typeof value === "function" || /^on[A-Z]/.test(name)) {
+    return "";
+  }
+
+  if (name === "class") {
+    const serialized = serializeClass(value as ClassValue);
+    return serialized ? serializeAttribute(name, serialized) : "";
+  }
+
+  if (name === "style") {
+    const serialized = serializeStyle(value as StyleValue);
+    return serialized ? serializeAttribute(name, serialized) : "";
+  }
+
+  return serializeAttribute(name, value);
+}
+
+function renderJsxChild(value: unknown): string {
+  if (Array.isArray(value)) {
+    return value.map(renderJsxChild).join("");
+  }
+
+  if (isSlateHTML(value)) {
+    return value.value;
+  }
+
+  if (value == null || typeof value === "boolean") {
+    return "";
+  }
+
+  return escapeHTML(value);
+}
+
+const VOID_ELEMENTS = new Set([
+  "area",
+  "base",
+  "br",
+  "col",
+  "embed",
+  "hr",
+  "img",
+  "input",
+  "link",
+  "meta",
+  "param",
+  "source",
+  "track",
+  "wbr",
+]);
 
 const BOOLEAN_ATTRIBUTES = new Set([
   "allowfullscreen",
