@@ -172,7 +172,7 @@ function slateCompletionItems(document: TextDocument, position: Position): Compl
     return [
       slateSnippet("Fragment", "Fragment>\n  $0\n</Fragment>", "Group template children without emitting a wrapper element"),
       slateSnippet("slot", 'slot name="${1:default}" data={{ ${2:data} }} />', "Declare a slot outlet"),
-      slateSnippet("script slate", "script slate>\n  $0\n</script>", "Declare Slate compile-time TypeScript"),
+      slateSnippet("script slate", "script slate>\n  $0\n</script>", "Declare Slate compile-time TSX"),
     ];
   }
 
@@ -413,13 +413,13 @@ const SCRIPT_HOVER_DOCS: Record<string, SlateHoverDoc> = {
   "script.element": {
     label: "<script slate>",
     signature: "<script slate> ... </script>",
-    description: "Declares Slate compile-time TypeScript code. Runtime values defined here are available to the template during compilation.",
-    example: '<script slate>\n  const title = $prop("title", "Slate DX");\n</script>',
+    description: "Declares Slate compile-time TSX code. Runtime values defined here are available to the template during compilation.",
+    example: '<script slate>\n  const title = $prop("title", "Slate DX");\n  const badge = <strong>{title}</strong>;\n</script>',
   },
   "script.slate": {
     label: "slate",
     signature: "<script slate>",
-    description: "Marks this script block as Slate compile-time TypeScript. Plain JavaScript is not supported; write TypeScript/ESM syntax here.",
+    description: "Marks this script block as Slate compile-time TSX. JSX inside the block produces Slate-rendered HTML.",
     example: '<script slate>\n  export type Props = { title?: string };\n  const title = $prop("title", "Untitled");\n</script>',
   },
 };
@@ -1056,7 +1056,7 @@ export function scriptSymbolsFromTypeScript(document: TextDocument): SymbolEntry
     virtualDocument.text,
     ts.ScriptTarget.Latest,
     true,
-    ts.ScriptKind.TS,
+    ts.ScriptKind.TSX,
   );
   const symbols: SymbolEntry[] = [];
   const pushIdentifier = (identifier: ts.Identifier, symbolKind: SymbolKind): void => {

@@ -3,7 +3,7 @@
   "displayName": "Slatejs",
   "description": "Language support for Slate .slate files.",
   "publisher": "slate",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "license": "MIT",
   "type": "module",
   "private": true,
@@ -33,7 +33,7 @@
         "scopeName": "source.slate",
         "path": "./syntaxes/slate.tmLanguage.json",
         "embeddedLanguages": {
-          "source.ts": "typescript",
+          "source.tsx": "typescriptreact",
           "source.css": "css"
         }
       }

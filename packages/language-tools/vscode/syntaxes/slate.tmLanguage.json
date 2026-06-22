@@ -39,8 +39,8 @@
             "2": { "name": "entity.name.tag.script.slate" },
             "3": { "name": "punctuation.definition.tag.end.html.slate" }
           },
-          "contentName": "source.ts",
-          "patterns": [{ "include": "source.ts" }]
+          "contentName": "source.tsx",
+          "patterns": [{ "include": "source.tsx" }]
         }
       ]
     },
@@ -74,7 +74,7 @@
           "captures": {
             "1": { "name": "punctuation.definition.block.begin.slate" },
             "2": { "name": "keyword.control.conditional.slate" },
-            "3": { "name": "source.ts.embedded.slate" },
+            "3": { "name": "source.tsx.embedded.slate" },
             "4": { "name": "punctuation.definition.block.end.slate" }
           }
         },
@@ -84,9 +84,9 @@
           "captures": {
             "1": { "name": "punctuation.definition.block.begin.slate" },
             "2": { "name": "keyword.control.loop.slate" },
-            "3": { "name": "source.ts.embedded.slate" },
+            "3": { "name": "source.tsx.embedded.slate" },
             "4": { "name": "keyword.operator.expression.as.slate" },
-            "5": { "name": "source.ts.embedded.slate" },
+            "5": { "name": "source.tsx.embedded.slate" },
             "6": { "name": "punctuation.definition.block.end.slate" }
           }
         },
@@ -96,7 +96,7 @@
           "captures": {
             "1": { "name": "punctuation.definition.block.begin.slate" },
             "2": { "name": "keyword.control.loop.slate" },
-            "3": { "name": "source.ts.embedded.slate" },
+            "3": { "name": "source.tsx.embedded.slate" },
             "4": { "name": "punctuation.definition.block.end.slate" }
           }
         },
@@ -106,7 +106,7 @@
           "captures": {
             "1": { "name": "punctuation.definition.block.begin.slate" },
             "2": { "name": "keyword.control.async.slate" },
-            "3": { "name": "source.ts.embedded.slate" },
+            "3": { "name": "source.tsx.embedded.slate" },
             "4": { "name": "punctuation.definition.block.end.slate" }
           }
         },
@@ -116,7 +116,7 @@
           "captures": {
             "1": { "name": "punctuation.definition.block.begin.slate" },
             "2": { "name": "storage.type.slate" },
-            "3": { "name": "source.ts.embedded.slate" },
+            "3": { "name": "source.tsx.embedded.slate" },
             "4": { "name": "punctuation.definition.block.end.slate" }
           }
         },
@@ -126,7 +126,7 @@
           "captures": {
             "1": { "name": "punctuation.definition.directive.begin.slate" },
             "2": { "name": "keyword.other.directive.slate" },
-            "3": { "name": "source.ts.embedded.slate" },
+            "3": { "name": "source.tsx.embedded.slate" },
             "4": { "name": "punctuation.definition.directive.end.slate" }
           }
         }
@@ -144,8 +144,8 @@
           "endCaptures": {
             "0": { "name": "punctuation.definition.interpolation.end.slate" }
           },
-          "contentName": "source.ts.embedded.slate",
-          "patterns": [{ "include": "source.ts" }]
+          "contentName": "source.tsx.embedded.slate",
+          "patterns": [{ "include": "source.tsx" }]
         }
       ]
     },

@@ -16,7 +16,7 @@ for (const fixtureName of readdirSync(fixturesDir).sort()) {
     }
 
     const path = join(fixtureDir, filename);
-    output[`${filename}.module.ts`] = createSlateModuleSource(readFileSync(path, "utf8"), path);
+    output[`${filename}.module.tsx`] = createSlateModuleSource(readFileSync(path, "utf8"), path);
   }
 
   if (Object.keys(output).length === 0) {

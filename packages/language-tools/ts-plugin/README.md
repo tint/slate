@@ -5,7 +5,7 @@ TypeScript server plugin utilities for Slate editor integration.
 ## Responsibility
 
 - Improve TypeScript support for `.slate` files.
-- Provide virtual TypeScript documents for `<script slate>`.
+- Provide virtual TSX documents for `<script slate>`.
 - Preserve source offsets for diagnostics and navigation where possible.
 - Provide rune declaration types for `$prop`, `$props`, `$inject`, and `$provide`.
 - Provide TypeScript views for template expressions and block scopes.
@@ -13,10 +13,10 @@ TypeScript server plugin utilities for Slate editor integration.
 
 ## Current model
 
-The current implementation covers `<script slate>` and template TypeScript islands.
+The current implementation covers `<script slate>` TSX and template TypeScript islands.
 
 It parses a `.slate` file with `@slate/compiler`, finds the first Slate script block,
-and creates a virtual `.slate.ts` document:
+and creates a virtual `.slate.tsx` document:
 
 - non-script template content becomes whitespace
 - original newlines are preserved
@@ -38,7 +38,7 @@ original script offset === virtual script offset
 
 ## Component module typing
 
-For an imported `.slate` file, the plugin creates a virtual `.slate.module.ts` module.
+For an imported `.slate` file, the plugin creates a virtual `.slate.module.tsx` module.
 
 The public shape is:
 
@@ -102,7 +102,7 @@ export default function createPlugin(modules) {
 ```
 
 During initialization it patches the language service host so `.slate` snapshots are
-served as virtual TypeScript content.
+served as virtual TSX content.
 
 ## Status
 

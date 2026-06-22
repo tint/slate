@@ -5,7 +5,7 @@ Language support for Slate `.slate` files.
 ## Features
 
 - Syntax highlighting for `.slate` templates.
-- TypeScript highlighting inside `<script slate>`.
+- TSX highlighting inside `<script slate>`.
 - CSS highlighting inside `<style>`.
 - Diagnostics for Slate parser, template, rune, and TypeScript issues.
 - Completion for Slate blocks, directives, runes, slots, and common template attributes.
@@ -109,7 +109,7 @@ The extension provides snippets for:
 
 Hover works for:
 
-- TypeScript symbols in `<script slate>`.
+- TSX symbols in `<script slate>`.
 - Template expressions.
 - Each block bindings.
 - Slate runes such as `$prop` and `$provide`.

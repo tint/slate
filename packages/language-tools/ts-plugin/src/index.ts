@@ -12,8 +12,8 @@ import {
 } from "@slate/compiler";
 
 const SLATE_EXTENSION = ".slate";
-const VIRTUAL_EXTENSION = ".slate.ts";
-const MODULE_VIRTUAL_EXTENSION = ".slate.module.ts";
+const VIRTUAL_EXTENSION = ".slate.tsx";
+const MODULE_VIRTUAL_EXTENSION = ".slate.module.tsx";
 
 export type SlateVirtualMappingKind = "script" | "template" | "generated";
 
@@ -50,6 +50,8 @@ export const RUNE_DECLARATIONS: string = [
   "declare function $slot(name: string): () => __SlateRenderResult;",
   "declare function $slot<T>(name: string): (data: T) => __SlateRenderResult;",
   "declare function $slot<T>(name: string, defaultData: T): (data?: T) => __SlateRenderResult;",
+  "declare function __slateJsx(type: string | typeof __slateFragment, props: Record<string, unknown> | null, ...children: unknown[]): __SlateHTML;",
+  "declare const __slateFragment: unique symbol;",
   "declare function __slateEach<T>(value: Iterable<T> | ArrayLike<T>): Iterable<[number, T]>;",
   "declare const __SLATE_HTML: unique symbol;",
   "type __SlateHTML = { readonly [__SLATE_HTML]: true; readonly value: string };",
@@ -60,6 +62,15 @@ export const RUNE_DECLARATIONS: string = [
   "type __SlateDefaultedProps<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;",
   "type __SlateUnionToIntersection<T> = (T extends unknown ? (value: T) => void : never) extends (value: infer I) => void ? I : never;",
   "type __SlatePropEntry<K extends PropertyKey, T, HasDefault extends boolean> = HasDefault extends true ? { [P in K]?: T } : undefined extends T ? { [P in K]?: T } : { [P in K]: T };",
+  "declare global {",
+  "  namespace JSX {",
+  "    type Element = __SlateHTML;",
+  "    interface ElementChildrenAttribute { children: {}; }",
+  "    interface IntrinsicElements {",
+  "      [name: string]: Record<string, unknown>;",
+  "    }",
+  "  }",
+  "}",
   "declare module \"*.slate\" { const component: unknown; export default component; }",
   "declare module \"*.avif\" { const url: string; export default url; }",
   "declare module \"*.bmp\" { const url: string; export default url; }",
@@ -182,6 +193,9 @@ export function createUnknownSlateModuleSource(): string {
 
 export const SLATE_TYPE_SCRIPT_COMPILER_OPTIONS: ts.CompilerOptions = {
   allowArbitraryExtensions: true,
+  jsx: ts.JsxEmit.React,
+  jsxFactory: "__slateJsx",
+  jsxFragmentFactory: "__slateFragment",
   module: ts.ModuleKind.ESNext,
   moduleResolution: ts.ModuleResolutionKind.Bundler,
   noEmit: true,
@@ -247,7 +261,7 @@ export function createSlateCompilerHost(options: SlateCompilerHostOptions): ts.C
     const source = sources.readFile(filename);
 
     if (source !== undefined && sources.isSlateManagedFile(filename)) {
-      return ts.createSourceFile(filename, source, languageVersion, true, ts.ScriptKind.TS);
+      return ts.createSourceFile(filename, source, languageVersion, true, ts.ScriptKind.TSX);
     }
 
     return baseGetSourceFile(filename, languageVersion, onError, shouldCreateNewSourceFile);
@@ -316,7 +330,7 @@ function createSlateTypeScriptSourceHost(options: SlateTypeScriptHostOptions): {
       return fileExists(filename);
     },
     getScriptKind(filename) {
-      return isSlateManagedFile(filename) ? ts.ScriptKind.TS : ts.ScriptKind.Unknown;
+      return isSlateManagedFile(filename) ? ts.ScriptKind.TSX : ts.ScriptKind.Unknown;
     },
     isSlateManagedFile,
     readFile(filename) {
@@ -362,9 +376,13 @@ function resolveSlateImport(
 
   return {
     resolvedFileName: toSlateModuleVirtualFilename(resolvedOriginalFile),
-    extension: ts.Extension.Ts,
+    extension: ts.Extension.Tsx,
     isExternalLibraryImport: false,
   };
+}
+
+function createSlateScriptSourceFile(source: string): ts.SourceFile {
+  return ts.createSourceFile("component.slate.tsx", source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
 }
 
 function extractTypeModuleSource(source: string): {
@@ -373,7 +391,7 @@ function extractTypeModuleSource(source: string): {
   hasPropsType: boolean;
   hasSlotsType: boolean;
 } {
-  const sourceFile = ts.createSourceFile("component.slate.ts", source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  const sourceFile = createSlateScriptSourceFile(source);
   const chunks: string[] = [];
   const runtimeChunks: string[] = [];
   let hasPropsType = false;
@@ -420,7 +438,7 @@ function extractTypeModuleSource(source: string): {
 }
 
 function createInferredPropsSource(runtimeSource: string): string {
-  const sourceFile = ts.createSourceFile("component.slate.ts", runtimeSource, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  const sourceFile = createSlateScriptSourceFile(runtimeSource);
   const propEntries: string[] = [];
   const spreads: string[] = [];
 
@@ -555,7 +573,7 @@ type SlotOutlet = {
 
 function collectSlotRunes(source: string): SlotOutlet[] {
   const outlets: SlotOutlet[] = [];
-  const sourceFile = ts.createSourceFile("component.slate.ts", source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  const sourceFile = createSlateScriptSourceFile(source);
 
   function visit(node: ts.Node): void {
     if (
@@ -680,7 +698,7 @@ function slotDataTypeFromExpression(expression: string): string {
     `const __slotData = (${expression});`,
     ts.ScriptTarget.Latest,
     true,
-    ts.ScriptKind.TS,
+    ts.ScriptKind.TSX,
   );
   const statement = sourceFile.statements[0];
   const initializer = statement && ts.isVariableStatement(statement)
@@ -743,7 +761,7 @@ function propertyNameToTypeKey(name: ts.PropertyName): string | undefined {
 }
 
 export function toVirtualFilename(filename: string): string {
-  return filename.endsWith(SLATE_EXTENSION) ? `${filename}.ts` : filename;
+  return filename.endsWith(SLATE_EXTENSION) ? `${filename}.tsx` : filename;
 }
 
 export function isSlateFile(filename: string): boolean {
@@ -759,11 +777,11 @@ export function isSlateModuleVirtualFile(filename: string): boolean {
 }
 
 export function toSlateModuleVirtualFilename(filename: string): string {
-  return filename.endsWith(SLATE_EXTENSION) ? `${filename}.module.ts` : filename;
+  return filename.endsWith(SLATE_EXTENSION) ? `${filename}.module.tsx` : filename;
 }
 
 export function toOriginalSlateModuleFilename(filename: string): string {
-  return isSlateModuleVirtualFile(filename) ? filename.slice(0, -".module.ts".length) : filename;
+  return isSlateModuleVirtualFile(filename) ? filename.slice(0, -".module.tsx".length) : filename;
 }
 
 export function toOriginalFilename(filename: string): string {
@@ -771,7 +789,7 @@ export function toOriginalFilename(filename: string): string {
     return toOriginalSlateModuleFilename(filename);
   }
 
-  return isSlateVirtualFile(filename) ? filename.slice(0, -".ts".length) : filename;
+  return isSlateVirtualFile(filename) ? filename.slice(0, -".tsx".length) : filename;
 }
 
 export function toVirtualOffset(document: SlateVirtualDocument, originalOffset: number): number | undefined {
@@ -858,7 +876,7 @@ function patchLanguageServiceHost(tsModule: typeof ts, info: ts.server.PluginCre
 
   host.getScriptKind = (filename) => {
     if (isSlateFile(filename) || isSlateModuleVirtualFile(filename)) {
-      return tsModule.ScriptKind.TS;
+      return tsModule.ScriptKind.TSX;
     }
 
     return getScriptKind?.(filename) ?? tsModule.ScriptKind.Unknown;
@@ -869,6 +887,9 @@ function patchLanguageServiceHost(tsModule: typeof ts, info: ts.server.PluginCre
     return {
       ...options,
       allowArbitraryExtensions: true,
+      jsx: options.jsx ?? tsModule.JsxEmit.React,
+      jsxFactory: options.jsxFactory ?? "__slateJsx",
+      jsxFragmentFactory: options.jsxFragmentFactory ?? "__slateFragment",
     };
   };
 
