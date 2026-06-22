@@ -242,6 +242,26 @@ Component props use HTML attribute syntax:
 <Card title="Hello" count={count} disabled />
 ```
 
+Prop names are matched exactly as written. Slate does not normalize between
+kebab-case and camelCase:
+
+```slate
+<Card menu-class="compact" menuClass="wide" />
+```
+
+The example above passes two different props:
+
+```ts
+{
+  "menu-class": "compact",
+  menuClass: "wide",
+}
+```
+
+Component authors choose their public prop names with `$prop` or `$props`, and
+callers must use the same spelling. `$prop("menu-class")` is matched by
+`menu-class`, while `$prop("menuClass")` is matched by `menuClass`.
+
 If a component exports a `Props` type, callers are checked against that type:
 
 ```slate

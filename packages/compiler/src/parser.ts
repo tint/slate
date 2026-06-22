@@ -421,13 +421,21 @@ class Parser {
       while (!this.isEof() && !this.isWhitespace(this.current()) && this.current() !== ">") {
         this.pos++;
       }
+      const value = this.source.slice(valueStart, this.pos);
 
       attributes.push({
         ...this.createAttributeBase(start, this.pos, rawName, name),
         kind: "StringAttribute",
-        value: this.source.slice(valueStart, this.pos),
+        value,
         quote: "\"",
       });
+
+      if (this.looksLikeExpressionAttributeValue(value)) {
+        this.addDiagnostic(
+          "Attribute expressions must be wrapped in `{...}`.",
+          this.range(valueStart, this.pos),
+        );
+      }
     }
 
     return attributes;
@@ -820,6 +828,10 @@ class Parser {
       ...this.createAttributeBase(start, end, rawName, name),
       kind: "BooleanAttribute",
     };
+  }
+
+  private looksLikeExpressionAttributeValue(value: string): boolean {
+    return value.startsWith("[") || value.startsWith("(") || value.startsWith("`");
   }
 
   private createAttributeBase(start: number, end: number, rawName: string, name: string) {

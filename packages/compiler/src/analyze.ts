@@ -629,6 +629,15 @@ function validateAttributes(attributes: AttributeCst[]): Diagnostic[] {
   const diagnostics: Diagnostic[] = validateDevDirectives(attributes);
 
   for (const attr of attributes) {
+    if (
+      attr.kind === "ExpressionAttribute" &&
+      attr.name === "style" &&
+      looksLikeUnwrappedStyleObject(attr.expression.text)
+    ) {
+      diagnostics.push(error("Style object expressions must use double braces, for example `style={{ color: \"red\" }}`.", attr.range));
+      continue;
+    }
+
     if ((attr.kind === "StringAttribute" || attr.kind === "BooleanAttribute") && attr.name === "slot") {
       diagnostics.push(error("Use `slot:name` for Slate slot assignment, not `slot=\"name\"`.", attr.range));
       continue;
@@ -649,6 +658,11 @@ function validateAttributes(attributes: AttributeCst[]): Diagnostic[] {
   }
 
   return diagnostics;
+}
+
+function looksLikeUnwrappedStyleObject(expression: string): boolean {
+  const trimmed = expression.trim();
+  return /^[A-Za-z_$][\w$-]*\s*:/.test(trimmed);
 }
 
 function validateDevDirectives(attributes: AttributeCst[]): Diagnostic[] {
