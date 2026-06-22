@@ -52,7 +52,7 @@ export async function runPreview(options: PreviewOptions): Promise<void> {
   return runPreview(options);
 }
 
-export async function run(argv = process.argv.slice(2)): Promise<void> {
+export async function run(argv: string[] = process.argv.slice(2)): Promise<void> {
   await loadTsx();
   const { run } = await import("./commands.ts");
   return run(argv);
