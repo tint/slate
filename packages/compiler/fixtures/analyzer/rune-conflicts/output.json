@@ -1,0 +1,112 @@
+{
+  "script": {
+    "kind": "SlateScriptElement",
+    "range": {
+      "start": 0,
+      "end": 313
+    },
+    "openTag": {
+      "kind": "Tag",
+      "range": {
+        "start": 0,
+        "end": 14
+      },
+      "tagName": "script",
+      "rawTagName": "script",
+      "attributes": [
+        {
+          "range": {
+            "start": 8,
+            "end": 13
+          },
+          "name": "slate",
+          "rawName": "slate",
+          "kind": "BooleanAttribute"
+        }
+      ],
+      "selfClosing": false,
+      "closing": false
+    },
+    "body": {
+      "kind": "RawText",
+      "range": {
+        "start": 14,
+        "end": 304
+      },
+      "text": "\nconst title = $prop(\"title\");\nconst duplicateTitle = $prop(\"title\", \"Untitled\");\nconst propsFromType = $props<{ title: string; count?: number }>();\nconst propsFromDefaults = $props({ count: 0, variant: \"primary\" });\nconst header = $slot(\"header\");\nconst duplicateHeader = $slot(\"header\");\n"
+    },
+    "closeTag": {
+      "kind": "Tag",
+      "range": {
+        "start": 304,
+        "end": 313
+      },
+      "tagName": "script",
+      "rawTagName": "script",
+      "attributes": [],
+      "selfClosing": false,
+      "closing": true
+    }
+  },
+  "components": [],
+  "slots": [
+    {
+      "localName": "header",
+      "name": "header",
+      "range": {
+        "start": 237,
+        "end": 261
+      }
+    },
+    {
+      "localName": "duplicateHeader",
+      "name": "header",
+      "range": {
+        "start": 269,
+        "end": 302
+      }
+    }
+  ],
+  "diagnostics": [
+    {
+      "message": "Duplicate prop rune declaration for `title`. First declared with $prop.",
+      "severity": "error",
+      "range": {
+        "start": 74,
+        "end": 81
+      }
+    },
+    {
+      "message": "Duplicate prop rune declaration for `title`. First declared with $prop.",
+      "severity": "error",
+      "range": {
+        "start": 127,
+        "end": 132
+      }
+    },
+    {
+      "message": "Duplicate prop rune declaration for `count`. First declared with $props.",
+      "severity": "error",
+      "range": {
+        "start": 198,
+        "end": 203
+      }
+    },
+    {
+      "message": "Duplicate slot rune declaration for `header`. First declared with $slot.",
+      "severity": "error",
+      "range": {
+        "start": 293,
+        "end": 301
+      }
+    },
+    {
+      "message": "Slot `header` is already consumed by $slot. Use either $slot or <slot> for the same slot name.",
+      "severity": "error",
+      "range": {
+        "start": 335,
+        "end": 357
+      }
+    }
+  ]
+}

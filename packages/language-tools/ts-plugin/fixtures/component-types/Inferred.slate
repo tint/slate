@@ -9,6 +9,7 @@ const tail = 1;
 
 <section>
   <slot name="header" data={{ title, count, tail }} />
+  <slot name="header" data={{ title }} />
   <slot />
   {action({ label: title })}
   {footer()}

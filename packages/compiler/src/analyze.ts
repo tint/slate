@@ -27,6 +27,11 @@ export type SlotBinding = {
   range: Range;
 };
 
+type TemplateSlotOutlet = {
+  name: string;
+  range: Range;
+};
+
 export type SlateModule = {
   script?: SlateScriptElementCst;
   components: ComponentBinding[];
@@ -61,6 +66,7 @@ export function analyze(cst: SlateFileCst, _options: AnalyzeOptions = {}): Analy
 
   const components = script ? collectComponentImports(script) : [];
   const slots = script ? collectSlotBindings(script, diagnostics) : [];
+  diagnostics.push(...validateSlotRuneOutletConflicts(cst, slots));
   const module: SlateModule = {
     script,
     components,
@@ -100,6 +106,7 @@ function validateSlateScript(script: SlateScriptElementCst): Diagnostic[] {
   }
 
   diagnostics.push(...validateTypeOnlyExports(script));
+  diagnostics.push(...validateRuneConflicts(script));
 
   return diagnostics;
 }
@@ -231,6 +238,258 @@ function collectSlotBindings(script: SlateScriptElementCst, diagnostics: Diagnos
   }
 
   return slots;
+}
+
+function validateSlotRuneOutletConflicts(cst: SlateFileCst, slots: SlotBinding[]): Diagnostic[] {
+  if (!slots.length) {
+    return [];
+  }
+
+  const diagnostics: Diagnostic[] = [];
+  const slotRuneNames = new Map(slots.map((slot) => [slot.name, slot]));
+
+  for (const outlet of collectTemplateSlotOutlets(cst.children)) {
+    const rune = slotRuneNames.get(outlet.name);
+
+    if (!rune) {
+      continue;
+    }
+
+    diagnostics.push(error(
+      `Slot \`${outlet.name}\` is already consumed by $slot. Use either $slot or <slot> for the same slot name.`,
+      outlet.range,
+    ));
+  }
+
+  return diagnostics;
+}
+
+function collectTemplateSlotOutlets(nodes: TemplateCstNode[], outlets: TemplateSlotOutlet[] = []): TemplateSlotOutlet[] {
+  for (const node of nodes) {
+    if (node.kind === "Element") {
+      if (node.tagName === "slot") {
+        outlets.push({
+          name: templateSlotOutletName(node),
+          range: node.openTag.range,
+        });
+      }
+
+      collectTemplateSlotOutlets(node.children, outlets);
+      continue;
+    }
+
+    if (node.kind === "IfBlock") {
+      collectTemplateSlotOutlets(node.then, outlets);
+
+      if (node.else) {
+        collectTemplateSlotOutlets(node.else, outlets);
+      }
+
+      continue;
+    }
+
+    if (node.kind === "EachBlock") {
+      collectTemplateSlotOutlets(node.children, outlets);
+
+      if (node.else) {
+        collectTemplateSlotOutlets(node.else, outlets);
+      }
+    }
+  }
+
+  return outlets;
+}
+
+function templateSlotOutletName(element: ElementCst): string {
+  const nameAttribute = element.openTag.attributes.find((attribute) => attribute.name === "name");
+  return nameAttribute?.kind === "StringAttribute" && nameAttribute.value ? nameAttribute.value : "default";
+}
+
+type RuneDeclaration = {
+  name: string;
+  rune: "$prop" | "$props" | "$slot";
+  range: Range;
+};
+
+function validateRuneConflicts(script: SlateScriptElementCst): Diagnostic[] {
+  const diagnostics: Diagnostic[] = [];
+  const text = script.body.text;
+  const bodyStart = script.body.range.start;
+  const sourceFile = ts.createSourceFile("component.slate.ts", text, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
+  const propDeclarations: RuneDeclaration[] = [];
+  const slotDeclarations: RuneDeclaration[] = [];
+
+  for (const statement of sourceFile.statements) {
+    if (!ts.isVariableStatement(statement)) {
+      continue;
+    }
+
+    for (const declaration of statement.declarationList.declarations) {
+      if (!declaration.initializer || !ts.isCallExpression(declaration.initializer)) {
+        continue;
+      }
+
+      const call = declaration.initializer;
+
+      if (!ts.isIdentifier(call.expression)) {
+        continue;
+      }
+
+      if (call.expression.text === "$prop") {
+        const propName = staticStringArgument(call, 0);
+
+        if (propName) {
+          propDeclarations.push({
+            name: propName,
+            rune: "$prop",
+            range: absoluteRange(bodyStart, call.arguments[0]!, sourceFile),
+          });
+        }
+
+        continue;
+      }
+
+      if (call.expression.text === "$props") {
+        for (const propName of staticPropsKeys(call, sourceFile)) {
+          propDeclarations.push({
+            name: propName.name,
+            rune: "$props",
+            range: {
+              start: bodyStart + propName.start,
+              end: bodyStart + propName.end,
+            },
+          });
+        }
+
+        continue;
+      }
+
+      if (call.expression.text === "$slot") {
+        const slotName = staticStringArgument(call, 0);
+
+        if (slotName) {
+          slotDeclarations.push({
+            name: slotName,
+            rune: "$slot",
+            range: absoluteRange(bodyStart, call.arguments[0]!, sourceFile),
+          });
+        }
+      }
+    }
+  }
+
+  diagnostics.push(...duplicateRuneDiagnostics(propDeclarations, "prop"));
+  diagnostics.push(...duplicateRuneDiagnostics(slotDeclarations, "slot"));
+  return diagnostics;
+}
+
+function duplicateRuneDiagnostics(declarations: RuneDeclaration[], label: "prop" | "slot"): Diagnostic[] {
+  const diagnostics: Diagnostic[] = [];
+  const firstByName = new Map<string, RuneDeclaration>();
+
+  for (const declaration of declarations) {
+    const first = firstByName.get(declaration.name);
+
+    if (!first) {
+      firstByName.set(declaration.name, declaration);
+      continue;
+    }
+
+    diagnostics.push(error(
+      `Duplicate ${label} rune declaration for \`${declaration.name}\`. First declared with ${first.rune}.`,
+      declaration.range,
+    ));
+  }
+
+  return diagnostics;
+}
+
+function staticStringArgument(call: ts.CallExpression, index: number): string | undefined {
+  const argument = call.arguments[index];
+  return argument && ts.isStringLiteralLike(argument) ? argument.text : undefined;
+}
+
+function staticPropsKeys(
+  call: ts.CallExpression,
+  sourceFile: ts.SourceFile,
+): Array<{ name: string; start: number; end: number }> {
+  const keys: Array<{ name: string; start: number; end: number }> = [];
+  const typeArgument = call.typeArguments?.[0];
+
+  if (typeArgument && ts.isTypeLiteralNode(typeArgument)) {
+    for (const member of typeArgument.members) {
+      if (!ts.isPropertySignature(member)) {
+        continue;
+      }
+
+      const name = propertyNameText(member.name);
+
+      if (!name) {
+        continue;
+      }
+
+      keys.push({
+        name,
+        start: member.name.getStart(sourceFile),
+        end: member.name.getEnd(),
+      });
+    }
+  }
+
+  const defaults = call.arguments[0];
+  const object = defaults ? unwrapTsExpression(defaults) : undefined;
+
+  if (object && ts.isObjectLiteralExpression(object)) {
+    for (const property of object.properties) {
+      if (ts.isShorthandPropertyAssignment(property)) {
+        keys.push({
+          name: property.name.text,
+          start: property.name.getStart(sourceFile),
+          end: property.name.getEnd(),
+        });
+        continue;
+      }
+
+      if (ts.isPropertyAssignment(property)) {
+        const name = propertyNameText(property.name);
+
+        if (name) {
+          keys.push({
+            name,
+            start: property.name.getStart(sourceFile),
+            end: property.name.getEnd(),
+          });
+        }
+      }
+    }
+  }
+
+  return keys;
+}
+
+function propertyNameText(name: ts.PropertyName): string | undefined {
+  if (ts.isIdentifier(name) || ts.isStringLiteralLike(name) || ts.isNumericLiteral(name)) {
+    return name.text;
+  }
+
+  return undefined;
+}
+
+function unwrapTsExpression(expression: ts.Expression): ts.Expression {
+  let current = expression;
+
+  while (ts.isParenthesizedExpression(current) || ts.isAsExpression(current) || ts.isSatisfiesExpression(current)) {
+    current = current.expression;
+  }
+
+  return current;
+}
+
+function absoluteRange(bodyStart: number, node: ts.Node, sourceFile: ts.SourceFile): Range {
+  return {
+    start: bodyStart + node.getStart(sourceFile),
+    end: bodyStart + node.getEnd(),
+  };
 }
 
 function hasExportModifier(statement: ts.Statement): boolean {

@@ -287,6 +287,8 @@ Rules:
 - The optional second argument is the default value.
 - The returned value is available to the template.
 - Type parameters provide TypeScript type information.
+- A prop name may only be declared once across `$prop` and statically visible `$props` keys.
+- Dynamic prop keys that cannot be statically inspected are not rejected by the compiler.
 
 ### `$props`
 
@@ -312,6 +314,8 @@ Rules:
 - `$props<T>()` returns a typed props object.
 - An optional defaults object may be provided.
 - Defaults are applied when the caller does not provide a prop.
+- Statically visible `$props` keys are mutually exclusive with `$prop("name")`.
+- Statically visible `$props` keys are mutually exclusive with other statically visible `$props` keys in the same component.
 
 ### `$slot`
 
@@ -341,6 +345,10 @@ Rules:
 - `$slot<T>("name", defaultData)` returns a render function with optional data.
 - `$slot("name", defaultData)` infers data from `defaultData`.
 - The render function returns `RenderResult`, so `{slot(data)}` inserts rendered HTML without escaping.
+- A slot name may only be declared once across `$slot` calls in the same component.
+- `$slot("name")` is mutually exclusive with a template `<slot name="name">` outlet in the same component.
+- `$slot("default")` is mutually exclusive with a template `<slot />` outlet in the same component.
+- `$slot` and `<slot>` are two different consumption models for the same incoming slot, so a component must choose one model per slot name.
 
 ### `$provide`
 
@@ -812,6 +820,11 @@ Rules:
 - `<slot />` is the default slot outlet.
 - `<slot name="title" />` is a named slot outlet.
 - `<slot name="title" data={value} />` passes data to the slot content.
+- Multiple `<slot>` outlets with the same name are allowed.
+- Multiple same-name `<slot>` outlets render the same incoming slot content at multiple positions.
+- Same-name `<slot>` outlets with different `data` shapes expose a union of those data shapes to consumers.
+- Same-name `<slot>` outlet data is not merged with `&` and is not widened to `Partial<T>`.
+- A `<slot>` outlet is mutually exclusive with a same-name `$slot("name")` rune declaration.
 - `slot:title` assigns a child node to a named slot.
 - `slot:title={pattern}` assigns a child node to a named slot and binds slot data.
 - Children without `slot` are assigned to the default slot.
@@ -846,6 +859,8 @@ Type contract:
 
 - A child component's `<slot name="header" data={value} />` defines the data shape for the `header` slot.
 - A parent component's `slot:header={pattern}` is checked against that child slot data shape.
+- If a child component renders the same slot name with multiple data shapes, the parent receives a union of those shapes.
+- The union reflects runtime behavior: each outlet render calls the slot with that outlet's data, and the data objects are not combined.
 - Unknown slot names are type errors when the child component exposes a static slot contract.
 - If a slot outlet has no `data`, the parent may still provide slot content, but there is no data pattern to bind.
 - Slot data expressions that depend on compile-time script values keep their TypeScript types when the component is imported by another `.slate` file.

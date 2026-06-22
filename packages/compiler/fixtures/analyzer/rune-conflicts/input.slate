@@ -1,0 +1,12 @@
+<script slate>
+const title = $prop("title");
+const duplicateTitle = $prop("title", "Untitled");
+const propsFromType = $props<{ title: string; count?: number }>();
+const propsFromDefaults = $props({ count: 0, variant: "primary" });
+const header = $slot("header");
+const duplicateHeader = $slot("header");
+</script>
+
+<div>{title}</div>
+
+<slot name="header" />

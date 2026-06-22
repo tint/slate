@@ -1,0 +1,42 @@
+[
+  {
+    "message": "Duplicate prop rune declaration for `title`. First declared with $prop.",
+    "severity": "error",
+    "range": {
+      "start": 74,
+      "end": 81
+    }
+  },
+  {
+    "message": "Duplicate prop rune declaration for `title`. First declared with $prop.",
+    "severity": "error",
+    "range": {
+      "start": 127,
+      "end": 132
+    }
+  },
+  {
+    "message": "Duplicate prop rune declaration for `count`. First declared with $props.",
+    "severity": "error",
+    "range": {
+      "start": 198,
+      "end": 203
+    }
+  },
+  {
+    "message": "Duplicate slot rune declaration for `header`. First declared with $slot.",
+    "severity": "error",
+    "range": {
+      "start": 293,
+      "end": 301
+    }
+  },
+  {
+    "message": "Slot `header` is already consumed by $slot. Use either $slot or <slot> for the same slot name.",
+    "severity": "error",
+    "range": {
+      "start": 335,
+      "end": 357
+    }
+  }
+]
