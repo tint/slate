@@ -35,7 +35,7 @@ import {
   slateComponentTagRanges,
   type SymbolEntry,
   type TypeScriptContext,
-} from "./typescript-context";
+} from "./typescript-context.ts";
 
 const connection = createConnection(ProposedFeatures.all);
 const documents = new TextDocuments(TextDocument);

@@ -1,5 +1,6 @@
 <script slate>
 import "./style.css";
+import Badge from "./Badge.slate";
 import logoUrl from "./logo.svg";
 
 const title = "Slate Vite";
@@ -32,7 +33,7 @@ const configured = __SLATE_VITE_FIXTURE__;
   <p>{configured}</p>
   <ul>
     {#each items as item}
-      <li>{item}</li>
+      <li><Badge label={item} /></li>
     {/each}
   </ul>
 </main>

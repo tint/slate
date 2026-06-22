@@ -1,7 +1,7 @@
 import { readFile } from "node:fs/promises";
 import { basename, dirname, relative, resolve } from "node:path";
-import { withFilename, type Diagnostic } from "./diagnostics";
-import { compile } from "./index";
+import { withFilename, type Diagnostic } from "./diagnostics.ts";
+import { compile } from "./index.ts";
 
 export type CompiledFile = {
   sourcePath: string;

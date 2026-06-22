@@ -1,0 +1,5 @@
+<script slate>
+const label = $prop("label", "badge");
+</script>
+
+<span class="badge">{label}</span>

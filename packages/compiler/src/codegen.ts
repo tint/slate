@@ -10,10 +10,10 @@ import type {
   SlateScriptElementCst,
   TemplateCstNode,
   TextCst,
-} from "./cst";
-import type { Diagnostic } from "./diagnostics";
-import type { SlateModule } from "./analyze";
-import { appendInlineSourceMap, createSourceMap, type SourceMap, type SourceMapHint, type SourceMapOption } from "./sourcemap";
+} from "./cst.ts";
+import type { Diagnostic } from "./diagnostics.ts";
+import type { SlateModule } from "./analyze.ts";
+import { appendInlineSourceMap, createSourceMap, type SourceMap, type SourceMapHint, type SourceMapOption } from "./sourcemap.ts";
 import ts from "typescript";
 
 export type GenerateOptions = {
@@ -264,10 +264,10 @@ function generateEachBlock(node: EachBlockCst, componentNames: Set<string>, file
   const eachExpression = `Array.from(${wrapExpression(node.expression.text, filename, node.expression.range, "template", sourceMapHints)})`;
 
   if (!node.else) {
-    return `(await Promise.all(${eachExpression}.map(async (${item}${index}) => [\n          ${body}\n        ].join("")))).join("")`;
+    return `(await Promise.all(${eachExpression}.map(async (${item}${index}) => {\n          return [\n            ${body}\n          ].join(\"\");\n        }))).join("")`;
   }
 
-  return `await (async () => {\n        const __items = ${eachExpression};\n        return __items.length ? (await Promise.all(__items.map(async (${item}${index}) => [\n          ${body}\n        ].join("")))).join("") : [\n        ${elseBody ?? ""}\n      ].join("");\n      })()`;
+  return `await (async () => {\n        const __items = ${eachExpression};\n        return __items.length ? (await Promise.all(__items.map(async (${item}${index}) => {\n          return [\n            ${body}\n          ].join(\"\");\n        }))).join("") : [\n        ${elseBody ?? ""}\n      ].join("");\n      })()`;
 }
 
 function generateIfBlock(node: IfBlockCst, componentNames: Set<string>, filename: string, dev: boolean, sourceMapHints: SourceMapHint[]): string {
@@ -567,6 +567,14 @@ function indent(text: string, spaces: number): string {
 
 function transpileSlateScript(text: string): { imports: string; body: string } {
   const { imports, body } = splitSlateScript(text);
+  const importResult = ts.transpileModule(imports, {
+    compilerOptions: {
+      module: ts.ModuleKind.ESNext,
+      target: ts.ScriptTarget.ES2022,
+      removeComments: false,
+      verbatimModuleSyntax: true,
+    },
+  });
   const result = ts.transpileModule(body, {
     compilerOptions: {
       module: ts.ModuleKind.ESNext,
@@ -576,7 +584,7 @@ function transpileSlateScript(text: string): { imports: string; body: string } {
   });
 
   return {
-    imports,
+    imports: importResult.outputText.replace(/\n?export \{\};\s*$/m, "").trim(),
     body: result.outputText.replace(/\n?export \{\};\s*$/m, ""),
   };
 }

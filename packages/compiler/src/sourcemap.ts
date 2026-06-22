@@ -1,5 +1,5 @@
 import { Buffer } from "node:buffer";
-import { LineMap, type Range } from "./source";
+import { LineMap, type Range } from "./source.ts";
 
 export type SourceMapOption = boolean | "inline" | "hidden";
 

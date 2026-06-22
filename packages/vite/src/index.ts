@@ -1,7 +1,7 @@
-export { buildSlate } from "./build";
-export { createSlateDevServer } from "./dev";
-export { slate } from "./plugin";
-export { createSlatePreviewServer } from "./preview";
+export { buildSlate } from "./build.ts";
+export { createSlateDevServer } from "./dev.ts";
+export { slate } from "./plugin.ts";
+export { createSlatePreviewServer } from "./preview.ts";
 export type {
   NormalizedInput,
   SlateBuildOptions,
@@ -13,4 +13,4 @@ export type {
   SlateViteInput,
   SlateViteOptions,
   SlateViteUserConfig,
-} from "./types";
+} from "./types.ts";

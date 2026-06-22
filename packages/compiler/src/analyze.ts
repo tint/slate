@@ -5,9 +5,9 @@ import type {
   SlateFileCst,
   SlateScriptElementCst,
   TemplateCstNode,
-} from "./cst";
-import { error, type Diagnostic } from "./diagnostics";
-import type { Range } from "./source";
+} from "./cst.ts";
+import { error, type Diagnostic } from "./diagnostics.ts";
+import type { Range } from "./source.ts";
 import ts from "typescript";
 
 export type AnalyzeOptions = {

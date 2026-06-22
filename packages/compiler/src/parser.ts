@@ -18,9 +18,9 @@ import type {
   TagCst,
   TemplateCstNode,
   TextCst,
-} from "./cst";
-import { error, type Diagnostic } from "./diagnostics";
-import { LineMap, type Range } from "./source";
+} from "./cst.ts";
+import { error, type Diagnostic } from "./diagnostics.ts";
+import { LineMap, type Range } from "./source.ts";
 
 export type ParseOptions = {
   filename?: string;

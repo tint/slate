@@ -2,9 +2,9 @@ export {
   renderSlate,
   type RenderSlateOptions,
   type SlateRenderable,
-} from "./render";
+} from "./render.ts";
 export {
   startSlateDevServer,
   type StartedSlateDevServer,
   type StartSlateDevServerOptions,
-} from "./dev-server";
+} from "./dev-server.ts";

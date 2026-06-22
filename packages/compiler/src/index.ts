@@ -1,10 +1,10 @@
-export { analyze } from "./analyze";
-export type { AnalyzeOptions, AnalyzeResult, ComponentBinding, SlateModule, SlotBinding } from "./analyze";
-export { compileFiles } from "./compile-files";
-export type { CompiledFile, CompileFilesOptions, CompileFilesResult } from "./compile-files";
-export { generate } from "./codegen";
-export type { GenerateOptions, GenerateResult } from "./codegen";
-export type { SourceMap, SourceMapOption } from "./sourcemap";
+export { analyze } from "./analyze.ts";
+export type { AnalyzeOptions, AnalyzeResult, ComponentBinding, SlateModule, SlotBinding } from "./analyze.ts";
+export { compileFiles } from "./compile-files.ts";
+export type { CompiledFile, CompileFilesOptions, CompileFilesResult } from "./compile-files.ts";
+export { generate } from "./codegen.ts";
+export type { GenerateOptions, GenerateResult } from "./codegen.ts";
+export type { SourceMap, SourceMapOption } from "./sourcemap.ts";
 export type {
   AttributeCst,
   CommentCst,
@@ -23,13 +23,13 @@ export type {
   TagCst,
   TemplateCstNode,
   TextCst,
-} from "./cst";
-export { formatDiagnostic } from "./diagnostics";
-export type { Diagnostic, DiagnosticSeverity } from "./diagnostics";
-export { parse } from "./parser";
-export type { ParseOptions, ParseResult } from "./parser";
-export { LineMap } from "./source";
-export type { Position, Range } from "./source";
+} from "./cst.ts";
+export { formatDiagnostic } from "./diagnostics.ts";
+export type { Diagnostic, DiagnosticSeverity } from "./diagnostics.ts";
+export { parse } from "./parser.ts";
+export type { ParseOptions, ParseResult } from "./parser.ts";
+export { LineMap } from "./source.ts";
+export type { Position, Range } from "./source.ts";
 
 export type CompileResult = {
   code: string;
@@ -43,11 +43,11 @@ export type CompileOptions = {
   sourcemap?: SourceMapOption;
 };
 
-import type { Diagnostic } from "./diagnostics";
-import type { SourceMap, SourceMapOption } from "./sourcemap";
-import { parse } from "./parser";
-import { analyze } from "./analyze";
-import { generate } from "./codegen";
+import type { Diagnostic } from "./diagnostics.ts";
+import type { SourceMap, SourceMapOption } from "./sourcemap.ts";
+import { parse } from "./parser.ts";
+import { analyze } from "./analyze.ts";
+import { generate } from "./codegen.ts";
 
 export function compile(source: string, options: CompileOptions = {}): CompileResult {
   const parsed = parse(source);

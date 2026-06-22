@@ -1,0 +1,10 @@
+<script slate>
+  import Card, { type CardProps } from "./Card.slate";
+  import type { Unused } from "./types";
+
+  const props: CardProps = {
+    title: "Hello",
+  };
+</script>
+
+<Card title={props.title} />

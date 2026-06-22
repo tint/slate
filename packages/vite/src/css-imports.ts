@@ -2,9 +2,9 @@ import { mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, relative, resolve } from "node:path";
 import type { InlineConfig } from "vite";
 import { build as viteBuild, mergeConfig } from "vite";
-import { normalizeUserViteConfig } from "./config";
-import { slate } from "./plugin";
-import type { SlatePlugin, SlateViteUserConfig } from "./types";
+import { normalizeUserViteConfig } from "./config.ts";
+import { slate } from "./plugin.ts";
+import type { SlatePlugin, SlateViteUserConfig } from "./types.ts";
 
 type CssImport = {
   specifier: string;

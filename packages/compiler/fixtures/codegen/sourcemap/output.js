@@ -18,8 +18,9 @@ export async function render(__props = {}, slots = {}, context = {}) {
       "<ul",
       ">",
       "\n    ",
-      (await Promise.all(Array.from(evaluateSlateExpression(() => (items), {"filename":"input.slate","range":{"start":129,"end":134},"kind":"template"})).map(async (item) => [
-              "\n      ",
+      (await Promise.all(Array.from(evaluateSlateExpression(() => (items), {"filename":"input.slate","range":{"start":129,"end":134},"kind":"template"})).map(async (item) => {
+              return [
+                "\n      ",
               [
       "<li",
       serializeAttribute("data-item", evaluateSlateExpression(() => (item), {"filename":"input.slate","range":{"start":166,"end":170},"kind":"template"})),
@@ -28,7 +29,8 @@ export async function render(__props = {}, slots = {}, context = {}) {
       "</li>"
     ].join(""),
               "\n    "
-            ].join("")))).join(""),
+              ].join("");
+            }))).join(""),
       "\n  ",
       "</ul>"
     ].join("");

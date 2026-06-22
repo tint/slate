@@ -1,8 +1,8 @@
 import { createServer as createHttpServer, type Server as HttpServer } from "node:http";
 import { resolve } from "node:path";
-import { previewErrorPage, sendHtml } from "./errors";
-import { servePreviewFile } from "./public-files";
-import type { SlatePreviewOptions } from "./types";
+import { previewErrorPage, sendHtml } from "./errors.ts";
+import { servePreviewFile } from "./public-files.ts";
+import type { SlatePreviewOptions } from "./types.ts";
 
 /** Create a small static server for already-built Slate output. */
 export function createSlatePreviewServer(options: SlatePreviewOptions = {}): HttpServer {

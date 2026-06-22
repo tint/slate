@@ -3,12 +3,12 @@ import { resolve } from "node:path";
 import type { InlineConfig, ViteDevServer } from "vite";
 import { createServer as createViteServer, mergeConfig } from "vite";
 import { cloneContext, injectCollectedAssets, renderHTML } from "@slate/kit";
-import { normalizeInputs, normalizeUserViteConfig, routeForPath } from "./config";
-import { collectSlateCssImports, cssImportDevUrls, injectStylesheets } from "./css-imports";
-import { errorPage, injectViteClient, stripViteClient } from "./errors";
-import { processHtml } from "./html";
-import { slate } from "./plugin";
-import type { SlateViteOptions } from "./types";
+import { normalizeInputs, normalizeUserViteConfig, routeForPath } from "./config.ts";
+import { collectSlateCssImports, cssImportDevUrls, injectStylesheets } from "./css-imports.ts";
+import { errorPage, injectViteClient, stripViteClient } from "./errors.ts";
+import { processHtml } from "./html.ts";
+import { slate } from "./plugin.ts";
+import type { SlateViteOptions } from "./types.ts";
 
 /** Create a Vite dev server that renders configured Slate inputs on request. */
 export async function createSlateDevServer(options: SlateViteOptions): Promise<ViteDevServer> {
@@ -65,9 +65,13 @@ export async function createSlateDevServer(options: SlateViteOptions): Promise<V
       }
     } catch (error) {
       server.ssrFixStacktrace(error as Error);
+      const page = errorPage(error instanceof Error ? error.stack ?? error.message : String(error));
+      const htmlWithClient = options.reload === false
+        ? page
+        : injectViteClient(page, options.preserveScroll !== false);
       response.statusCode = 500;
       response.setHeader("content-type", "text/html; charset=utf-8");
-      response.end(errorPage(error instanceof Error ? error.stack ?? error.message : String(error)));
+      response.end(htmlWithClient);
     }
   });
 

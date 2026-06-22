@@ -2,7 +2,7 @@ import { readFile } from "node:fs/promises";
 import type { Plugin, ResolvedConfig } from "vite";
 import { compile, formatDiagnostic } from "@slate/compiler";
 import type { SourceMapOption } from "@slate/compiler";
-import type { SlatePluginOptions } from "./types";
+import type { SlatePluginOptions } from "./types.ts";
 
 /**
  * Vite plugin that turns `.slate` files into SSR render modules.

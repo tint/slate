@@ -3,7 +3,7 @@ import rehypeFormat from "rehype-format";
 import rehypeMinifyWhitespace from "rehype-minify-whitespace";
 import rehypeParse from "rehype-parse";
 import rehypeStringify from "rehype-stringify";
-import type { SlateHtmlOptions } from "./types";
+import type { SlateHtmlOptions } from "./types.ts";
 
 /**
  * Apply user-configured HTML postprocessing to the final rendered document.

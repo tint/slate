@@ -5,13 +5,13 @@ import type { InlineConfig } from "vite";
 import { build as viteBuild, mergeConfig } from "vite";
 import { formatDiagnostic } from "@slate/compiler";
 import { cloneContext, injectCollectedAssets, renderHTML } from "@slate/kit";
-import { normalizeInputs, normalizeUserViteConfig } from "./config";
-import { buildSlateCssImports, collectSlateCssImports, injectStylesheets } from "./css-imports";
-import { isSlateRenderError } from "./errors";
-import { processHtml } from "./html";
-import { copyPublicDir } from "./public-files";
-import { slate } from "./plugin";
-import type { SlateBuildOptions, SlatePlugin, SlateViteUserConfig } from "./types";
+import { normalizeInputs, normalizeUserViteConfig } from "./config.ts";
+import { buildSlateCssImports, collectSlateCssImports, injectStylesheets } from "./css-imports.ts";
+import { isSlateRenderError } from "./errors.ts";
+import { processHtml } from "./html.ts";
+import { copyPublicDir } from "./public-files.ts";
+import { slate } from "./plugin.ts";
+import type { SlateBuildOptions, SlatePlugin, SlateViteUserConfig } from "./types.ts";
 
 /**
  * Build one or more Slate inputs to static HTML.

@@ -1,5 +1,5 @@
-import type { Diagnostic } from "./diagnostics";
-import type { Range } from "./source";
+import type { Diagnostic } from "./diagnostics.ts";
+import type { Range } from "./source.ts";
 
 export type CstNodeBase = {
   kind: string;

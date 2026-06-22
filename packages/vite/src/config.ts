@@ -1,6 +1,6 @@
 import { resolve } from "node:path";
 import type { InlineConfig } from "vite";
-import type { NormalizedInput, SlateViteInput, SlateViteUserConfig } from "./types";
+import type { NormalizedInput, SlateViteInput, SlateViteUserConfig } from "./types.ts";
 
 /** Resolve user-facing input config into absolute file paths. */
 export function normalizeInputs(root: string, input: SlateViteInput): NormalizedInput[] {

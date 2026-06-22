@@ -1,4 +1,4 @@
-import { LineMap, type Range } from "./source";
+import { LineMap, type Range } from "./source.ts";
 
 export type DiagnosticSeverity = "error" | "warning";
 
