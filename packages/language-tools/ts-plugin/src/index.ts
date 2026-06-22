@@ -774,6 +774,7 @@ function patchLanguageServiceHost(tsModule: typeof ts, info: ts.server.PluginCre
   const fileExists = hostWithFileSystem.fileExists?.bind(hostWithFileSystem);
   const readFile = hostWithFileSystem.readFile?.bind(hostWithFileSystem);
   const resolveModuleNames = host.resolveModuleNames?.bind(host);
+  const resolveModuleNameLiterals = host.resolveModuleNameLiterals?.bind(host);
   const readSlateSourceFromHost = (filename: string): string | undefined =>
     readSlateSourceFromPluginHost(filename, getScriptSnapshot, tsModule);
 
@@ -857,6 +858,42 @@ function patchLanguageServiceHost(tsModule: typeof ts, info: ts.server.PluginCre
         hostWithFileSystem,
       ).resolvedModule;
     });
+
+  host.resolveModuleNameLiterals = (moduleLiterals, containingFile, redirectedReference, options, containingSourceFile, reusedNames) =>
+    moduleLiterals.map((moduleLiteral) => {
+      const resolvedSlateModule = resolveSlateImport(moduleLiteral.text, containingFile, readSlateSourceFromHost);
+
+      if (resolvedSlateModule) {
+        return {
+          resolvedModule: resolvedSlateModule,
+        };
+      }
+
+      if (resolveModuleNameLiterals) {
+        return resolveModuleNameLiterals(
+          [moduleLiteral],
+          containingFile,
+          redirectedReference,
+          options,
+          containingSourceFile,
+          reusedNames,
+        )[0];
+      }
+
+      return tsModule.resolveModuleName(
+        moduleLiteral.text,
+        containingFile,
+        options,
+        hostWithFileSystem,
+        undefined,
+        redirectedReference,
+        moduleResolutionMode(moduleLiteral),
+      );
+    });
+}
+
+function moduleResolutionMode(moduleLiteral: ts.StringLiteralLike): ts.ResolutionMode | undefined {
+  return (moduleLiteral as { impliedNodeFormat?: ts.ResolutionMode }).impliedNodeFormat;
 }
 
 function readSlateSourceFromPluginHost(

@@ -101,7 +101,26 @@ function createHost(
     directoryExists: ts.sys.directoryExists,
     getDirectories: ts.sys.getDirectories,
     useCaseSensitiveFileNames: () => ts.sys.useCaseSensitiveFileNames,
+    resolveModuleNameLiterals: (moduleLiterals, containingFile, redirectedReference, options) =>
+      moduleLiterals.map((moduleLiteral) =>
+        ts.resolveModuleName(
+          moduleLiteral.text,
+          containingFile,
+          options,
+          {
+            fileExists: (filename) => files.has(filename) || ts.sys.fileExists(filename),
+            readFile: (filename) => files.get(filename) ?? ts.sys.readFile(filename),
+          },
+          undefined,
+          redirectedReference,
+          moduleResolutionMode(moduleLiteral),
+        )
+      ),
   };
+}
+
+function moduleResolutionMode(moduleLiteral: ts.StringLiteralLike): ts.ResolutionMode | undefined {
+  return (moduleLiteral as { impliedNodeFormat?: ts.ResolutionMode }).impliedNodeFormat;
 }
 
 function positionAt(source: string, offset: number): {
