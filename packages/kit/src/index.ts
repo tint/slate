@@ -20,7 +20,8 @@ export type RenderPrimitive =
 export type RenderValue =
   | RenderPrimitive
   | SlateHTML
-  | Promise<RenderPrimitive | SlateHTML>;
+  | readonly RenderValue[]
+  | Promise<RenderPrimitive | SlateHTML | readonly RenderValue[]>;
 
 /** Safe HTML result returned by components, slots, and render functions. */
 export type RenderResult = SlateHTML | Promise<SlateHTML>;
@@ -127,6 +128,11 @@ export async function renderValue(value: RenderValue): Promise<string> {
 
   if (isSlateHTML(resolved)) {
     return resolved.value;
+  }
+
+  if (Array.isArray(resolved)) {
+    const parts = await Promise.all(resolved.map((item) => renderValue(item)));
+    return parts.join("");
   }
 
   if (resolved == null || typeof resolved === "boolean") {

@@ -3,10 +3,12 @@ import { html } from "@slate/kit";
 
 const raw = html("<strong>safe</strong>");
 const text = "<em>escaped</em>";
+const values = ["<", raw, false, 1, [">"]];
 </script>
 
 <p>{raw}</p>
 <p>{text}</p>
+<p>{values}</p>
 <p>{true}</p>
 <p>{false}</p>
 <p>{@html false}</p>

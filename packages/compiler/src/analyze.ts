@@ -350,7 +350,7 @@ function validateRuneConflicts(script: SlateScriptElementCst): Diagnostic[] {
       }
 
       if (call.expression.text === "$props") {
-        for (const propName of staticPropsKeys(call, sourceFile)) {
+        for (const propName of uniqueStaticPropsKeys(call, sourceFile)) {
           propDeclarations.push({
             name: propName.name,
             rune: "$props",
@@ -407,6 +407,19 @@ function duplicateRuneDiagnostics(declarations: RuneDeclaration[], label: "prop"
 function staticStringArgument(call: ts.CallExpression, index: number): string | undefined {
   const argument = call.arguments[index];
   return argument && ts.isStringLiteralLike(argument) ? argument.text : undefined;
+}
+
+function uniqueStaticPropsKeys(
+  call: ts.CallExpression,
+  sourceFile: ts.SourceFile,
+): Array<{ name: string; start: number; end: number }> {
+  const unique = new Map<string, { name: string; start: number; end: number }>();
+
+  for (const key of staticPropsKeys(call, sourceFile)) {
+    unique.set(key.name, unique.get(key.name) ?? key);
+  }
+
+  return Array.from(unique.values());
 }
 
 function staticPropsKeys(

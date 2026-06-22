@@ -36,7 +36,17 @@ type RenderValue =
   | null
   | undefined
   | SlateHTML
-  | Promise<RenderValue>;
+  | readonly RenderValue[]
+  | Promise<
+      | string
+      | number
+      | bigint
+      | boolean
+      | null
+      | undefined
+      | SlateHTML
+      | readonly RenderValue[]
+    >;
 
 type RenderResult = SlateHTML | Promise<SlateHTML>;
 
@@ -51,6 +61,7 @@ type RenderFunction<TInput = void> =
 Normal `{expression}` interpolation uses `renderValue()`:
 
 - `SlateHTML` is inserted without escaping.
+- arrays are recursively rendered and concatenated without separators.
 - strings, numbers, and bigints are escaped.
 - `null`, `undefined`, `true`, and `false` render as empty output.
 

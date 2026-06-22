@@ -446,7 +446,8 @@ export type RenderPrimitive =
 export type RenderValue =
   | RenderPrimitive
   | SlateHTML
-  | Promise<RenderValue>;
+  | readonly RenderValue[]
+  | Promise<RenderPrimitive | SlateHTML | readonly RenderValue[]>;
 
 export type RenderResult = SlateHTML | Promise<SlateHTML>;
 
@@ -463,6 +464,7 @@ Rules:
 - Normal `{expression}` uses `renderValue(expression)`.
 - `renderValue` escapes strings, numbers, and bigints.
 - `renderValue` inserts `SlateHTML` without escaping.
+- `renderValue` recursively renders arrays and concatenates items without separators.
 - `renderValue` renders `null`, `undefined`, `true`, and `false` as empty output.
 - `{@html expression}` uses `renderHTML(expression)`.
 - `renderHTML` inserts strings as raw HTML.

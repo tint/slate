@@ -1,11 +1,11 @@
 <script slate>
   const title = $prop<string>("title", "Untitled");
   const props = $props<{
-    count?: number;
+    total?: number;
   }>({
-    count: 0,
+    total: 0,
   });
 </script>
 
 <h1>{title}</h1>
-<p>{props.count}</p>
+<p>{props.total}</p>
