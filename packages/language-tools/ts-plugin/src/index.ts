@@ -57,6 +57,9 @@ export const RUNE_DECLARATIONS: string = [
   "type __SlatePropsOf<T> = T extends { render: (...args: any[]) => unknown } ? NonNullable<Parameters<T[\"render\"]>[0]> : Record<string, unknown>;",
   "type __SlateSlotsOf<T> = T extends { render: (...args: any[]) => unknown } ? NonNullable<Parameters<T[\"render\"]>[1]> : Record<string, unknown>;",
   "type __SlatePropValue<T, K extends PropertyKey> = K extends keyof __SlatePropsOf<T> ? __SlatePropsOf<T>[K] : unknown;",
+  "type __SlateDefaultedProps<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;",
+  "type __SlateUnionToIntersection<T> = (T extends unknown ? (value: T) => void : never) extends (value: infer I) => void ? I : never;",
+  "type __SlatePropEntry<K extends PropertyKey, T, HasDefault extends boolean> = HasDefault extends true ? { [P in K]?: T } : undefined extends T ? { [P in K]?: T } : { [P in K]: T };",
   "declare module \"*.slate\" { const component: unknown; export default component; }",
   "declare module \"*.avif\" { const url: string; export default url; }",
   "declare module \"*.bmp\" { const url: string; export default url; }",
@@ -418,7 +421,7 @@ function extractTypeModuleSource(source: string): {
 
 function createInferredPropsSource(runtimeSource: string): string {
   const sourceFile = ts.createSourceFile("component.slate.ts", runtimeSource, ts.ScriptTarget.Latest, true, ts.ScriptKind.TS);
-  const properties: string[] = [];
+  const propEntries: string[] = [];
   const spreads: string[] = [];
 
   const visit = (node: ts.Node): void => {
@@ -442,13 +445,12 @@ function createInferredPropsSource(runtimeSource: string): string {
         return;
       }
 
-      const optional = initializer.arguments.length >= 2 ? "?" : "";
-      properties.push(`  ${JSON.stringify(key.text)}${optional}: ${propTypeFromCall(initializer, runtimeSource)};`);
+      propEntries.push(`__SlatePropEntry<${JSON.stringify(key.text)}, ${propTypeFromCall(initializer, runtimeSource)}, ${propCallHasDefault(initializer) ? "true" : "false"}>`);
       return;
     }
 
     if (ts.isIdentifier(initializer.expression) && initializer.expression.text === "$props") {
-      spreads.push(`typeof ${node.name.text}`);
+      spreads.push(propsTypeFromCall(initializer, node.name.text, runtimeSource, sourceFile));
       return;
     }
 
@@ -457,10 +459,60 @@ function createInferredPropsSource(runtimeSource: string): string {
 
   ts.forEachChild(sourceFile, visit);
 
-  const objectType = properties.length > 0 ? ["{", ...properties, "}"].join("\n") : "Record<string, unknown>";
+  const objectType = propEntries.length > 0 ? `__SlateUnionToIntersection<${propEntries.join(" | ")}>` : "Record<string, unknown>";
   const inferred = [objectType, ...spreads].join(" & ");
 
   return `type __SlateInferredProps = ${inferred};`;
+}
+
+function propCallHasDefault(call: ts.CallExpression): boolean {
+  return call.arguments.length >= 2;
+}
+
+function propsTypeFromCall(call: ts.CallExpression, localName: string, source: string, sourceFile: ts.SourceFile): string {
+  const typeArgument = call.typeArguments?.[0];
+  const defaults = call.arguments[0];
+
+  if (!defaults) {
+    return `typeof ${localName}`;
+  }
+
+  const defaultKeys = staticObjectKeys(defaults);
+
+  if (!defaultKeys.length) {
+    return `typeof ${localName}`;
+  }
+
+  const keyUnion = defaultKeys.map((key) => JSON.stringify(key)).join(" | ");
+
+  if (typeArgument) {
+    const typeText = source.slice(typeArgument.getStart(sourceFile), typeArgument.getEnd());
+    return `__SlateDefaultedProps<${typeText}, Extract<${keyUnion}, keyof ${typeText}>>`;
+  }
+
+  return `__SlateDefaultedProps<typeof ${localName}, ${keyUnion}>`;
+}
+
+function staticObjectKeys(node: ts.Expression): string[] {
+  if (!ts.isObjectLiteralExpression(node)) {
+    return [];
+  }
+
+  const keys: string[] = [];
+
+  for (const property of node.properties) {
+    if (!ts.isPropertyAssignment(property) && !ts.isShorthandPropertyAssignment(property)) {
+      continue;
+    }
+
+    const name = property.name;
+
+    if (ts.isIdentifier(name) || ts.isStringLiteralLike(name) || ts.isNumericLiteral(name)) {
+      keys.push(name.text);
+    }
+  }
+
+  return Array.from(new Set(keys));
 }
 
 function propTypeFromCall(call: ts.CallExpression, source: string): string {
