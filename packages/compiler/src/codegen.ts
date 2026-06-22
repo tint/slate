@@ -13,32 +13,38 @@ import type {
 } from "./cst";
 import type { Diagnostic } from "./diagnostics";
 import type { SlateModule } from "./analyze";
+import { appendInlineSourceMap, createSourceMap, type SourceMap, type SourceMapHint, type SourceMapOption } from "./sourcemap";
 import ts from "typescript";
 
 export type GenerateOptions = {
   filename?: string;
+  source?: string;
   module?: SlateModule;
   dev?: boolean;
+  sourcemap?: SourceMapOption;
 };
 
 export type GenerateResult = {
   code: string;
+  map?: SourceMap;
   diagnostics: Diagnostic[];
 };
 
 export function generate(cst: SlateFileCst, _options: GenerateOptions = {}): GenerateResult {
   const filename = _options.filename ?? "component.slate";
   const dev = _options.dev ?? false;
+  const source = _options.source ?? "";
+  const sourceMapHints: SourceMapHint[] = [];
   const script = cst.children.find((child): child is SlateScriptElementCst => child.kind === "SlateScriptElement");
   const componentNames = new Set(_options.module?.components.map((component) => component.localName) ?? []);
   const slotBindings = _options.module?.slots ?? [];
   const bodyNodes = cst.children.filter((child) => child.kind !== "SlateScriptElement");
   const scriptParts = script ? transpileSlateScript(script.body.text) : { imports: "", body: "" };
-  const statements = generateStatements(bodyNodes, componentNames, "__html", filename, dev);
+  const statements = generateStatements(bodyNodes, componentNames, "__html", filename, dev, sourceMapHints);
   const usedRunes = collectUsedRunes([scriptParts.body, statements]);
   const kitImports = collectKitImports([scriptParts.body, statements]);
   const runeHelpers = generateRuneHelpers(usedRunes, slotBindings);
-  const code = [
+  let code = [
     `import { ${kitImports.join(", ")} } from "@slate/kit";`,
     scriptParts.imports.trim(),
     "",
@@ -56,9 +62,22 @@ export function generate(cst: SlateFileCst, _options: GenerateOptions = {}): Gen
   ]
     .filter((part) => part !== "")
     .join("\n");
+  const map = _options.sourcemap
+    ? createSourceMap({
+        code,
+        source,
+        filename,
+        hints: sourceMapHints,
+      })
+    : undefined;
+
+  if (_options.sourcemap === "inline" && map) {
+    code = appendInlineSourceMap(code, map);
+  }
 
   return {
     code,
+    map,
     diagnostics: [],
   };
 }
@@ -141,46 +160,66 @@ function generateRuneHelpers(usedRunes: Set<RuneName>, slots: SlateModule["slots
   return helpers;
 }
 
-function generateStatements(nodes: TemplateCstNode[], componentNames: Set<string>, target: string, filename: string, dev: boolean): string {
-  return nodes.map((node) => generateStatement(node, componentNames, target, filename, dev)).filter(Boolean).join("\n");
+function generateStatements(
+  nodes: TemplateCstNode[],
+  componentNames: Set<string>,
+  target: string,
+  filename: string,
+  dev: boolean,
+  sourceMapHints: SourceMapHint[],
+): string {
+  return nodes.map((node) => generateStatement(node, componentNames, target, filename, dev, sourceMapHints)).filter(Boolean).join("\n");
 }
 
-function generateStatement(node: TemplateCstNode, componentNames: Set<string>, target: string, filename: string, dev: boolean): string {
+function generateStatement(
+  node: TemplateCstNode,
+  componentNames: Set<string>,
+  target: string,
+  filename: string,
+  dev: boolean,
+  sourceMapHints: SourceMapHint[],
+): string {
   switch (node.kind) {
     case "ConstTag":
     case "LetTag":
       return `${node.statement.text};`;
     case "IfBlock":
-      return generateIfStatement(node, componentNames, target, filename, dev);
+      return generateIfStatement(node, componentNames, target, filename, dev, sourceMapHints);
     case "EachBlock":
-      return generateEachStatement(node, componentNames, target, filename, dev);
+      return generateEachStatement(node, componentNames, target, filename, dev, sourceMapHints);
     case "DebugDirective":
     case "Error":
     case "SlateScriptElement":
       return "";
     default:
-      return `${target} += ${generateNode(node, componentNames, filename, dev)};`;
+      return `${target} += ${generateNode(node, componentNames, filename, dev, sourceMapHints)};`;
   }
 }
 
-function generateNode(node: TemplateCstNode, componentNames: Set<string>, filename: string, dev: boolean): string {
+function generateNode(
+  node: TemplateCstNode,
+  componentNames: Set<string>,
+  filename: string,
+  dev: boolean,
+  sourceMapHints: SourceMapHint[],
+): string {
   switch (node.kind) {
     case "Text":
       return generateText(node);
     case "Comment":
       return JSON.stringify(`<!--${node.text}${node.closed ? "-->" : ""}`);
     case "Element":
-      return generateElement(node, componentNames, filename, dev);
+      return generateElement(node, componentNames, filename, dev, sourceMapHints);
     case "RawTextElement":
-      return generateRawTextElement(node, filename);
+      return generateRawTextElement(node, filename, sourceMapHints);
     case "Interpolation":
-      return generateInterpolation(node, filename);
+      return generateInterpolation(node, filename, sourceMapHints);
     case "HtmlDirective":
-      return generateHtmlDirective(node, filename);
+      return generateHtmlDirective(node, filename, sourceMapHints);
     case "IfBlock":
-      return generateIfBlock(node, componentNames, filename, dev);
+      return generateIfBlock(node, componentNames, filename, dev, sourceMapHints);
     case "EachBlock":
-      return generateEachBlock(node, componentNames, filename, dev);
+      return generateEachBlock(node, componentNames, filename, dev, sourceMapHints);
     case "ConstTag":
     case "LetTag":
       return "\"\"";
@@ -191,10 +230,10 @@ function generateNode(node: TemplateCstNode, componentNames: Set<string>, filena
   }
 }
 
-function generateIfStatement(node: IfBlockCst, componentNames: Set<string>, target: string, filename: string, dev: boolean): string {
-  const condition = node.open.expression ? wrapExpression(node.open.expression.text, filename, node.open.expression.range, "template") : "false";
-  const thenBody = generateStatements(node.then, componentNames, target, filename, dev);
-  const elseBody = node.else ? generateStatements(node.else, componentNames, target, filename, dev) : "";
+function generateIfStatement(node: IfBlockCst, componentNames: Set<string>, target: string, filename: string, dev: boolean, sourceMapHints: SourceMapHint[]): string {
+  const condition = node.open.expression ? wrapExpression(node.open.expression.text, filename, node.open.expression.range, "template", sourceMapHints) : "false";
+  const thenBody = generateStatements(node.then, componentNames, target, filename, dev, sourceMapHints);
+  const elseBody = node.else ? generateStatements(node.else, componentNames, target, filename, dev, sourceMapHints) : "";
 
   if (!node.else) {
     return `if (${condition}) {\n${indent(thenBody, 2)}\n}`;
@@ -203,11 +242,11 @@ function generateIfStatement(node: IfBlockCst, componentNames: Set<string>, targ
   return `if (${condition}) {\n${indent(thenBody, 2)}\n} else {\n${indent(elseBody, 2)}\n}`;
 }
 
-function generateEachStatement(node: EachBlockCst, componentNames: Set<string>, target: string, filename: string, dev: boolean): string {
-  const list = `Array.from(${wrapExpression(node.expression.text, filename, node.expression.range, "template")})`;
+function generateEachStatement(node: EachBlockCst, componentNames: Set<string>, target: string, filename: string, dev: boolean, sourceMapHints: SourceMapHint[]): string {
+  const list = `Array.from(${wrapExpression(node.expression.text, filename, node.expression.range, "template", sourceMapHints)})`;
   const item = node.item;
-  const body = generateStatements(node.children, componentNames, target, filename, dev);
-  const elseBody = node.else ? generateStatements(node.else, componentNames, target, filename, dev) : "";
+  const body = generateStatements(node.children, componentNames, target, filename, dev, sourceMapHints);
+  const elseBody = node.else ? generateStatements(node.else, componentNames, target, filename, dev, sourceMapHints) : "";
   const entry = node.index ? `${node.index}, ${item}` : `_, ${item}`;
 
   if (!node.else) {
@@ -217,12 +256,12 @@ function generateEachStatement(node: EachBlockCst, componentNames: Set<string>, 
   return `const __items = ${list};\nif (__items.length) {\n  for (const [${entry}] of __items.entries()) {\n${indent(body, 4)}\n  }\n} else {\n${indent(elseBody, 2)}\n}`;
 }
 
-function generateEachBlock(node: EachBlockCst, componentNames: Set<string>, filename: string, dev: boolean): string {
+function generateEachBlock(node: EachBlockCst, componentNames: Set<string>, filename: string, dev: boolean, sourceMapHints: SourceMapHint[]): string {
   const item = node.item;
   const index = node.index ? `, ${node.index}` : "";
-  const body = node.children.map((child) => generateNode(child, componentNames, filename, dev)).filter(Boolean).join(",\n          ");
-  const elseBody = node.else?.map((child) => generateNode(child, componentNames, filename, dev)).filter(Boolean).join(",\n        ");
-  const eachExpression = `Array.from(${wrapExpression(node.expression.text, filename, node.expression.range, "template")})`;
+  const body = node.children.map((child) => generateNode(child, componentNames, filename, dev, sourceMapHints)).filter(Boolean).join(",\n          ");
+  const elseBody = node.else?.map((child) => generateNode(child, componentNames, filename, dev, sourceMapHints)).filter(Boolean).join(",\n        ");
+  const eachExpression = `Array.from(${wrapExpression(node.expression.text, filename, node.expression.range, "template", sourceMapHints)})`;
 
   if (!node.else) {
     return `(await Promise.all(${eachExpression}.map(async (${item}${index}) => [\n          ${body}\n        ].join("")))).join("")`;
@@ -231,10 +270,10 @@ function generateEachBlock(node: EachBlockCst, componentNames: Set<string>, file
   return `await (async () => {\n        const __items = ${eachExpression};\n        return __items.length ? (await Promise.all(__items.map(async (${item}${index}) => [\n          ${body}\n        ].join("")))).join("") : [\n        ${elseBody ?? ""}\n      ].join("");\n      })()`;
 }
 
-function generateIfBlock(node: IfBlockCst, componentNames: Set<string>, filename: string, dev: boolean): string {
-  const condition = node.open.expression ? wrapExpression(node.open.expression.text, filename, node.open.expression.range, "template") : "false";
-  const thenBody = node.then.map((child) => generateNode(child, componentNames, filename, dev)).filter(Boolean).join(",\n        ");
-  const elseBody = node.else?.map((child) => generateNode(child, componentNames, filename, dev)).filter(Boolean).join(",\n        ");
+function generateIfBlock(node: IfBlockCst, componentNames: Set<string>, filename: string, dev: boolean, sourceMapHints: SourceMapHint[]): string {
+  const condition = node.open.expression ? wrapExpression(node.open.expression.text, filename, node.open.expression.range, "template", sourceMapHints) : "false";
+  const thenBody = node.then.map((child) => generateNode(child, componentNames, filename, dev, sourceMapHints)).filter(Boolean).join(",\n        ");
+  const elseBody = node.else?.map((child) => generateNode(child, componentNames, filename, dev, sourceMapHints)).filter(Boolean).join(",\n        ");
 
   return `(${condition}) ? [\n        ${thenBody}\n      ].join("") : [\n        ${elseBody ?? ""}\n      ].join("")`;
 }
@@ -243,56 +282,56 @@ function generateText(node: TextCst): string {
   return JSON.stringify(node.text);
 }
 
-function generateInterpolation(node: InterpolationCst, filename: string): string {
-  return `await renderValue(${wrapExpression(node.expression.text, filename, node.expression.range, "template")})`;
+function generateInterpolation(node: InterpolationCst, filename: string, sourceMapHints: SourceMapHint[]): string {
+  return `await renderValue(${wrapExpression(node.expression.text, filename, node.expression.range, "template", sourceMapHints)})`;
 }
 
-function generateHtmlDirective(node: HtmlDirectiveCst, filename: string): string {
-  return `await renderHTML(${wrapExpression(node.expression.text, filename, node.expression.range, "template")})`;
+function generateHtmlDirective(node: HtmlDirectiveCst, filename: string, sourceMapHints: SourceMapHint[]): string {
+  return `await renderHTML(${wrapExpression(node.expression.text, filename, node.expression.range, "template", sourceMapHints)})`;
 }
 
-function generateElement(node: ElementCst, componentNames: Set<string>, filename: string, dev: boolean): string {
+function generateElement(node: ElementCst, componentNames: Set<string>, filename: string, dev: boolean, sourceMapHints: SourceMapHint[]): string {
   if (componentNames.has(node.rawTagName)) {
-    return generateComponent(node, filename, dev, componentNames);
+    return generateComponent(node, filename, dev, componentNames, sourceMapHints);
   }
 
   if (node.tagName === "slot") {
-    return generateSlotOutlet(node, componentNames, filename, dev);
+    return generateSlotOutlet(node, componentNames, filename, dev, sourceMapHints);
   }
 
   if (node.rawTagName === "Fragment") {
     return [
       "[",
-      ...node.children.map((child) => generateNode(child, componentNames, filename, dev)).filter(Boolean).map((child) => `  ${child},`),
+      ...node.children.map((child) => generateNode(child, componentNames, filename, dev, sourceMapHints)).filter(Boolean).map((child) => `  ${child},`),
       "].join(\"\")",
     ].join("\n");
   }
 
   if (node.selfClosing) {
-    return `[${generateOpenTagParts(node.rawTagName, node.openTag.attributes, true, filename, dev).join(", ")}].join("")`;
+    return `[${generateOpenTagParts(node.rawTagName, node.openTag.attributes, true, filename, dev, sourceMapHints).join(", ")}].join("")`;
   }
 
-  const children = node.children.map((child) => generateNode(child, componentNames, filename, dev)).filter(Boolean);
+  const children = node.children.map((child) => generateNode(child, componentNames, filename, dev, sourceMapHints)).filter(Boolean);
   const close = node.closeTag ? `</${node.closeTag.rawTagName}>` : "";
 
   return [
     "[",
-    ...generateOpenTagParts(node.rawTagName, node.openTag.attributes, false, filename, dev).map((part) => `  ${part},`),
+    ...generateOpenTagParts(node.rawTagName, node.openTag.attributes, false, filename, dev, sourceMapHints).map((part) => `  ${part},`),
     ...children.map((child) => `  ${child},`),
     `  ${JSON.stringify(close)}`,
     "].join(\"\")",
   ].join("\n");
 }
 
-function generateOpenTagParts(rawTagName: string, attributes: AttributeCst[], selfClosing: boolean, filename: string, dev: boolean): string[] {
+function generateOpenTagParts(rawTagName: string, attributes: AttributeCst[], selfClosing: boolean, filename: string, dev: boolean, sourceMapHints: SourceMapHint[]): string[] {
   return [
     JSON.stringify(`<${rawTagName}`),
-    ...generateAttributeParts(attributes, filename, dev),
+    ...generateAttributeParts(attributes, filename, dev, sourceMapHints),
     JSON.stringify(selfClosing ? " />" : ">"),
   ];
 }
 
-function generateAttributeParts(attributes: AttributeCst[], filename: string, dev: boolean): string[] {
+function generateAttributeParts(attributes: AttributeCst[], filename: string, dev: boolean, sourceMapHints: SourceMapHint[]): string[] {
   const chunks: string[] = [];
 
   for (const attr of attributes) {
@@ -314,7 +353,7 @@ function generateAttributeParts(attributes: AttributeCst[], filename: string, de
     }
 
     if (attr.kind === "ExpressionAttribute") {
-      const expression = wrapExpression(attr.expression.text, filename, attr.expression.range, "template");
+      const expression = wrapExpression(attr.expression.text, filename, attr.expression.range, "template", sourceMapHints);
       let value = expression;
 
       if (attr.name === "class") {
@@ -343,7 +382,7 @@ function generateJoined(children: string[]): string {
   ].join("\n");
 }
 
-function generateSlotOutlet(node: ElementCst, componentNames: Set<string>, filename: string, dev: boolean): string {
+function generateSlotOutlet(node: ElementCst, componentNames: Set<string>, filename: string, dev: boolean, sourceMapHints: SourceMapHint[]): string {
   const nameAttr = node.openTag.attributes.find(
     (attr) => attr.kind === "StringAttribute" && attr.name === "name",
   );
@@ -352,20 +391,20 @@ function generateSlotOutlet(node: ElementCst, componentNames: Set<string>, filen
   );
   const name = nameAttr?.kind === "StringAttribute" ? nameAttr.value : "default";
   const fallback = node.children.length
-    ? `[\n      ${node.children.map((child) => generateNode(child, componentNames, filename, dev)).filter(Boolean).join(",\n      ")}\n    ].join("")`
+    ? `[\n      ${node.children.map((child) => generateNode(child, componentNames, filename, dev, sourceMapHints)).filter(Boolean).join(",\n      ")}\n    ].join("")`
     : "\"\"";
   const data = dataAttr?.kind === "ExpressionAttribute"
-    ? wrapExpression(dataAttr.expression.text, filename, dataAttr.expression.range, "slot")
+    ? wrapExpression(dataAttr.expression.text, filename, dataAttr.expression.range, "slot", sourceMapHints)
     : "undefined";
 
   return `await renderHTML(await renderSlot(slots, ${JSON.stringify(name)}, __slateHtml(${fallback}), ${data}))`;
 }
 
-function generateComponent(node: ElementCst, filename: string, dev: boolean, componentNames?: Set<string>): string {
-  return `await renderHTML(await ${node.rawTagName}.render(${generatePropsObject(node.openTag.attributes, filename)}, ${generateSlotsObject(node, componentNames ?? new Set(), filename, dev)}, context))`;
+function generateComponent(node: ElementCst, filename: string, dev: boolean, componentNames: Set<string>, sourceMapHints: SourceMapHint[]): string {
+  return `await renderHTML(await ${node.rawTagName}.render(${generatePropsObject(node.openTag.attributes, filename, sourceMapHints)}, ${generateSlotsObject(node, componentNames, filename, dev, sourceMapHints)}, context))`;
 }
 
-function generateSlotsObject(node: ElementCst, componentNames: Set<string>, filename: string, dev: boolean): string {
+function generateSlotsObject(node: ElementCst, componentNames: Set<string>, filename: string, dev: boolean, sourceMapHints: SourceMapHint[]): string {
   const slotGroups = new Map<string, { pattern?: string; children: TemplateCstNode[] }>();
   slotGroups.set("default", {
     children: [],
@@ -408,7 +447,7 @@ function generateSlotsObject(node: ElementCst, componentNames: Set<string>, file
   const slots = entries.map(([name, slot]) => {
     const params = slot.pattern ? slot.pattern : "";
 
-    return `${JSON.stringify(name)}: async (${params}) => {\n      let __html = \"\";\n${indent(generateStatements(slot.children, componentNames, "__html", filename, dev), 6)}\n      return __slateHtml(__html);\n    }`;
+    return `${JSON.stringify(name)}: async (${params}) => {\n      let __html = \"\";\n${indent(generateStatements(slot.children, componentNames, "__html", filename, dev, sourceMapHints), 6)}\n      return __slateHtml(__html);\n    }`;
   });
 
   return `{\n    ${slots.join(",\n    ")}\n  }`;
@@ -426,7 +465,7 @@ function stripSlotAttribute(node: ElementCst): ElementCst {
   };
 }
 
-function generatePropsObject(attributes: AttributeCst[], filename: string): string {
+function generatePropsObject(attributes: AttributeCst[], filename: string, sourceMapHints: SourceMapHint[]): string {
   const props: string[] = [];
 
   for (const attr of attributes) {
@@ -441,7 +480,7 @@ function generatePropsObject(attributes: AttributeCst[], filename: string): stri
     }
 
     if (attr.kind === "ExpressionAttribute") {
-      props.push(`${JSON.stringify(attr.name)}: ${wrapExpression(attr.expression.text, filename, attr.expression.range, "component")}`);
+      props.push(`${JSON.stringify(attr.name)}: ${wrapExpression(attr.expression.text, filename, attr.expression.range, "component", sourceMapHints)}`);
       continue;
     }
   }
@@ -449,10 +488,10 @@ function generatePropsObject(attributes: AttributeCst[], filename: string): stri
   return `{ ${props.join(", ")} }`;
 }
 
-function generateRawTextElement(node: RawTextElementCst, filename: string): string {
+function generateRawTextElement(node: RawTextElementCst, filename: string, sourceMapHints: SourceMapHint[]): string {
   const close = node.closeTag ? `</${node.closeTag.rawTagName}>` : "";
   const html = generateJoined([
-    ...generateOpenTagParts(node.rawTagName, node.openTag.attributes, false, filename, false).map((part) => `  ${part},`),
+    ...generateOpenTagParts(node.rawTagName, node.openTag.attributes, false, filename, false, sourceMapHints).map((part) => `  ${part},`),
     `  ${JSON.stringify(node.body.text)},`,
     `  ${JSON.stringify(close)}`,
   ]);
@@ -497,7 +536,12 @@ function wrapExpression(
   filename: string,
   range: { start: number; end: number },
   kind: "script" | "template" | "slot" | "component",
+  sourceMapHints: SourceMapHint[],
 ): string {
+  sourceMapHints.push({
+    generatedText: text,
+    original: range,
+  });
   return `evaluateSlateExpression(() => (${text}), ${sourceLocation(filename, range, kind)})`;
 }
 

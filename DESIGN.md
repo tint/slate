@@ -1031,6 +1031,5 @@ Initial implementation should not support:
 - Client runtime.
 - Browser-side reactivity.
 - Scoped CSS.
-- Source maps.
 - Incremental build cache.
 - Streaming render.

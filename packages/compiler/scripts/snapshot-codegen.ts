@@ -10,13 +10,25 @@ for (const fixtureName of readdirSync(fixturesDir)) {
   const fixtureDir = join(fixturesDir, fixtureName);
   const inputPath = join(fixtureDir, "input.slate");
   const outputPath = join(fixtureDir, "output.js");
+  const mapPath = join(fixtureDir, "output.map.json");
   const diagnosticsPath = join(fixtureDir, "diagnostics.json");
   const source = readFileSync(inputPath, "utf8");
-  const result = compile(source);
+  const result = compile(
+    source,
+    fixtureName === "sourcemap"
+      ? {
+          filename: "input.slate",
+          sourcemap: true,
+        }
+      : {},
+  );
 
   mkdirSync(fixtureDir, {
     recursive: true,
   });
   writeFileSync(outputPath, result.code);
+  if (result.map) {
+    writeFileSync(mapPath, `${JSON.stringify(result.map, null, 2)}\n`);
+  }
   writeFileSync(diagnosticsPath, `${JSON.stringify(result.diagnostics, null, 2)}\n`);
 }

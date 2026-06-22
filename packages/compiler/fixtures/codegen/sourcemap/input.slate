@@ -1,0 +1,14 @@
+<script slate>
+const title = "Hello";
+const items = ["a", "b"];
+</script>
+
+<h1>{title}</h1>
+
+{#if items.length}
+  <ul>
+    {#each items as item}
+      <li data-item={item}>{item}</li>
+    {/each}
+  </ul>
+{/if}

@@ -4,6 +4,7 @@ export { compileFiles } from "./compile-files";
 export type { CompiledFile, CompileFilesOptions, CompileFilesResult } from "./compile-files";
 export { generate } from "./codegen";
 export type { GenerateOptions, GenerateResult } from "./codegen";
+export type { SourceMap, SourceMapOption } from "./sourcemap";
 export type {
   AttributeCst,
   CommentCst,
@@ -32,15 +33,18 @@ export type { Position, Range } from "./source";
 
 export type CompileResult = {
   code: string;
+  map?: SourceMap;
   diagnostics: Diagnostic[];
 };
 
 export type CompileOptions = {
   filename?: string;
   dev?: boolean;
+  sourcemap?: SourceMapOption;
 };
 
 import type { Diagnostic } from "./diagnostics";
+import type { SourceMap, SourceMapOption } from "./sourcemap";
 import { parse } from "./parser";
 import { analyze } from "./analyze";
 import { generate } from "./codegen";
@@ -50,12 +54,15 @@ export function compile(source: string, options: CompileOptions = {}): CompileRe
   const analyzed = analyze(parsed.cst);
   const generated = generate(parsed.cst, {
     filename: options.filename,
+    source,
     module: analyzed.module,
     dev: options.dev,
+    sourcemap: options.sourcemap,
   });
 
   return {
     code: generated.code,
+    map: generated.map,
     diagnostics: [...parsed.diagnostics, ...analyzed.diagnostics, ...generated.diagnostics],
   };
 }

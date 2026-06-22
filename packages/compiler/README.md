@@ -29,6 +29,7 @@ Primary entry point:
 ```ts
 compile(source, {
   filename: "entry.slate",
+  sourcemap: true,
 });
 ```
 
@@ -59,7 +60,29 @@ Covered expression kinds:
 - component prop expressions
 - slot data expressions
 
-Standard source maps can be added later once compiler sidecar mappings are stable.
+## Source maps
+
+The compiler can emit standard v3 source maps for generated render modules:
+
+```ts
+const result = compile(source, {
+  filename: "entry.slate",
+  sourcemap: true,
+});
+```
+
+Supported values:
+
+- `false` or `undefined`: no source map.
+- `true`: return `result.map` without appending a sourceMappingURL comment.
+- `"hidden"`: return `result.map` without appending a sourceMappingURL comment.
+- `"inline"`: return `result.map` and append an inline sourceMappingURL data URL.
+
+The map is segment-level. It maps Slate expressions back to source ranges, but
+does not map generated helper code or final HTML output.
+
+Vite/Rolldown and CLI integrations are responsible for deciding whether to
+write sidecar `.map` files or pass maps through a bundler pipeline.
 
 ## Compiler directives
 
