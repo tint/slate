@@ -75,6 +75,7 @@ async function renderBuildInput(root: string, inputPath: string, tmpDir: string,
       build: {
         ssr: inputPath,
         outDir: tmpDir,
+        sourcemap: vite?.build?.sourcemap,
         emptyOutDir: true,
         copyPublicDir: false,
         rollupOptions: {

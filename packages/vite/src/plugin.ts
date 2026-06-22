@@ -1,6 +1,7 @@
 import { readFile } from "node:fs/promises";
-import type { Plugin } from "vite";
+import type { Plugin, ResolvedConfig } from "vite";
 import { compile, formatDiagnostic } from "@slate/compiler";
+import type { SourceMapOption } from "@slate/compiler";
 import type { SlatePluginOptions } from "./types";
 
 /**
@@ -10,9 +11,14 @@ import type { SlatePluginOptions } from "./types";
  * the `.slate` extension so diagnostics and generated imports remain stable.
  */
 export function slate(options: SlatePluginOptions = {}): Plugin {
+  let config: ResolvedConfig | undefined;
+
   return {
     name: "slate",
     enforce: "pre",
+    configResolved(resolvedConfig) {
+      config = resolvedConfig;
+    },
     async transform(_code, id) {
       const filename = cleanId(id);
 
@@ -24,6 +30,7 @@ export function slate(options: SlatePluginOptions = {}): Plugin {
       const result = compile(source, {
         filename,
         dev: options.dev,
+        sourcemap: options.sourcemap ?? sourceMapOptionFromVite(config),
       });
 
       if (result.diagnostics.length) {
@@ -41,7 +48,7 @@ export function slate(options: SlatePluginOptions = {}): Plugin {
 
       return {
         code,
-        map: null,
+        map: result.map ?? null,
       };
     },
     handleHotUpdate(ctx) {
@@ -57,4 +64,14 @@ export function slate(options: SlatePluginOptions = {}): Plugin {
 
 function cleanId(id: string): string {
   return id.split("?")[0] ?? id;
+}
+
+function sourceMapOptionFromVite(config: ResolvedConfig | undefined): SourceMapOption | undefined {
+  const sourcemap = config?.build.sourcemap;
+
+  if (sourcemap === true || sourcemap === "inline" || sourcemap === "hidden") {
+    return sourcemap;
+  }
+
+  return undefined;
 }

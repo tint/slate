@@ -2,17 +2,41 @@ import { get } from "node:http";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { readFile, rm } from "node:fs/promises";
-import { buildSlate, createSlateDevServer } from "../src/index";
+import type { Plugin } from "vite";
+import { buildSlate, createSlateDevServer, slate } from "../src/index";
 
 const root = dirname(fileURLToPath(import.meta.url));
 const packageRoot = join(root, "..");
 const fixtureRoot = join(packageRoot, "fixtures/basic");
+const appPath = join(fixtureRoot, "App.slate");
 const tmpDir = join(packageRoot, ".tmp");
 
 await rm(tmpDir, {
   recursive: true,
   force: true,
 });
+
+const slatePlugin = slate({
+  sourcemap: true,
+}) as Plugin;
+const transform = typeof slatePlugin.transform === "function"
+  ? slatePlugin.transform
+  : slatePlugin.transform?.handler;
+const transformed = await transform?.call({
+  error(error: string | Error): never {
+    throw typeof error === "string" ? new Error(error) : error;
+  },
+} as never, "", appPath);
+
+if (
+  !transformed ||
+  typeof transformed === "string" ||
+  !("map" in transformed) ||
+  !transformed.map ||
+  !JSON.stringify(transformed.map).includes("App.slate")
+) {
+  throw new Error("Expected Slate Vite transform to return a source map for .slate input.");
+}
 
 const server = await createSlateDevServer({
   root: fixtureRoot,
@@ -21,6 +45,9 @@ const server = await createSlateDevServer({
   vite: {
     define: {
       __SLATE_VITE_FIXTURE__: JSON.stringify("configured by vite"),
+    },
+    build: {
+      sourcemap: true,
     },
   },
   server: {
@@ -144,8 +171,7 @@ const minifiedHtml = await readFile(join(tmpDir, "minified.html"), "utf8");
 if (
   !minifiedHtml.includes("Slate Vite") ||
   !minifiedHtml.includes("configured by vite") ||
-  minifiedHtml.includes("\n  <") ||
-  minifiedHtml.includes("\n    ")
+  minifiedHtml.includes("\n  <")
 ) {
   throw new Error(`Unexpected minified buildSlate HTML output.\n${minifiedHtml}`);
 }

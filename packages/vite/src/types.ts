@@ -1,5 +1,6 @@
 import type { InlineConfig, PluginOption } from "vite";
 import type { PluggableList } from "unified";
+import type { SourceMapOption } from "@slate/compiler";
 
 /** A single Slate entry or a named multi-entry map. Named entries become route/build output names. */
 export type SlateViteInput = string | Record<string, string>;
@@ -75,6 +76,7 @@ export type SlatePreviewOptions = {
 export type SlatePluginOptions = {
   kitSpecifier?: string;
   dev?: boolean;
+  sourcemap?: SourceMapOption;
 };
 
 /** Internal normalized input used by dev/build routing. */

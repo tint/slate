@@ -39,6 +39,21 @@ await buildSlate({
 
 `html.format` supports `"preserve"`, `"pretty"`, and `"minify"`. `html.rehypePlugins` can be used to run additional rehype transforms on the final rendered HTML.
 
+Slate's Vite plugin follows Vite/Rolldown source map settings. When
+`vite.build.sourcemap` is `true`, `"inline"`, or `"hidden"`, `.slate`
+transforms return compiler source maps to Vite:
+
+```ts
+await buildSlate({
+  input: "src/App.slate",
+  vite: {
+    build: {
+      sourcemap: true,
+    },
+  },
+});
+```
+
 ## Global and inline assets
 
 Slate collects global inline assets during render and injects them into the
