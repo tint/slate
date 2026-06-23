@@ -278,6 +278,8 @@ export const Fragment: unique symbol = Symbol.for("slate.fragment") as never;
 /** Props accepted by Slate's JSX runtime. */
 export type JsxProps = Record<string, unknown> & {
   children?: unknown;
+} & {
+  [K in `on${string}`]?: never;
 };
 
 /** Create a Slate HTML fragment from TSX used inside `<script slate>`. */
