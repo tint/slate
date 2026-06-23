@@ -1,6 +1,6 @@
 {
   "name": "SlateRenderError",
-  "messageIncludes": "Slate JSX does not support runtime event handler attribute \"onClick\".",
+  "messageIncludes": "Slate JSX event handler attribute \"onClick\" must be a string.",
   "kind": "template",
   "rangeText": "<button onClick={handleClick}>Click</button>"
 }

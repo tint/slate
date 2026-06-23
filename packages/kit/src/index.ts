@@ -279,7 +279,7 @@ export const Fragment: unique symbol = Symbol.for("slate.fragment") as never;
 export type JsxProps = Record<string, unknown> & {
   children?: unknown;
 } & {
-  [K in `on${string}`]?: never;
+  [K in `on${string}`]?: string;
 };
 
 /** Create a Slate HTML fragment from TSX used inside `<script slate>`. */
@@ -307,8 +307,8 @@ export async function jsx(type: string | typeof Fragment, props: JsxProps | null
 export const jsxs = jsx;
 
 function renderJsxAttribute(name: string, value: unknown): string {
-  if (/^on/i.test(name)) {
-    throw new Error(`Slate JSX does not support runtime event handler attribute "${name}".`);
+  if (/^on/i.test(name) && value != null && typeof value !== "string") {
+    throw new Error(`Slate JSX event handler attribute "${name}" must be a string.`);
   }
 
   if (typeof value === "function") {

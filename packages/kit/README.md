@@ -129,9 +129,10 @@ const icon = <strong class="mark">Ready</strong>;
 <p>{icon}</p>
 ```
 
-JSX is for compile-time HTML composition only. Runtime event handler attributes
-such as `onClick` are rejected because Slate does not attach browser-side event
-listeners from compile-time JSX.
+JSX is for compile-time HTML composition only. Inline event handler attributes
+such as `onclick` are allowed only as strings. Function-valued event handlers
+such as `onClick={() => ...}` are rejected because Slate does not attach
+browser-side listeners from compile-time JSX.
 
 Imported `.slate` components can be used from JSX. JSX children are passed to
 the component as its default slot:
