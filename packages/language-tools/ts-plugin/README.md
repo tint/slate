@@ -82,7 +82,7 @@ Inference rules:
 - `<slot />` infers the default slot with `data?: undefined`.
 - JSX component usage accepts named slots through a `slots` prop.
 - JSX `slots` rejects unknown slot names and contextually types each slot function's data parameter.
-- JSX children are mapped to the default slot; `slots.default` and JSX children are a runtime error when combined.
+- JSX children are mapped to the default slot; `slots.default` and JSX children are rejected when combined.
 
 These types exist only for editor integration and type checking. They do not change the generated runtime render module.
 

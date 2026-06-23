@@ -52,7 +52,7 @@ export const RUNE_DECLARATIONS: string = [
   "declare function $slot<T>(name: string, defaultData: T): (data?: T) => __SlateRenderResult;",
   "declare const __SLATE_COMPONENT: unique symbol;",
   "type __SlateJsxSlots<TSlots> = { [K in keyof TSlots]?: NonNullable<TSlots[K]> extends (...args: infer A) => unknown ? (...args: A) => unknown : never };",
-  "type __SlateJsxComponentProps<TProps, TSlots> = TProps & { children?: unknown; slots?: __SlateJsxSlots<TSlots> };",
+  "type __SlateJsxComponentProps<TProps, TSlots> = TProps & ({ children?: unknown; slots?: Omit<__SlateJsxSlots<TSlots>, \"default\"> } | { children?: never; slots?: __SlateJsxSlots<TSlots> });",
   "type __SlateJsxComponent<TProps = Record<string, unknown>, TSlots = Record<string, unknown>> = { readonly [__SLATE_COMPONENT]: true; (props?: __SlateJsxComponentProps<TProps, TSlots>): __SlateRenderResult; render(props?: TProps, slots?: TSlots, context?: unknown): __SlateRenderResult };",
   "declare function __slateJsx<TProps, TSlots>(type: string | typeof __slateFragment | __SlateJsxComponent<TProps, TSlots>, props: __SlateJsxComponentProps<TProps, TSlots> | null, ...children: unknown[]): __SlateRenderResult;",
   "declare const __slateFragment: unique symbol;",

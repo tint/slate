@@ -18,4 +18,10 @@ const invalid = <Card slots={{
   },
   footer: () => "footer",
 }} />;
+
+const conflict = <Card slots={{
+  default: () => "default",
+}}>
+  child
+</Card>;
 </script>

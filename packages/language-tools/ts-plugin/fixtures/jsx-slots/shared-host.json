@@ -26,6 +26,14 @@
     },
     {
       "file": "entry.slate.tsx",
+      "message": "Object literal may only specify known properties, and 'default' does not exist in type 'Omit<__SlateJsxSlots<__SlateInferredSlots>, \"default\">'.",
+      "range": {
+        "start": 421,
+        "end": 428
+      }
+    },
+    {
+      "file": "entry.slate.tsx",
       "message": "Duplicate identifier 'Element'."
     },
     {
@@ -120,6 +128,14 @@
       "range": {
         "start": 355,
         "end": 361
+      }
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Object literal may only specify known properties, and 'default' does not exist in type 'Omit<__SlateJsxSlots<__SlateInferredSlots>, \"default\">'.",
+      "range": {
+        "start": 421,
+        "end": 428
       }
     },
     {
