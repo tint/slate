@@ -1,0 +1,6 @@
+{
+  "name": "SlateRenderError",
+  "messageIncludes": "Unsupported Slate JSX component.",
+  "kind": "template",
+  "rangeText": "<Local />"
+}

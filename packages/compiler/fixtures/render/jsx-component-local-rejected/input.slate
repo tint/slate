@@ -1,0 +1,7 @@
+<script slate>
+const Local = {
+  render: async () => "<p>Local</p>",
+};
+</script>
+
+{<Local />}

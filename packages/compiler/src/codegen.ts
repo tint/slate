@@ -44,7 +44,7 @@ export function generate(cst: SlateFileCst, _options: GenerateOptions = {}): Gen
   const usedRunes = collectUsedRunes([scriptParts.body, statements]);
   const kitImports = collectKitImports([scriptParts.body, statements]);
   const runeHelpers = generateRuneHelpers(usedRunes, slotBindings);
-  const jsxHelper = generateJsxHelper([scriptParts.body, statements]);
+  const jsxHelper = generateJsxHelper([scriptParts.body, statements], componentNames);
   let code = [
     `import { ${kitImports.join(", ")} } from "@slate/kit";`,
     scriptParts.imports.trim(),
@@ -143,19 +143,22 @@ function collectKitImports(chunks: string[]): string[] {
   return imports;
 }
 
-function generateJsxHelper(chunks: string[]): string {
+function generateJsxHelper(chunks: string[], componentNames: Set<string>): string {
   const source = chunks.join("\n");
 
   if (!source.includes("__slateJsx(")) {
     return "";
   }
 
+  const components = [...componentNames].sort().join(", ");
+
   return [
+    `const __slateComponents = new Set([${components}]);`,
     "const __slateJsx = (type, props, ...children) => {",
     "  if (typeof type === \"string\" || type === __slateFragment) {",
     "    return __slateElement(type, props, ...children);",
     "  }",
-    "  if (type && typeof type.render === \"function\") {",
+    "  if (__slateComponents.has(type)) {",
     "    const normalizedChildren = children.length > 0 ? children : props?.children === undefined ? [] : [props.children];",
     "    const componentProps = props?.children === undefined ? props ?? {} : Object.fromEntries(Object.entries(props).filter(([name]) => name !== \"children\"));",
     "    const componentSlots = normalizedChildren.length > 0 ? { default: async () => __slateHtml(await renderValue(normalizedChildren)) } : {};",

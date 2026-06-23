@@ -1,11 +1,12 @@
 import { cloneContext, html as __slateHtml, evaluateSlateExpression, renderValue, jsx as __slateElement, Fragment as __slateFragment } from "@slate/kit";
 export async function render(__props = {}, slots = {}, context = {}) {
   context = cloneContext(context);
+  const __slateComponents = new Set([]);
   const __slateJsx = (type, props, ...children) => {
     if (typeof type === "string" || type === __slateFragment) {
       return __slateElement(type, props, ...children);
     }
-    if (type && typeof type.render === "function") {
+    if (__slateComponents.has(type)) {
       const normalizedChildren = children.length > 0 ? children : props?.children === undefined ? [] : [props.children];
       const componentProps = props?.children === undefined ? props ?? {} : Object.fromEntries(Object.entries(props).filter(([name]) => name !== "children"));
       const componentSlots = normalizedChildren.length > 0 ? { default: async () => __slateHtml(await renderValue(normalizedChildren)) } : {};
