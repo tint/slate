@@ -1,0 +1,9 @@
+<script slate>
+const title = "Hello";
+const tail = 1;
+</script>
+
+<section>
+  <slot name="header" data={{ title, tail }} />
+  <slot />
+</section>

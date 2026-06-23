@@ -68,7 +68,7 @@ function runCompilerHost(
     virtualDocument.text,
     ts.ScriptTarget.Latest,
     true,
-    ts.ScriptKind.TS,
+    ts.ScriptKind.TSX,
   );
   const host = createSlateCompilerHost({
     virtualDocument,

@@ -1,0 +1,21 @@
+<script slate>
+import Card from "./Card.slate";
+
+const valid = <Card slots={{
+  header: ({ title, tail }) => {
+    title.toUpperCase();
+    tail.toFixed();
+    return "header";
+  },
+  default: () => "default",
+}} />;
+
+const invalid = <Card slots={{
+  header: ({ title, tail }) => {
+    title.toFixed();
+    tail.toUpperCase();
+    return "header";
+  },
+  footer: () => "footer",
+}} />;
+</script>

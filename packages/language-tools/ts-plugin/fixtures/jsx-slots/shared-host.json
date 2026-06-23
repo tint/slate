@@ -2,6 +2,30 @@
   "languageService": [
     {
       "file": "entry.slate.tsx",
+      "message": "Property 'toFixed' does not exist on type '\"Hello\"'. Did you mean 'fixed'?",
+      "range": {
+        "start": 292,
+        "end": 299
+      }
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Property 'toUpperCase' does not exist on type '1'.",
+      "range": {
+        "start": 312,
+        "end": 323
+      }
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Object literal may only specify known properties, and 'footer' does not exist in type '__SlateJsxSlots<__SlateInferredSlots>'.",
+      "range": {
+        "start": 355,
+        "end": 361
+      }
+    },
+    {
+      "file": "entry.slate.tsx",
       "message": "Duplicate identifier 'Element'."
     },
     {
@@ -71,47 +95,35 @@
     {
       "file": "entry.slate.tsx",
       "message": "Invalid module name in augmentation, module '*?raw' cannot be found."
-    },
-    {
-      "file": "entry.slate.tsx",
-      "message": "Type 'number' does not satisfy the expected type 'string'.",
-      "range": {
-        "start": 72,
-        "end": 81
-      }
-    },
-    {
-      "file": "entry.slate.tsx",
-      "message": "Property 'toFixed' does not exist on type '\"Hello\"'. Did you mean 'fixed'?",
-      "range": {
-        "start": 130,
-        "end": 137
-      }
-    },
-    {
-      "file": "entry.slate.tsx",
-      "message": "Property 'toUpperCase' does not exist on type '1'.",
-      "range": {
-        "start": 151,
-        "end": 162
-      }
-    },
-    {
-      "file": "entry.slate.tsx",
-      "message": "Object literal may only specify known properties, and '\"footer\"' does not exist in type '__SlateInferredSlots'.",
-      "range": {
-        "start": 188,
-        "end": 196
-      }
-    },
-    {
-      "file": "entry.slate.tsx",
-      "message": "Parameter '__slateSlotData' implicitly has an 'any' type."
     }
   ],
   "compiler": [
     {
       "file": "entry.slate.tsx",
+      "message": "Property 'toFixed' does not exist on type '\"Hello\"'. Did you mean 'fixed'?",
+      "range": {
+        "start": 292,
+        "end": 299
+      }
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Property 'toUpperCase' does not exist on type '1'.",
+      "range": {
+        "start": 312,
+        "end": 323
+      }
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Object literal may only specify known properties, and 'footer' does not exist in type '__SlateJsxSlots<__SlateInferredSlots>'.",
+      "range": {
+        "start": 355,
+        "end": 361
+      }
+    },
+    {
+      "file": "entry.slate.tsx",
       "message": "Duplicate identifier 'Element'."
     },
     {
@@ -181,42 +193,6 @@
     {
       "file": "entry.slate.tsx",
       "message": "Invalid module name in augmentation, module '*?raw' cannot be found."
-    },
-    {
-      "file": "entry.slate.tsx",
-      "message": "Type 'number' does not satisfy the expected type 'string'.",
-      "range": {
-        "start": 72,
-        "end": 81
-      }
-    },
-    {
-      "file": "entry.slate.tsx",
-      "message": "Property 'toFixed' does not exist on type '\"Hello\"'. Did you mean 'fixed'?",
-      "range": {
-        "start": 130,
-        "end": 137
-      }
-    },
-    {
-      "file": "entry.slate.tsx",
-      "message": "Property 'toUpperCase' does not exist on type '1'.",
-      "range": {
-        "start": 151,
-        "end": 162
-      }
-    },
-    {
-      "file": "entry.slate.tsx",
-      "message": "Object literal may only specify known properties, and '\"footer\"' does not exist in type '__SlateInferredSlots'.",
-      "range": {
-        "start": 188,
-        "end": 196
-      }
-    },
-    {
-      "file": "entry.slate.tsx",
-      "message": "Parameter '__slateSlotData' implicitly has an 'any' type."
     }
   ]
 }
