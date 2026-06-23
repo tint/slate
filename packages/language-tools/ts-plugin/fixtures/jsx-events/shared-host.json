@@ -2,18 +2,18 @@
   "languageService": [
     {
       "file": "entry.slate.tsx",
-      "message": "Type '() => string' is not assignable to type 'undefined'.",
+      "message": "Type '() => string' is not assignable to type 'string'.",
       "range": {
-        "start": 148,
-        "end": 155
+        "start": 219,
+        "end": 232
       }
     },
     {
       "file": "entry.slate.tsx",
-      "message": "Type '() => string' is not assignable to type 'undefined'.",
+      "message": "Type '() => string' is not assignable to type 'string'.",
       "range": {
-        "start": 214,
-        "end": 221
+        "start": 285,
+        "end": 298
       }
     },
     {
@@ -88,18 +88,18 @@
   "compiler": [
     {
       "file": "entry.slate.tsx",
-      "message": "Type '() => string' is not assignable to type 'undefined'.",
+      "message": "Type '() => string' is not assignable to type 'string'.",
       "range": {
-        "start": 148,
-        "end": 155
+        "start": 219,
+        "end": 232
       }
     },
     {
       "file": "entry.slate.tsx",
-      "message": "Type '() => string' is not assignable to type 'undefined'.",
+      "message": "Type '() => string' is not assignable to type 'string'.",
       "range": {
-        "start": 214,
-        "end": 221
+        "start": 285,
+        "end": 298
       }
     },
     {
