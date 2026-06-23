@@ -2,4 +2,7 @@
 const title = $prop("title", "Untitled");
 </script>
 
-<article>{title}</article>
+<article>
+  <h2>{title}</h2>
+  <slot />
+</article>

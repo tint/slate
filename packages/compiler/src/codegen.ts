@@ -133,6 +133,9 @@ function collectKitImports(chunks: string[]): string[] {
   if (source.includes("__slateJsx(")) {
     imports.push("jsx as __slateElement");
     imports.push("Fragment as __slateFragment");
+    if (!imports.includes("renderValue")) {
+      imports.push("renderValue");
+    }
   } else if (source.includes("__slateFragment")) {
     imports.push("Fragment as __slateFragment");
   }
@@ -153,10 +156,10 @@ function generateJsxHelper(chunks: string[]): string {
     "    return __slateElement(type, props, ...children);",
     "  }",
     "  if (type && typeof type.render === \"function\") {",
-    "    if (children.length > 0 || props?.children !== undefined) {",
-    "      throw new Error(\"Slate component JSX children are not supported yet.\");",
-    "    }",
-    "    return type.render(props ?? {}, {}, context);",
+    "    const normalizedChildren = children.length > 0 ? children : props?.children === undefined ? [] : [props.children];",
+    "    const componentProps = props?.children === undefined ? props ?? {} : Object.fromEntries(Object.entries(props).filter(([name]) => name !== \"children\"));",
+    "    const componentSlots = normalizedChildren.length > 0 ? { default: async () => __slateHtml(await renderValue(normalizedChildren)) } : {};",
+    "    return type.render(componentProps, componentSlots, context);",
     "  }",
     "  throw new Error(\"Unsupported Slate JSX component.\");",
     "};",

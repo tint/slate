@@ -7,27 +7,29 @@ export async function render(__props = {}, slots = {}, context = {}) {
       return __slateElement(type, props, ...children);
     }
     if (type && typeof type.render === "function") {
-      if (children.length > 0 || props?.children !== undefined) {
-        throw new Error("Slate component JSX children are not supported yet.");
-      }
-      return type.render(props ?? {}, {}, context);
+      const normalizedChildren = children.length > 0 ? children : props?.children === undefined ? [] : [props.children];
+      const componentProps = props?.children === undefined ? props ?? {} : Object.fromEntries(Object.entries(props).filter(([name]) => name !== "children"));
+      const componentSlots = normalizedChildren.length > 0 ? { default: async () => __slateHtml(await renderValue(normalizedChildren)) } : {};
+      return type.render(componentProps, componentSlots, context);
     }
     throw new Error("Unsupported Slate JSX component.");
   };
-  const scriptCard = __slateJsx(Card, { title: "From script" });
+  const scriptCard = __slateJsx(Card, { title: "From script" },
+      __slateJsx("p", null, "Script child"));
   let __html = "";
   __html += "\n\n";
   __html += [
     "<main",
     ">",
-    await renderValue(evaluateSlateExpression(() => (scriptCard), {"filename":"component.slate","range":{"start":116,"end":126},"kind":"template"})),
+    await renderValue(evaluateSlateExpression(() => (scriptCard), {"filename":"component.slate","range":{"start":140,"end":150},"kind":"template"})),
     "</main>"
   ].join("");
   __html += "\n";
   __html += [
     "<section",
     ">",
-    await renderValue(evaluateSlateExpression(() => (__slateJsx(Card, { title: "From template" })), {"filename":"component.slate","range":{"start":145,"end":175},"kind":"template"})),
+    await renderValue(evaluateSlateExpression(() => (__slateJsx(Card, { title: "From template" },
+      __slateJsx("p", null, "Template child"))), {"filename":"component.slate","range":{"start":169,"end":229},"kind":"template"})),
     "</section>"
   ].join("");
   __html += "\n";
