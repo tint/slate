@@ -1,0 +1,5 @@
+<script slate>
+const handleClick = () => "clicked";
+</script>
+
+<div>{<button onClick={handleClick}>Click</button>}</div>

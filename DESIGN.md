@@ -137,7 +137,7 @@ Rules:
 - ESM `import` and `export` are supported.
 - Only TypeScript type exports are allowed from `<script slate>`.
 - TypeScript types, interfaces, generics, and annotations are supported.
-- JSX is supported inside `<script slate>` and produces Slate-rendered HTML. Runtime event handler attributes such as `onClick` are not supported.
+- JSX is supported inside `<script slate>` and produces Slate-rendered HTML. Runtime event handler attributes such as `onClick` are rejected.
 - JSX inside template expressions is supported for intrinsic HTML elements and fragments.
 - Slate component JSX is supported only for components imported from `.slate` files.
 - TSX-defined components are not Slate components and are rejected by the compiler runtime.
