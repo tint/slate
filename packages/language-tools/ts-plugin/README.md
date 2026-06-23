@@ -83,6 +83,7 @@ Inference rules:
 - JSX component usage accepts named slots through a `slots` prop.
 - JSX `slots` rejects unknown slot names and contextually types each slot function's data parameter.
 - JSX children are mapped to the default slot; `slots.default` and JSX children are rejected when combined.
+- JSX intrinsic elements reject `on*` runtime event handler attributes such as `onClick` and `onclick`.
 
 These types exist only for editor integration and type checking. They do not change the generated runtime render module.
 

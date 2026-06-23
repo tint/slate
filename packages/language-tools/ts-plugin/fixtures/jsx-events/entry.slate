@@ -1,0 +1,6 @@
+<script slate>
+const handleClick = () => "clicked";
+const ok = <button type="button" data-action="save">Save</button>;
+const invalidCamel = <button onClick={handleClick}>Save</button>;
+const invalidLower = <button onclick={handleClick}>Save</button>;
+</script>
