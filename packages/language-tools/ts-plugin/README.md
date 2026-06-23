@@ -53,6 +53,15 @@ export type SlateHTML = {
 export type RenderResult = SlateHTML | Promise<SlateHTML>;
 
 export type Component<TProps, TSlots> = {
+  readonly [__SLATE_COMPONENT]: true;
+  (props?: TProps & {
+    children?: unknown;
+    slots?: {
+      [K in keyof TSlots]?: NonNullable<TSlots[K]> extends (...args: infer A) => unknown
+        ? (...args: A) => unknown
+        : never;
+    };
+  }): RenderResult;
   render(props?: TProps, slots?: TSlots, context?: unknown): RenderResult;
 };
 
@@ -71,6 +80,9 @@ Inference rules:
 - `$slot("footer", { text: "Footer" })` infers `footer?: (data: { text: string }) => unknown`.
 - `<slot name="header" data={{ title, count }} />` infers `header?: (data: { title: typeof title; count: typeof count }) => unknown`.
 - `<slot />` infers the default slot with `data?: undefined`.
+- JSX component usage accepts named slots through a `slots` prop.
+- JSX `slots` rejects unknown slot names and contextually types each slot function's data parameter.
+- JSX children are mapped to the default slot; `slots.default` and JSX children are a runtime error when combined.
 
 These types exist only for editor integration and type checking. They do not change the generated runtime render module.
 

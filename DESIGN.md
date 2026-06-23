@@ -145,6 +145,7 @@ Rules:
 - Named slots in JSX use a `slots` prop with slot functions.
 - `slots.default` and JSX children are mutually exclusive.
 - Slot data is received as the slot function argument.
+- JSX `slots` is type-checked from the imported `.slate` component's `Slots` contract. Unknown slot names are rejected, and each slot function receives the inferred slot data type.
 - The code runs at compile time.
 - The block is not emitted to final HTML.
 - Template syntax is not parsed inside the block.
