@@ -103,10 +103,22 @@ export class SlateRenderError extends Error {
 /** Evaluate a generated expression and wrap thrown errors with Slate metadata. */
 export function evaluateSlateExpression<T>(fn: () => T, location: SlateSourceLocation): T {
   try {
-    return fn();
+    const value = fn();
+
+    if (isPromiseLike(value)) {
+      return value.catch((cause: unknown) => {
+        throw new SlateRenderError(cause, location);
+      }) as T;
+    }
+
+    return value;
   } catch (cause) {
     throw new SlateRenderError(cause, location);
   }
+}
+
+function isPromiseLike(value: unknown): value is Promise<unknown> {
+  return Boolean(value && typeof value === "object" && typeof (value as Promise<unknown>).then === "function");
 }
 
 /** Escape a value for safe HTML text/attribute interpolation. */
@@ -293,8 +305,12 @@ export async function jsx(type: string | typeof Fragment, props: JsxProps | null
 export const jsxs = jsx;
 
 function renderJsxAttribute(name: string, value: unknown): string {
-  if (typeof value === "function" || /^on[A-Z]/.test(name)) {
-    return "";
+  if (/^on/i.test(name)) {
+    throw new Error(`Slate JSX does not support runtime event handler attribute "${name}".`);
+  }
+
+  if (typeof value === "function") {
+    throw new Error(`Slate JSX cannot serialize function attribute "${name}".`);
   }
 
   if (name === "class") {
