@@ -8,8 +8,15 @@ export async function render(__props = {}, slots = {}, context = {}) {
     }
     if (__slateComponents.has(type)) {
       const normalizedChildren = children.length > 0 ? children : props?.children === undefined ? [] : [props.children];
-      const componentProps = props?.children === undefined ? props ?? {} : Object.fromEntries(Object.entries(props).filter(([name]) => name !== "children"));
-      const componentSlots = normalizedChildren.length > 0 ? { default: async () => __slateHtml(await renderValue(normalizedChildren)) } : {};
+      const providedSlots = props?.slots ?? {};
+      if (normalizedChildren.length > 0 && providedSlots.default) {
+        throw new Error("Slate component JSX cannot combine children with slots.default.");
+      }
+      const componentProps = props ? Object.fromEntries(Object.entries(props).filter(([name]) => name !== "children" && name !== "slots")) : {};
+      const componentSlots = {
+        ...providedSlots,
+        ...(normalizedChildren.length > 0 ? { default: async () => __slateHtml(await renderValue(normalizedChildren)) } : {}),
+      };
       return type.render(componentProps, componentSlots, context);
     }
     throw new Error("Unsupported Slate JSX component.");

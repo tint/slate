@@ -1,0 +1,6 @@
+{
+  "name": "SlateRenderError",
+  "messageIncludes": "Slate component JSX cannot combine children with slots.default.",
+  "kind": "template",
+  "rangeText": "<Card slots={{ default: () => <p>Default</p> }}><p>Child</p></Card>"
+}

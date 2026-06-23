@@ -132,6 +132,43 @@ const icon = <strong class="mark">Ready</strong>;
 JSX is for compile-time HTML composition only. Runtime event handler attributes
 such as `onClick` are intentionally ignored.
 
+Imported `.slate` components can be used from JSX. JSX children are passed to
+the component as its default slot:
+
+```slate
+<script slate>
+import Card from "./Card.slate";
+
+const card = <Card title="Hello"><p>Body</p></Card>;
+</script>
+
+{card}
+```
+
+TSX-defined functions or objects are not Slate components. Components must be
+`.slate` files imported into `<script slate>`.
+
+Named slots use a `slots` prop:
+
+```slate
+<script slate>
+import Card from "./Card.slate";
+
+const card = (
+  <Card
+    slots={{
+      header: () => <h1>Header</h1>,
+      footer: ({ year }) => <small>{year}</small>,
+    }}
+  >
+    <p>Body</p>
+  </Card>
+);
+</script>
+```
+
+`slots.default` and JSX children are mutually exclusive.
+
 ## Boundary
 
 `@slate/kit` should not own compiler behavior. Compiler logic belongs in `@slate/compiler`.

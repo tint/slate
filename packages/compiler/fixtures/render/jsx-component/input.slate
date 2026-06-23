@@ -1,8 +1,17 @@
 <script slate>
 import Card from "./Card.slate";
 
-const scriptCard = <Card title="From script"><p>Script child</p></Card>;
+const scriptCard = (
+  <Card
+    title="From script"
+    slots={{
+      header: () => <h1>Script header</h1>,
+    }}
+  >
+    <p>Script child</p>
+  </Card>
+);
 </script>
 
 <main>{scriptCard}</main>
-<section>{<Card title="From template"><p>{"Template child"}</p></Card>}</section>
+<section>{<Card title="From template" slots={{ default: () => <p>Template default</p>, header: () => <h1>Template header</h1> }} />}</section>

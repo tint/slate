@@ -3,6 +3,10 @@ const title = $prop("title", "Untitled");
 </script>
 
 <article>
-  <h2>{title}</h2>
-  <slot />
+  <header>
+    <slot name="header">{title}</slot>
+  </header>
+  <main>
+    <slot />
+  </main>
 </article>

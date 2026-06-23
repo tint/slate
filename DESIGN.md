@@ -139,7 +139,12 @@ Rules:
 - TypeScript types, interfaces, generics, and annotations are supported.
 - JSX is supported inside `<script slate>` and produces Slate-rendered HTML. Runtime event handler attributes such as `onClick` are not supported.
 - JSX inside template expressions is supported for intrinsic HTML elements and fragments.
-- Slate component JSX is supported only for imported `.slate` components without children in the first implementation.
+- Slate component JSX is supported only for components imported from `.slate` files.
+- TSX-defined components are not Slate components and are rejected by the compiler runtime.
+- JSX children on a Slate component are mapped to the default slot.
+- Named slots in JSX use a `slots` prop with slot functions.
+- `slots.default` and JSX children are mutually exclusive.
+- Slot data is received as the slot function argument.
 - The code runs at compile time.
 - The block is not emitted to final HTML.
 - Template syntax is not parsed inside the block.

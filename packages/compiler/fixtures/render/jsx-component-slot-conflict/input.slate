@@ -1,0 +1,5 @@
+<script slate>
+import Card from "./Card.slate";
+</script>
+
+{<Card slots={{ default: () => <p>Default</p> }}><p>Child</p></Card>}
