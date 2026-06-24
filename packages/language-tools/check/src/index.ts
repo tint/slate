@@ -51,18 +51,49 @@ export type AttributeDiagnosticRule = {
   message?: string;
 };
 
+export function normalizeAttributeDiagnosticRules(value: unknown): AttributeDiagnosticRule[] {
+  if (!Array.isArray(value)) {
+    return [];
+  }
+
+  const rules: AttributeDiagnosticRule[] = [];
+
+  for (const item of value) {
+    if (!isRecord(item)) {
+      continue;
+    }
+
+    const pattern = item.pattern;
+
+    if (!(typeof pattern === "string" && pattern.length > 0) && !(pattern instanceof RegExp)) {
+      continue;
+    }
+
+    const severity = normalizeAttributeDiagnosticSeverity(item.severity);
+
+    rules.push({
+      pattern,
+      severity,
+      message: typeof item.message === "string" ? item.message : undefined,
+    });
+  }
+
+  return rules;
+}
+
 export function checkSource(options: CheckSourceOptions): CheckSourceResult {
+  const attributeDiagnosticRules = normalizeAttributeDiagnosticRules(options.attributeDiagnostics);
   const result = compile(options.source);
   const filename = options.filename;
   const typeDiagnostics = checkVirtualDocument({
     source: options.source,
     filename,
-    attributeDiagnostics: options.attributeDiagnostics,
+    attributeDiagnostics: attributeDiagnosticRules,
   });
   const attributeDiagnostics = checkAttributeDiagnostics({
     source: options.source,
     filename,
-    rules: options.attributeDiagnostics,
+    rules: attributeDiagnosticRules,
   });
 
   return {
@@ -81,6 +112,7 @@ export function checkSource(options: CheckSourceOptions): CheckSourceResult {
 }
 
 export async function checkFiles(options: CheckFilesOptions): Promise<CheckFilesResult> {
+  const attributeDiagnosticRules = normalizeAttributeDiagnosticRules(options.attributeDiagnostics);
   const outDir = await mkdtemp(join(tmpdir(), `slate-check-${randomBytes(6).toString("hex")}-`));
   const result = await compileFiles({
     entry: options.entry,
@@ -90,13 +122,13 @@ export async function checkFiles(options: CheckFilesOptions): Promise<CheckFiles
   const typeDiagnostics = checkVirtualDocument({
     source: entrySource,
     filename: options.entry,
-    attributeDiagnostics: options.attributeDiagnostics,
+    attributeDiagnostics: attributeDiagnosticRules,
   });
   const attributeDiagnostics = Object.entries(result.sources).flatMap(([filename, source]) =>
     checkAttributeDiagnostics({
       source,
       filename,
-      rules: options.attributeDiagnostics,
+      rules: attributeDiagnosticRules,
     })
   );
 
@@ -223,6 +255,14 @@ function matchesAttributePattern(pattern: AttributeDiagnosticRule["pattern"], ra
   }
 
   return false;
+}
+
+function normalizeAttributeDiagnosticSeverity(value: unknown): AttributeDiagnosticSeverity {
+  return value === "error" || value === "warning" || value === "off" ? value : "warning";
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
 function checkVirtualDocument(options: CheckSourceOptions): Diagnostic[] {

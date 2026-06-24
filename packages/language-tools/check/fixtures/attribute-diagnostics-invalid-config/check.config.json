@@ -1,0 +1,15 @@
+{
+  "attributeDiagnostics": [
+    null,
+    {},
+    {
+      "pattern": "",
+      "severity": "warning"
+    },
+    {
+      "pattern": "className",
+      "severity": "off",
+      "message": "This rule is disabled."
+    }
+  ]
+}
