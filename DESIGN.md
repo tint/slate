@@ -318,6 +318,9 @@ Rules:
 - The optional second argument is the default value.
 - The returned value is available to the template.
 - Type parameters provide TypeScript type information.
+- `$prop<T>("name")` is required for callers unless `T` includes `undefined`.
+- `$prop<T>("name", defaultValue)` is optional for callers.
+- `$prop<undefined>("name")` is invalid because it declares a prop that can never carry useful data.
 - A prop name may only be declared once across `$prop` and statically visible `$props` keys.
 - Dynamic prop keys that cannot be statically inspected are not rejected by the compiler.
 
@@ -343,8 +346,11 @@ Declares multiple component props.
 Rules:
 
 - `$props<T>()` returns a typed props object.
-- An optional defaults object may be provided.
+- An optional defaults object may be provided and is typed as `Partial<T>`.
 - Defaults are applied when the caller does not provide a prop.
+- Keys with defaults are optional for callers.
+- Keys whose type includes `undefined` are optional for callers.
+- Keys without defaults and without `undefined` in their type are required for callers.
 - Statically visible `$props` keys are mutually exclusive with `$prop("name")`.
 - Statically visible `$props` keys are mutually exclusive with other statically visible `$props` keys in the same component.
 
@@ -550,6 +556,19 @@ Attribute diagnostics are matched against the raw attribute name. They cover
 normal template attributes and JSX attributes inside `<script slate>` or
 template expressions.
 
+Rule matching:
+
+- `pattern: "className"` matches one exact attribute name.
+- `pattern: "aria-*"` matches a prefix.
+- `pattern: "*-class"` matches a suffix.
+- `pattern: "*react*"` matches a substring.
+- `pattern: "*"` matches every attribute.
+- `pattern: /regex/` can be used for custom matching.
+- `severity` may be `"warning"`, `"error"`, or `"off"`.
+- If `severity` is omitted, Slate treats the rule as a warning.
+- The first matching enabled rule wins.
+- Invalid diagnostic rules are ignored.
+
 This model exists so component results, slot results, and future render runes
 can pass through `{expression}` without accidentally escaping already-rendered
 HTML.
@@ -566,7 +585,8 @@ Expression interpolation renders an escaped value.
 
 Rules:
 
-- Expressions are evaluated in the current template scope.
+- Expressions are TSX expressions evaluated in the current template scope.
+- JSX inside expressions is supported for intrinsic elements, fragments, and imported `.slate` components.
 - Output is HTML-escaped by default.
 - Expressions are not parsed inside normal `<script>` or `<style>`.
 
@@ -656,6 +676,9 @@ Rules:
 - The expression is awaited at compile time.
 - The `{:then}` branch renders when the promise resolves.
 - The `{:catch}` branch renders when the promise rejects.
+- `{:then name}` binds the resolved value to an identifier scoped to that branch.
+- `{:catch error}` binds the rejected value to an identifier scoped to that branch.
+- `{:then ...}` and `{:catch ...}` currently accept identifiers, not destructuring patterns.
 - The pending branch is only meaningful for future streaming or progressive rendering modes.
 - Static builds emit the final resolved or rejected branch.
 
@@ -675,7 +698,7 @@ Rules:
 
 ### `{@debug ...}`
 
-Compile-time debugging:
+Render-time debugging:
 
 ```slate
 {@debug user}
@@ -683,10 +706,11 @@ Compile-time debugging:
 
 Rules:
 
-- Expressions are evaluated at compile time.
-- Values are printed in development or debug mode.
+- In dev mode, the expression is evaluated during render.
+- In dev mode, the value is printed with `console.log("[slate:debug]", value)`.
+- In production mode, the directive is removed and the expression is not evaluated.
 - No HTML is emitted.
-- Production builds may remove debug statements or warn on them.
+- Runtime errors from the debug expression are mapped back to the `.slate` source range.
 
 ### `{let/const ...}`
 
@@ -853,7 +877,8 @@ Named slot example:
 
 ### `slots`
 
-Slate uses native `<slot>` tags and `slot` attributes for slots.
+Slate uses native `<slot>` outlet elements and Slate `slot:*` directives for
+component slots.
 
 Component definition:
 
@@ -1060,15 +1085,18 @@ Rules:
 Initial implementation should support:
 
 - `.slate` file parsing.
-- `<script slate>` TypeScript compile-time execution.
+- `<script slate>` TSX compile-time execution.
 - Normal HTML and custom element output.
 - Component imports and component calls.
 - Attribute props.
 - `{expression}`.
 - `{#if}`.
 - `{#each}`.
+- `{#await}`.
 - `{@html ...}`.
-- Native `<slot>` and `slot:name`.
+- `{@debug ...}` in dev output.
+- `{let/const ...}`.
+- Native `<slot>` outlets and `slot:name`.
 - `Fragment`.
 - `class=` clsx-style serialization.
 - `style=` string/object/array serialization.
@@ -1079,12 +1107,6 @@ Initial implementation should support:
 - Normal `<script>` and `<style>` passthrough.
 - `is:global` and `is:inline` for normal inline `<script>` and `<style>`.
 - `dev:scroll` in development output.
-
-Initial implementation may reserve or partially support:
-
-- `{#await}`.
-- `{@debug ...}`.
-- `{let/const ...}`.
 
 Initial implementation should not support:
 
