@@ -202,6 +202,7 @@ function collectAttributeDiagnosticsFromAttributes(
 
 function matchesAttributePattern(pattern: AttributeDiagnosticRule["pattern"], rawName: string): boolean {
   if (pattern instanceof RegExp) {
+    pattern.lastIndex = 0;
     return pattern.test(rawName);
   }
 
