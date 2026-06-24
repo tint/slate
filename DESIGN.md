@@ -520,6 +520,35 @@ HTML attributes use attribute-specific rendering:
 - `false` on normal attributes removes the attribute.
 - `class=` and `style=` keep their dedicated serializers.
 
+Slate does not treat React aliases such as `className` and `htmlFor` as built-in
+errors. They are emitted literally by default. Projects that want stricter
+compatibility rules can opt into attribute diagnostics in `slate.config.*`:
+
+```ts
+import { defineConfig } from "@slate/cli";
+
+export default defineConfig({
+  html: {
+    attributeDiagnostics: [
+      {
+        pattern: "className",
+        severity: "warning",
+        message: "Slate emits `className` literally. Use `class` for CSS classes.",
+      },
+      {
+        pattern: "htmlFor",
+        severity: "warning",
+        message: "Slate emits `htmlFor` literally. Use `for` for native label binding.",
+      },
+    ],
+  },
+});
+```
+
+Attribute diagnostics are matched against the raw attribute name. The first
+implementation covers normal template attributes; JSX expression attributes are
+checked separately by the TypeScript model.
+
 This model exists so component results, slot results, and future render runes
 can pass through `{expression}` without accidentally escaping already-rendered
 HTML.
