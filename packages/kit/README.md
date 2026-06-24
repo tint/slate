@@ -139,6 +139,10 @@ types. Common HTML, SVG, ARIA roles and values, `data-*`, `is:*`, `dev:*`, and
 `slot:*` attributes are typed. `class` accepts `ClassValue`, and `style`
 accepts `StyleValue`.
 
+Common tags such as `button`, `input`, `img`, `script`, `video`, and `svg` have
+tag-specific attribute types for values like `button type`, image loading, media
+preload, track kind, and SVG attributes.
+
 Imported `.slate` components can be used from JSX. JSX children are passed to
 the component as its default slot:
 
