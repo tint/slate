@@ -1,3 +1,22 @@
+import type { ClassValue, JsxProps, StyleValue } from "./jsx-types";
+
+export type {
+  ClassValue,
+  JsxAriaValue,
+  JsxAttributePrimitive,
+  JsxBooleanish,
+  JsxCrossOrigin,
+  JsxEventAttributes,
+  JsxEventAttributeValue,
+  JsxFetchPriority,
+  JsxGlobalAttributes,
+  JsxHTMLAttributes,
+  JsxProps,
+  JsxReferrerPolicy,
+  JsxSVGAttributes,
+  StyleValue,
+} from "./jsx-types";
+
 /** Runtime brand used to mark HTML that Slate has already rendered safely. */
 export const SLATE_HTML: unique symbol = Symbol.for("slate.html") as never;
 
@@ -275,13 +294,6 @@ export async function renderSlot(
 /** Fragment marker used by Slate's JSX runtime. */
 export const Fragment: unique symbol = Symbol.for("slate.fragment") as never;
 
-/** Props accepted by Slate's JSX runtime. */
-export type JsxProps = Record<string, unknown> & {
-  children?: unknown;
-} & {
-  [K in `on${string}`]?: string;
-};
-
 /** Create a Slate HTML fragment from TSX used inside `<script slate>`. */
 export async function jsx(type: string | typeof Fragment, props: JsxProps | null, ...children: unknown[]): Promise<SlateHTML> {
   const normalizedChildren = children.length > 0 ? children : [props?.children];
@@ -431,31 +443,12 @@ export function serializeAttribute(name: string, value: unknown, quote = "\""): 
   return ` ${name}=${quote}${escapeHTML(attributeValue)}${quote}`;
 }
 
-/** clsx-compatible value accepted by Slate's `class={...}` serializer. */
-export type ClassValue =
-  | string
-  | number
-  | boolean
-  | null
-  | undefined
-  | ClassValue[]
-  | Record<string, unknown>;
-
 /** Serialize Slate `class={...}` values into a space-separated class string. */
 export function serializeClass(value: ClassValue): string {
   const classes: string[] = [];
   collectClass(value, classes);
   return classes.join(" ");
 }
-
-/** Value accepted by Slate's `style={...}` serializer. */
-export type StyleValue =
-  | string
-  | null
-  | undefined
-  | false
-  | Record<string, string | number | null | undefined | false>
-  | StyleValue[];
 
 /** Serialize Slate `style={...}` values into a CSS declaration string. */
 export function serializeStyle(value: StyleValue): string {
