@@ -143,6 +143,10 @@ Common tags such as `button`, `input`, `img`, `script`, `video`, and `svg` have
 tag-specific attribute types for values like `button type`, image loading, media
 preload, track kind, and SVG attributes.
 
+At render time, known camelCase HTML/SVG aliases such as `httpEquiv`,
+`strokeWidth`, and `xlinkHref` are normalized to standard output attribute
+names.
+
 Imported `.slate` components can be used from JSX. JSX children are passed to
 the component as its default slot:
 

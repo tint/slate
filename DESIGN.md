@@ -140,6 +140,7 @@ Rules:
 - JSX is supported inside `<script slate>` and produces Slate-rendered HTML. Inline event handler attributes such as `onclick` are allowed only as strings; function-valued event handlers are rejected.
 - JSX intrinsic attributes use Slate's own HTML/SVG model, including typed `class`, `style`, ARIA roles and values, `data-*`, `is:*`, `dev:*`, and `slot:*` attributes.
 - Common intrinsic tags such as `button`, `input`, `img`, `script`, `video`, and `svg` have tag-specific attribute types.
+- JSX runtime normalizes known camelCase HTML/SVG attribute aliases such as `httpEquiv`, `strokeWidth`, and `xlinkHref` to standard output names.
 - JSX inside template expressions is supported for intrinsic HTML elements and fragments.
 - Slate component JSX is supported only for components imported from `.slate` files.
 - TSX-defined components are not Slate components and are rejected by the compiler runtime.
