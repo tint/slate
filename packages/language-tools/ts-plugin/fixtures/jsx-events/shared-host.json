@@ -2,18 +2,18 @@
   "languageService": [
     {
       "file": "entry.slate.tsx",
-      "message": "Type '() => string' is not assignable to type 'string'.",
+      "message": "Type '() => string' is not assignable to type '__SlateEventAttributeValue'.",
       "range": {
-        "start": 219,
-        "end": 232
+        "start": 612,
+        "end": 625
       }
     },
     {
       "file": "entry.slate.tsx",
-      "message": "Type '() => string' is not assignable to type 'string'.",
+      "message": "Type '() => string' is not assignable to type '__SlateEventAttributeValue'.",
       "range": {
-        "start": 285,
-        "end": 298
+        "start": 678,
+        "end": 691
       }
     },
     {
@@ -88,18 +88,18 @@
   "compiler": [
     {
       "file": "entry.slate.tsx",
-      "message": "Type '() => string' is not assignable to type 'string'.",
+      "message": "Type '() => string' is not assignable to type '__SlateEventAttributeValue'.",
       "range": {
-        "start": 219,
-        "end": 232
+        "start": 612,
+        "end": 625
       }
     },
     {
       "file": "entry.slate.tsx",
-      "message": "Type '() => string' is not assignable to type 'string'.",
+      "message": "Type '() => string' is not assignable to type '__SlateEventAttributeValue'.",
       "range": {
-        "start": 285,
-        "end": 298
+        "start": 678,
+        "end": 691
       }
     },
     {

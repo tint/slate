@@ -2,6 +2,22 @@
 const handleClick = () => "clicked";
 const ok = <button type="button" data-action="save">Save</button>;
 const inline = <button onclick="alert('saved')">Save</button>;
+const attributes = (
+  <div
+    class={["card", { active: true }]}
+    style={[{ color: "red" }, "margin: 0"]}
+    aria-hidden={true}
+    data-id={123}
+    popover="auto"
+    popovertarget="menu"
+    popovertargetaction="toggle"
+    dev:scroll="main"
+  >
+    <svg viewBox="0 0 24 24" fill="none" stroke-width={2}>
+      <path d="M0 0h24v24H0z" stroke-linecap="round" />
+    </svg>
+  </div>
+);
 const invalidCamel = <button onClick={handleClick}>Save</button>;
 const invalidLower = <button onclick={handleClick}>Save</button>;
 </script>
