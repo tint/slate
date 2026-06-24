@@ -1,5 +1,8 @@
 #!/usr/bin/env node
 
+import { access } from "node:fs/promises";
+import { dirname, extname, resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 import {
   createConnection,
   DiagnosticSeverity,
@@ -25,7 +28,7 @@ import type {
   TemplateCstNode,
 } from "@slate/compiler";
 import { parse } from "@slate/compiler";
-import { checkSource } from "@slate/check";
+import { checkSource, type AttributeDiagnosticRule } from "@slate/check";
 import {
   completionFromTypeScriptContext,
   createTypeScriptContext,
@@ -44,6 +47,11 @@ const typeScriptContextCache = new Map<string, {
   version: number;
   context: TypeScriptContext;
 }>();
+const checkConfigCache = new Map<string, Promise<CheckConfig>>();
+
+type CheckConfig = {
+  attributeDiagnostics?: AttributeDiagnosticRule[];
+};
 
 connection.onInitialize((): InitializeResult => ({
   capabilities: {
@@ -72,7 +80,7 @@ connection.onInitialize((): InitializeResult => ({
 
 documents.onDidChangeContent((event) => {
   clearTypeScriptContextCache();
-  validateDocument(event.document);
+  void validateDocument(event.document);
 });
 
 documents.onDidClose((event) => {
@@ -129,17 +137,114 @@ connection.languages.semanticTokens.on((params): SemanticTokens => {
 documents.listen(connection);
 connection.listen();
 
-function validateDocument(document: TextDocument): void {
+async function validateDocument(document: TextDocument): Promise<void> {
   const source = document.getText();
+  const filename = uriToFilename(document.uri);
+  const config = await loadCheckConfig(filename);
   const result = checkSource({
     source,
-    filename: uriToFilename(document.uri),
+    filename,
+    attributeDiagnostics: config.attributeDiagnostics,
   });
 
   connection.sendDiagnostics({
     uri: document.uri,
     diagnostics: toLspDiagnostics(result.diagnostics, document),
   });
+}
+
+async function loadCheckConfig(filename: string): Promise<CheckConfig> {
+  const configPath = await findNearestConfig(filename);
+
+  if (!configPath) {
+    return {};
+  }
+
+  let cached = checkConfigCache.get(configPath);
+
+  if (!cached) {
+    cached = readCheckConfig(configPath).catch(() => ({}));
+    checkConfigCache.set(configPath, cached);
+  }
+
+  return cached;
+}
+
+async function findNearestConfig(filename: string): Promise<string | undefined> {
+  let current = dirname(filename);
+
+  while (true) {
+    for (const name of ["slate.config.ts", "slate.config.mjs", "slate.config.js"]) {
+      const candidate = resolve(current, name);
+
+      if (await exists(candidate)) {
+        return candidate;
+      }
+    }
+
+    const parent = dirname(current);
+
+    if (parent === current) {
+      return undefined;
+    }
+
+    current = parent;
+  }
+}
+
+async function readCheckConfig(configPath: string): Promise<CheckConfig> {
+  const mod = await importConfigModule(configPath);
+  const configExport = mod.default ?? mod.config ?? {};
+  const config = await (typeof configExport === "function"
+    ? configExport({
+      command: "serve",
+      mode: "development",
+      phase: "check",
+    })
+    : configExport);
+
+  if (!isObject(config) || !isObject(config.html)) {
+    return {};
+  }
+
+  return {
+    attributeDiagnostics: Array.isArray(config.html.attributeDiagnostics)
+      ? config.html.attributeDiagnostics as AttributeDiagnosticRule[]
+      : undefined,
+  };
+}
+
+async function importConfigModule(configPath: string): Promise<Record<string, unknown>> {
+  const url = pathToFileURL(configPath).href;
+  const extension = extname(configPath);
+
+  if (extension === ".ts" || extension === ".tsx" || extension === ".mts" || extension === ".cts") {
+    if (isBunRuntime()) {
+      return await import(url);
+    }
+
+    const { tsImport } = await import("tsx/esm/api");
+    return await tsImport(url, import.meta.url);
+  }
+
+  return await import(`${url}?t=${Date.now()}`);
+}
+
+async function exists(path: string): Promise<boolean> {
+  try {
+    await access(path);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+function isObject(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
+}
+
+function isBunRuntime(): boolean {
+  return typeof process.versions.bun === "string";
 }
 
 function toLspDiagnostics(diagnostics: Diagnostic[], document: TextDocument): LspDiagnostic[] {
