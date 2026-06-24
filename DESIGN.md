@@ -520,6 +520,7 @@ HTML attributes use attribute-specific rendering:
 - `false` on normal attributes removes the attribute.
 - `class=` and `style=` keep their dedicated serializers.
 
+Slate JSX allows custom attributes by default, matching Slate template behavior.
 Slate does not treat React aliases such as `className` and `htmlFor` as built-in
 errors. They are emitted literally by default. Projects that want stricter
 compatibility rules can opt into attribute diagnostics in `slate.config.*`:
@@ -545,9 +546,9 @@ export default defineConfig({
 });
 ```
 
-Attribute diagnostics are matched against the raw attribute name. The first
-implementation covers normal template attributes; JSX expression attributes are
-checked separately by the TypeScript model.
+Attribute diagnostics are matched against the raw attribute name. They cover
+normal template attributes and JSX attributes inside `<script slate>` or
+template expressions.
 
 This model exists so component results, slot results, and future render runes
 can pass through `{expression}` without accidentally escaping already-rendered
