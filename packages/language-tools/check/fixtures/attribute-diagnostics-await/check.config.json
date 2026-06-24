@@ -1,0 +1,11 @@
+{
+  "html": {
+    "attributeDiagnostics": [
+      {
+        "pattern": "className",
+        "severity": "warning",
+        "message": "Use class instead of className."
+      }
+    ]
+  }
+}

@@ -1,0 +1,11 @@
+<script slate>
+const value = Promise.resolve("ok");
+</script>
+
+{#await value}
+  <p>Loading</p>
+{:then message}
+  <div className="bad">{message}</div>
+{:catch error}
+  <p>{error.message}</p>
+{/await}

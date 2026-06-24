@@ -3,6 +3,8 @@ import ts from "typescript";
 import {
   parse,
   type AttributeCst,
+  type AwaitBlockCst,
+  type BlockTagCst,
   type DirectiveAttributeCst,
   type EachBlockCst,
   type ElementCst,
@@ -705,6 +707,13 @@ function collectSlotOutlets(nodes: TemplateCstNode[], outlets: SlotOutlet[] = []
       if (node.else) {
         collectSlotOutlets(node.else, outlets);
       }
+      continue;
+    }
+
+    if (node.kind === "AwaitBlock") {
+      collectSlotOutlets(node.pending, outlets);
+      collectSlotOutlets(node.then?.children ?? [], outlets);
+      collectSlotOutlets(node.catch?.children ?? [], outlets);
     }
   }
 
@@ -1199,6 +1208,60 @@ function appendTemplateNode(builder: VirtualDocumentBuilder, node: TemplateCstNo
     return;
   }
 
+  if (node.kind === "AwaitBlock") {
+    const thenRange = awaitBindingRange(node.then?.tag);
+    const catchRange = awaitBindingRange(node.catch?.tag);
+
+    builder.appendGenerated("(async () => {\n");
+    builder.appendGenerated("{\n");
+
+    for (const child of node.pending) {
+      appendTemplateNode(builder, child, componentNames);
+    }
+
+    builder.appendGenerated("}\n");
+    builder.appendGenerated("try {\nconst __slateAwaitValue = await (");
+    builder.appendMapped("template", node.expression.text, trimmedIslandRange(builder.source, node.expression));
+    builder.appendGenerated(");\n");
+
+    if (node.then) {
+      builder.appendGenerated("{\n");
+
+      if (node.then.value) {
+        builder.appendGenerated("const ");
+        appendMappedIdentifier(builder, sanitizeIdentifier(node.then.value, "value"), thenRange);
+        builder.appendGenerated(" = __slateAwaitValue;\n");
+      }
+
+      for (const child of node.then.children) {
+        appendTemplateNode(builder, child, componentNames);
+      }
+
+      builder.appendGenerated("}\n");
+    }
+
+    builder.appendGenerated("} catch (__slateAwaitError) {\n");
+
+    if (node.catch) {
+      builder.appendGenerated("{\n");
+
+      if (node.catch.value) {
+        builder.appendGenerated("const ");
+        appendMappedIdentifier(builder, sanitizeIdentifier(node.catch.value, "error"), catchRange);
+        builder.appendGenerated(" = __slateAwaitError;\n");
+      }
+
+      for (const child of node.catch.children) {
+        appendTemplateNode(builder, child, componentNames);
+      }
+
+      builder.appendGenerated("}\n");
+    }
+
+    builder.appendGenerated("}\n})();\n");
+    return;
+  }
+
   if (node.kind === "Element") {
     appendElement(builder, node, componentNames);
   }
@@ -1520,6 +1583,22 @@ function eachBindingRanges(node: EachBlockCst): { item?: Range; index?: Range } 
   }
 
   return ranges;
+}
+
+function awaitBindingRange(tag: BlockTagCst | undefined): Range | undefined {
+  const expression = tag?.expression;
+
+  if (!expression?.text) {
+    return undefined;
+  }
+
+  const trimmed = expression.text.trim();
+  const offset = expression.text.indexOf(trimmed);
+
+  return {
+    start: expression.range.start + Math.max(0, offset),
+    end: expression.range.start + Math.max(0, offset) + trimmed.length,
+  };
 }
 
 function trimmedIslandRange(source: string, island: TsIslandLike): Range {

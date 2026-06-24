@@ -207,6 +207,22 @@ function collectAttributeDiagnosticsFromNode(
     return;
   }
 
+  if (node.kind === "AwaitBlock") {
+    for (const child of node.pending) {
+      collectAttributeDiagnosticsFromNode(child, filename, rules, diagnostics);
+    }
+
+    for (const child of node.then?.children ?? []) {
+      collectAttributeDiagnosticsFromNode(child, filename, rules, diagnostics);
+    }
+
+    for (const child of node.catch?.children ?? []) {
+      collectAttributeDiagnosticsFromNode(child, filename, rules, diagnostics);
+    }
+
+    return;
+  }
+
 }
 
 function collectAttributeDiagnosticsFromAttributes(

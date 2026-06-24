@@ -22,6 +22,8 @@ import {
 import { TextDocument } from "vscode-languageserver-textdocument";
 import { URI } from "vscode-uri";
 import type {
+  AwaitBlockCst,
+  BlockTagCst,
   Diagnostic,
   EachBlockCst,
   SlateFileCst,
@@ -374,6 +376,7 @@ function collectSemanticTokenEntries(source: string): SemanticTokenEntry[] {
   collectScriptSlateTokens(source, entries);
   collectTemplateKeywordTokens(source, entries);
   collectEachSemanticTokens(source, entries);
+  collectAwaitSemanticTokens(source, entries);
   collectComponentTagTokens(source, entries);
 
   return entries;
@@ -474,6 +477,25 @@ function collectEachSemanticTokens(source: string, entries: SemanticTokenEntry[]
   }
 }
 
+function collectAwaitSemanticTokens(source: string, entries: SemanticTokenEntry[]): void {
+  const pattern = /\{\s*:(then|catch)\s+([A-Za-z_$][\w$]*)/g;
+
+  for (const match of source.matchAll(pattern)) {
+    const name = match[2];
+
+    if (!name || match.index === undefined) {
+      continue;
+    }
+
+    const offset = match.index + match[0].lastIndexOf(name);
+    entries.push({
+      start: offset,
+      end: offset + name.length,
+      type: "parameter",
+    });
+  }
+}
+
 function collectComponentTagTokens(source: string, entries: SemanticTokenEntry[]): void {
   for (const tag of slateComponentTagRanges(source)) {
     entries.push({
@@ -525,6 +547,24 @@ function collectSymbolsFromNode(node: TemplateCstNode, symbols: SymbolEntry[]): 
     return;
   }
 
+  if (node.kind === "AwaitBlock") {
+    collectSymbolsFromAwait(node, symbols);
+
+    for (const child of node.pending) {
+      collectSymbolsFromNode(child, symbols);
+    }
+
+    for (const child of node.then?.children ?? []) {
+      collectSymbolsFromNode(child, symbols);
+    }
+
+    for (const child of node.catch?.children ?? []) {
+      collectSymbolsFromNode(child, symbols);
+    }
+
+    return;
+  }
+
   if (node.kind === "IfBlock") {
     for (const child of node.then) {
       collectSymbolsFromNode(child, symbols);
@@ -542,6 +582,29 @@ function collectSymbolsFromNode(node: TemplateCstNode, symbols: SymbolEntry[]): 
       collectSymbolsFromNode(child, symbols);
     }
   }
+}
+
+function collectSymbolsFromAwait(node: AwaitBlockCst, symbols: SymbolEntry[]): void {
+  collectSymbolFromAwaitBranch(node.then?.tag, symbols);
+  collectSymbolFromAwaitBranch(node.catch?.tag, symbols);
+}
+
+function collectSymbolFromAwaitBranch(tag: BlockTagCst | undefined, symbols: SymbolEntry[]): void {
+  const expression = tag?.expression;
+
+  if (!expression?.text || !/^[A-Za-z_$][\w$]*$/.test(expression.text.trim())) {
+    return;
+  }
+
+  const name = expression.text.trim();
+  const offset = expression.text.indexOf(name);
+  symbols.push({
+    name,
+    range: {
+      start: expression.range.start + Math.max(0, offset),
+      end: expression.range.start + Math.max(0, offset) + name.length,
+    },
+  });
 }
 
 function collectSymbolsFromEach(node: EachBlockCst, symbols: SymbolEntry[]): void {
