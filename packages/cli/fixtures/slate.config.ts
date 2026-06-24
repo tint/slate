@@ -28,7 +28,6 @@ export default defineConfig({
   dev: {
     port: 0,
     preserveScroll: true,
-    tmpDir: "../.tmp/config-dev-modules",
   },
   build: {
     output: "../.tmp/config-build",
