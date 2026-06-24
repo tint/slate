@@ -7,3 +7,5 @@ const items = ["<A>", "B"];
 <p>{visible ? <span>Yes</span> : <span>No</span>}</p>
 <ul>{items.map(item => <li>{item}</li>)}</ul>
 <section>{<>{"A"}<span>B</span></>}</section>
+<meta-fragment>{<meta httpEquiv="refresh" content="30" />}</meta-fragment>
+<svg-fragment>{<svg viewBox="0 0 24 24"><a xlinkHref="#target"><path fillRule="evenodd" strokeWidth={2} strokeLinecap="round" /></a></svg>}</svg-fragment>
