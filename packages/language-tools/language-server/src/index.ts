@@ -28,7 +28,11 @@ import type {
   TemplateCstNode,
 } from "@slate/compiler";
 import { parse } from "@slate/compiler";
-import { checkSource, type AttributeDiagnosticRule } from "@slate/check";
+import {
+  checkSource,
+  normalizeAttributeDiagnosticRules,
+  type AttributeDiagnosticRule,
+} from "@slate/check";
 import {
   completionFromTypeScriptContext,
   createTypeScriptContext,
@@ -216,9 +220,7 @@ async function readCheckConfig(configPath: string, mtimeMs: number): Promise<Che
   }
 
   return {
-    attributeDiagnostics: Array.isArray(config.html.attributeDiagnostics)
-      ? config.html.attributeDiagnostics as AttributeDiagnosticRule[]
-      : undefined,
+    attributeDiagnostics: normalizeAttributeDiagnosticRules(config.html.attributeDiagnostics),
   };
 }
 
