@@ -1,5 +1,11 @@
 /** Primitive value accepted by JSX HTML attributes. */
-export type JsxAttributePrimitive = string | number | bigint | boolean | null | undefined;
+export type JsxAttributePrimitive =
+  | string
+  | number
+  | bigint
+  | boolean
+  | null
+  | undefined;
 
 /** clsx-compatible value accepted by Slate's `class={...}` serializer. */
 export type ClassValue =
@@ -23,6 +29,158 @@ export type StyleValue =
 export type JsxAriaValue = string | number | boolean | null | undefined;
 export type JsxEventAttributeValue = string | null | undefined;
 
+export type AriaRole =
+  | "alert"
+  | "alertdialog"
+  | "application"
+  | "article"
+  | "banner"
+  | "button"
+  | "cell"
+  | "checkbox"
+  | "columnheader"
+  | "combobox"
+  | "complementary"
+  | "contentinfo"
+  | "definition"
+  | "dialog"
+  | "directory"
+  | "document"
+  | "feed"
+  | "figure"
+  | "form"
+  | "grid"
+  | "gridcell"
+  | "group"
+  | "heading"
+  | "img"
+  | "link"
+  | "list"
+  | "listbox"
+  | "listitem"
+  | "log"
+  | "main"
+  | "marquee"
+  | "math"
+  | "menu"
+  | "menubar"
+  | "menuitem"
+  | "menuitemcheckbox"
+  | "menuitemradio"
+  | "meter"
+  | "navigation"
+  | "none"
+  | "note"
+  | "option"
+  | "presentation"
+  | "progressbar"
+  | "radio"
+  | "radiogroup"
+  | "region"
+  | "row"
+  | "rowgroup"
+  | "rowheader"
+  | "scrollbar"
+  | "search"
+  | "searchbox"
+  | "separator"
+  | "slider"
+  | "spinbutton"
+  | "status"
+  | "switch"
+  | "tab"
+  | "table"
+  | "tablist"
+  | "tabpanel"
+  | "term"
+  | "textbox"
+  | "timer"
+  | "toolbar"
+  | "tooltip"
+  | "tree"
+  | "treegrid"
+  | "treeitem"
+  | (string & {});
+
+export type AriaBoolean = boolean | "true" | "false";
+export type AriaBooleanish = AriaBoolean | null | undefined;
+export type AriaCurrent = boolean | "false" | "true" | "page" | "step" | "location" | "date" | "time" | null | undefined;
+export type AriaInvalid = boolean | "false" | "true" | "grammar" | "spelling" | null | undefined;
+export type AriaLive = "off" | "assertive" | "polite" | null | undefined;
+export type AriaOrientation = "horizontal" | "vertical" | null | undefined;
+export type AriaRelevant =
+  | "additions"
+  | "additions removals"
+  | "additions text"
+  | "all"
+  | "removals"
+  | "removals additions"
+  | "removals text"
+  | "text"
+  | "text additions"
+  | "text removals"
+  | null
+  | undefined;
+export type AriaSort = "none" | "ascending" | "descending" | "other" | null | undefined;
+export type AriaAutocomplete = "none" | "inline" | "list" | "both" | null | undefined;
+export type AriaHasPopup = boolean | "false" | "true" | "menu" | "listbox" | "tree" | "grid" | "dialog" | null | undefined;
+
+export type AriaAttributes = {
+  "aria-activedescendant"?: string | null | undefined;
+  "aria-atomic"?: AriaBooleanish;
+  "aria-autocomplete"?: AriaAutocomplete;
+  "aria-braillelabel"?: string | null | undefined;
+  "aria-brailleroledescription"?: string | null | undefined;
+  "aria-busy"?: AriaBooleanish;
+  "aria-checked"?: boolean | "false" | "mixed" | "true" | null | undefined;
+  "aria-colcount"?: string | number | null | undefined;
+  "aria-colindex"?: string | number | null | undefined;
+  "aria-colindextext"?: string | null | undefined;
+  "aria-colspan"?: string | number | null | undefined;
+  "aria-controls"?: string | null | undefined;
+  "aria-current"?: AriaCurrent;
+  "aria-describedby"?: string | null | undefined;
+  "aria-description"?: string | null | undefined;
+  "aria-details"?: string | null | undefined;
+  "aria-disabled"?: AriaBooleanish;
+  "aria-dropeffect"?: "copy" | "execute" | "link" | "move" | "none" | "popup" | null | undefined;
+  "aria-errormessage"?: string | null | undefined;
+  "aria-expanded"?: AriaBooleanish;
+  "aria-flowto"?: string | null | undefined;
+  "aria-grabbed"?: AriaBooleanish;
+  "aria-haspopup"?: AriaHasPopup;
+  "aria-hidden"?: AriaBooleanish;
+  "aria-invalid"?: AriaInvalid;
+  "aria-keyshortcuts"?: string | null | undefined;
+  "aria-label"?: string | null | undefined;
+  "aria-labelledby"?: string | null | undefined;
+  "aria-level"?: string | number | null | undefined;
+  "aria-live"?: AriaLive;
+  "aria-modal"?: AriaBooleanish;
+  "aria-multiline"?: AriaBooleanish;
+  "aria-multiselectable"?: AriaBooleanish;
+  "aria-orientation"?: AriaOrientation;
+  "aria-owns"?: string | null | undefined;
+  "aria-placeholder"?: string | null | undefined;
+  "aria-posinset"?: string | number | null | undefined;
+  "aria-pressed"?: boolean | "false" | "mixed" | "true" | null | undefined;
+  "aria-readonly"?: AriaBooleanish;
+  "aria-relevant"?: AriaRelevant;
+  "aria-required"?: AriaBooleanish;
+  "aria-roledescription"?: string | null | undefined;
+  "aria-rowcount"?: string | number | null | undefined;
+  "aria-rowindex"?: string | number | null | undefined;
+  "aria-rowindextext"?: string | null | undefined;
+  "aria-rowspan"?: string | number | null | undefined;
+  "aria-selected"?: AriaBooleanish;
+  "aria-setsize"?: string | number | null | undefined;
+  "aria-sort"?: AriaSort;
+  "aria-valuemax"?: string | number | null | undefined;
+  "aria-valuemin"?: string | number | null | undefined;
+  "aria-valuenow"?: string | number | null | undefined;
+  "aria-valuetext"?: string | null | undefined;
+};
+
 export type JsxBooleanish = boolean | "true" | "false" | null | undefined;
 export type JsxCrossOrigin = "anonymous" | "use-credentials" | "" | null | undefined;
 export type JsxFetchPriority = "high" | "low" | "auto" | null | undefined;
@@ -39,7 +197,7 @@ export type JsxReferrerPolicy =
   | null
   | undefined;
 
-export type JsxGlobalAttributes = {
+export type JsxGlobalAttributes = AriaAttributes & {
   children?: unknown;
   accesskey?: string | null | undefined;
   autocapitalize?: string | null | undefined;
@@ -64,7 +222,7 @@ export type JsxGlobalAttributes = {
   nonce?: string | null | undefined;
   part?: string | null | undefined;
   popover?: boolean | "auto" | "manual" | null | undefined;
-  role?: string | null | undefined;
+  role?: AriaRole | null | undefined;
   slot?: string | null | undefined;
   spellcheck?: JsxBooleanish;
   style?: StyleValue;

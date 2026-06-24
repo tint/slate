@@ -1,6 +1,18 @@
 import type { ClassValue, JsxProps, StyleValue } from "./jsx-types";
 
 export type {
+  AriaAttributes,
+  AriaAutocomplete,
+  AriaBoolean,
+  AriaBooleanish,
+  AriaCurrent,
+  AriaHasPopup,
+  AriaInvalid,
+  AriaLive,
+  AriaOrientation,
+  AriaRelevant,
+  AriaRole,
+  AriaSort,
   ClassValue,
   JsxAriaValue,
   JsxAttributePrimitive,
