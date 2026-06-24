@@ -1,0 +1,34 @@
+{
+  "diagnostics": [
+    {
+      "message": "LSP className diagnostic.",
+      "range": {
+        "start": {
+          "line": 0,
+          "character": 7
+        },
+        "end": {
+          "line": 0,
+          "character": 24
+        }
+      },
+      "severity": 2,
+      "source": "slate"
+    },
+    {
+      "message": "LSP htmlFor diagnostic.",
+      "range": {
+        "start": {
+          "line": 0,
+          "character": 25
+        },
+        "end": {
+          "line": 0,
+          "character": 39
+        }
+      },
+      "severity": 1,
+      "source": "slate"
+    }
+  ]
+}

@@ -1,0 +1,5 @@
+<script slate>
+export type Props = { title?: string };
+</script>
+
+<section><slot /></section>

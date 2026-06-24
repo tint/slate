@@ -49,6 +49,15 @@ async function main(): Promise<void> {
     const diagnostics = await client.waitForNotification("textDocument/publishDiagnostics", (params) => {
       return isRecord(params) && params.uri === uri;
     });
+
+    if (!source.includes("title.toUpperCase")) {
+      await client.shutdown();
+      writeFixtureOutput(fixtureDir, {
+        diagnostics: normalizeDiagnostics(diagnostics.params),
+      });
+      continue;
+    }
+
     const hover = await client.request("textDocument/hover", {
       textDocument: { uri },
       position: positionAt(source, source.indexOf("title.toUpperCase") + "title".length),
@@ -140,11 +149,15 @@ async function main(): Promise<void> {
       documentSymbol: normalizeDocumentSymbols(documentSymbol.result),
     };
 
-    mkdirSync(fixtureDir, {
-      recursive: true,
-    });
-    writeFileSync(join(fixtureDir, "lsp.json"), `${JSON.stringify(output, null, 2)}\n`);
+    writeFixtureOutput(fixtureDir, output);
   }
+}
+
+function writeFixtureOutput(fixtureDir: string, output: unknown): void {
+  mkdirSync(fixtureDir, {
+    recursive: true,
+  });
+  writeFileSync(join(fixtureDir, "lsp.json"), `${JSON.stringify(output, null, 2)}\n`);
 }
 
 class LspClient {
