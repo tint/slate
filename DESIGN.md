@@ -138,7 +138,7 @@ Rules:
 - Only TypeScript type exports are allowed from `<script slate>`.
 - TypeScript types, interfaces, generics, and annotations are supported.
 - JSX is supported inside `<script slate>` and produces Slate-rendered HTML. Inline event handler attributes such as `onclick` are allowed only as strings; function-valued event handlers are rejected.
-- JSX intrinsic attributes use Slate's own HTML/SVG model, including typed `class`, `style`, ARIA, `data-*`, `is:*`, `dev:*`, and `slot:*` attributes.
+- JSX intrinsic attributes use Slate's own HTML/SVG model, including typed `class`, `style`, ARIA roles and values, `data-*`, `is:*`, `dev:*`, and `slot:*` attributes.
 - JSX inside template expressions is supported for intrinsic HTML elements and fragments.
 - Slate component JSX is supported only for components imported from `.slate` files.
 - TSX-defined components are not Slate components and are rejected by the compiler runtime.

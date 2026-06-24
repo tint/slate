@@ -83,7 +83,7 @@ Inference rules:
 - JSX component usage accepts named slots through a `slots` prop.
 - JSX `slots` rejects unknown slot names and contextually types each slot function's data parameter.
 - JSX children are mapped to the default slot; `slots.default` and JSX children are rejected when combined.
-- JSX intrinsic elements use Slate's HTML/SVG attribute model, including typed `class`, `style`, ARIA, `data-*`, `is:*`, `dev:*`, and `slot:*` attributes.
+- JSX intrinsic elements use Slate's HTML/SVG attribute model, including typed `class`, `style`, ARIA roles and values, `data-*`, `is:*`, `dev:*`, and `slot:*` attributes.
 - JSX intrinsic elements type `on*` event handler attributes as strings, so inline HTML handlers are possible but function-valued handlers are rejected.
 
 These types exist only for editor integration and type checking. They do not change the generated runtime render module.

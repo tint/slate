@@ -135,9 +135,9 @@ such as `onClick={() => ...}` are rejected because Slate does not attach
 browser-side listeners from compile-time JSX.
 
 Intrinsic JSX attributes use Slate's own HTML/SVG model instead of React DOM
-types. Common HTML, SVG, ARIA, `data-*`, `is:*`, `dev:*`, and `slot:*`
-attributes are typed. `class` accepts `ClassValue`, and `style` accepts
-`StyleValue`.
+types. Common HTML, SVG, ARIA roles and values, `data-*`, `is:*`, `dev:*`, and
+`slot:*` attributes are typed. `class` accepts `ClassValue`, and `style`
+accepts `StyleValue`.
 
 Imported `.slate` components can be used from JSX. JSX children are passed to
 the component as its default slot:
