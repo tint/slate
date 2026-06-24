@@ -1,0 +1,3 @@
+<script slate>
+const post = Promise.reject(new Error("No post"));
+</script>{#await post}<p>Loading</p>{:then value}<h1>{value.title}</h1>{:catch error}<p>{error.message}</p>{/await}

@@ -1,5 +1,7 @@
 import type {
   AttributeCst,
+  AwaitBlockCst,
+  BlockTagCst,
   CommentCst,
   ConstTagCst,
   DebugDirectiveCst,
@@ -43,6 +45,9 @@ type ChildrenStop =
   | {
       kind: "each";
     }
+  | {
+      kind: "await";
+    }
   | undefined;
 
 export function parse(source: string, _options: ParseOptions = {}): ParseResult {
@@ -53,8 +58,11 @@ export function parse(source: string, _options: ParseOptions = {}): ParseResult 
 class Parser {
   private pos = 0;
   private readonly diagnostics: Diagnostic[] = [];
+  private readonly source: string;
 
-  constructor(private readonly source: string) {}
+  constructor(source: string) {
+    this.source = source;
+  }
 
   parse(): ParseResult {
     const children = this.parseChildren();
@@ -87,6 +95,10 @@ class Parser {
       }
 
       if (stop?.kind === "each" && (this.startsWith("{:else}") || this.startsWith("{/each}"))) {
+        break;
+      }
+
+      if (stop?.kind === "await" && (this.startsWith("{:then") || this.startsWith("{:catch") || this.startsWith("{/await}"))) {
         break;
       }
 
@@ -468,6 +480,10 @@ class Parser {
       return this.parseEachBlock();
     }
 
+    if (this.startsWith("{#await", start)) {
+      return this.parseAwaitBlock();
+    }
+
     const expression = this.readBalancedBraces();
     const node: InterpolationCst = {
       kind: "Interpolation",
@@ -617,13 +633,92 @@ class Parser {
     return node;
   }
 
-  private parseBlockTag(name: "#if" | "#each" | ":else" | "/if" | "/each") {
+  private parseAwaitBlock(): AwaitBlockCst {
+    const start = this.pos;
+    const open = this.parseBlockTag("#await");
+    const expression = open.expression ?? {
+      range: this.range(open.range.end, open.range.end),
+      text: "undefined",
+    };
+    const pending = this.parseChildren({ kind: "await" });
+    let thenBranch: AwaitBlockCst["then"];
+    let catchBranch: AwaitBlockCst["catch"];
+
+    if (this.startsWith("{:then")) {
+      const tag = this.parseBlockTag(":then");
+      thenBranch = {
+        tag,
+        value: this.parseAwaitBinding(tag),
+        children: this.parseChildren({ kind: "await" }),
+      };
+    }
+
+    if (this.startsWith("{:catch")) {
+      const tag = this.parseBlockTag(":catch");
+      catchBranch = {
+        tag,
+        value: this.parseAwaitBinding(tag),
+        children: this.parseChildren({ kind: "await" }),
+      };
+    }
+
+    const close = this.startsWith("{/await}") ? this.parseBlockTag("/await") : undefined;
+    const end =
+      close?.range.end ??
+      (catchBranch?.children.at(-1)?.range.end ??
+        catchBranch?.tag.range.end ??
+        thenBranch?.children.at(-1)?.range.end ??
+        thenBranch?.tag.range.end ??
+        pending.at(-1)?.range.end ??
+        open.range.end);
+    const node: AwaitBlockCst = {
+      kind: "AwaitBlock",
+      range: this.range(start, end),
+      open,
+      expression,
+      pending,
+      then: thenBranch,
+      catch: catchBranch,
+      close,
+    };
+
+    if (!open.expression) {
+      this.addDiagnostic("Expected await block syntax `{#await expression}`.", open.range);
+    }
+
+    if (!close) {
+      this.addDiagnostic("Expected `{/await}` to close await block.", node.range);
+    }
+
+    return node;
+  }
+
+  private parseAwaitBinding(tag: BlockTagCst): string | undefined {
+    const text = tag.expression?.text.trim();
+
+    if (!text) {
+      return undefined;
+    }
+
+    if (/^[A-Za-z_$][\w$]*$/.test(text)) {
+      return text;
+    }
+
+    this.addDiagnostic(`Expected ${tag.name} binding to be an identifier.`, tag.expression?.range ?? tag.range);
+    return undefined;
+  }
+
+  private parseBlockTag(name: "#if" | "#each" | "#await" | ":else" | ":then" | ":catch" | "/if" | "/each" | "/await") {
     const start = this.pos;
     this.pos += name.length + 1;
     const expressionStart = this.pos;
     const close = this.findExpressionClose(start);
     const expressionEnd = close === -1 ? this.source.length : close;
     const closed = close !== -1;
+    const rawExpression = this.source.slice(expressionStart, expressionEnd);
+    const expressionText = rawExpression.trim();
+    const expressionOffset = expressionText ? rawExpression.indexOf(expressionText) : 0;
+    const trimmedExpressionStart = expressionStart + Math.max(0, expressionOffset);
     this.pos = closed ? close + 1 : this.source.length;
 
     return {
@@ -631,10 +726,10 @@ class Parser {
       name,
       range: this.range(start, this.pos),
       expression:
-        expressionEnd > expressionStart
+        expressionText
           ? {
-              range: this.range(expressionStart, expressionEnd),
-              text: this.source.slice(expressionStart, expressionEnd).trim(),
+              range: this.range(trimmedExpressionStart, trimmedExpressionStart + expressionText.length),
+              text: expressionText,
             }
           : undefined,
       closed,

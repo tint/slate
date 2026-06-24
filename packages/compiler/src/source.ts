@@ -9,9 +9,11 @@ export type Position = {
 };
 
 export class LineMap {
+  readonly source: string;
   readonly lineStarts: number[];
 
-  constructor(readonly source: string) {
+  constructor(source: string) {
+    this.source = source;
     this.lineStarts = [0];
 
     for (let index = 0; index < source.length; index++) {

@@ -1,0 +1,8 @@
+<script slate>
+const user = { name: "Slate" };
+</script>
+
+<div>
+  {@debug user}
+  <p>{user.name}</p>
+</div>

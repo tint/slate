@@ -294,6 +294,13 @@ function collectTemplateSlotOutlets(nodes: TemplateCstNode[], outlets: TemplateS
       if (node.else) {
         collectTemplateSlotOutlets(node.else, outlets);
       }
+      continue;
+    }
+
+    if (node.kind === "AwaitBlock") {
+      collectTemplateSlotOutlets(node.pending, outlets);
+      collectTemplateSlotOutlets(node.then?.children ?? [], outlets);
+      collectTemplateSlotOutlets(node.catch?.children ?? [], outlets);
     }
   }
 
@@ -566,6 +573,20 @@ function validateTemplateNode(node: TemplateCstNode): Diagnostic[] {
     }
 
     for (const child of node.else ?? []) {
+      diagnostics.push(...validateTemplateNode(child));
+    }
+  }
+
+  if (node.kind === "AwaitBlock") {
+    for (const child of node.pending) {
+      diagnostics.push(...validateTemplateNode(child));
+    }
+
+    for (const child of node.then?.children ?? []) {
+      diagnostics.push(...validateTemplateNode(child));
+    }
+
+    for (const child of node.catch?.children ?? []) {
       diagnostics.push(...validateTemplateNode(child));
     }
   }

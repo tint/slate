@@ -7,5 +7,5 @@
     "<script slate>\nconst title = \"Hello\";\nconst items = [\"a\", \"b\"];\n</script>\n\n<h1>{title}</h1>\n\n{#if items.length}\n  <ul>\n    {#each items as item}\n      <li data-item={item}>{item}</li>\n    {/each}\n  </ul>\n{/if}\n"
   ],
   "names": [],
-  "mappings": ";;;QAKK;;;;;;;;;;;qCAED;;;;;;mEAGwB,kGAAP"
+  "mappings": ";;;QAKK;;;;;;;;;;;qCAEA;;;;;;mEAGuB,kGAAP"
 }

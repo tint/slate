@@ -7,6 +7,9 @@ export type { GenerateOptions, GenerateResult } from "./codegen.ts";
 export type { SourceMap, SourceMapOption } from "./sourcemap.ts";
 export type {
   AttributeCst,
+  AwaitBlockCst,
+  AwaitBranchCst,
+  BlockTagCst,
   CommentCst,
   ConstTagCst,
   DebugDirectiveCst,

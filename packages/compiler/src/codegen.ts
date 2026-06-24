@@ -1,5 +1,7 @@
 import type {
   AttributeCst,
+  AwaitBlockCst,
+  DebugDirectiveCst,
   ElementCst,
   EachBlockCst,
   HtmlDirectiveCst,
@@ -232,7 +234,10 @@ function generateStatement(
       return generateIfStatement(node, componentNames, target, filename, dev, sourceMapHints);
     case "EachBlock":
       return generateEachStatement(node, componentNames, target, filename, dev, sourceMapHints);
+    case "AwaitBlock":
+      return generateAwaitStatement(node, componentNames, target, filename, dev, sourceMapHints);
     case "DebugDirective":
+      return generateDebugStatement(node, filename, dev, sourceMapHints);
     case "Error":
     case "SlateScriptElement":
       return "";
@@ -265,10 +270,13 @@ function generateNode(
       return generateIfBlock(node, componentNames, filename, dev, sourceMapHints);
     case "EachBlock":
       return generateEachBlock(node, componentNames, filename, dev, sourceMapHints);
+    case "AwaitBlock":
+      return generateAwaitBlock(node, componentNames, filename, dev, sourceMapHints);
     case "ConstTag":
     case "LetTag":
       return "\"\"";
     case "DebugDirective":
+      return generateDebugDirective(node, filename, dev, sourceMapHints);
     case "Error":
     case "SlateScriptElement":
       return "";
@@ -313,6 +321,39 @@ function generateEachBlock(node: EachBlockCst, componentNames: Set<string>, file
   }
 
   return `await (async () => {\n        const __items = ${eachExpression};\n        return __items.length ? (await Promise.all(__items.map(async (${item}${index}) => {\n          return [\n            ${body}\n          ].join(\"\");\n        }))).join("") : [\n        ${elseBody ?? ""}\n      ].join("");\n      })()`;
+}
+
+function generateAwaitStatement(node: AwaitBlockCst, componentNames: Set<string>, target: string, filename: string, dev: boolean, sourceMapHints: SourceMapHint[]): string {
+  const expression = wrapExpression(node.expression.text, filename, node.expression.range, "template", sourceMapHints);
+  const thenBody = node.then ? generateStatements(node.then.children, componentNames, target, filename, dev, sourceMapHints) : "";
+  const catchBody = node.catch ? generateStatements(node.catch.children, componentNames, target, filename, dev, sourceMapHints) : "";
+  const thenValue = node.then?.value ? `const ${node.then.value} = __slateAwaitValue;\n` : "";
+  const catchValue = node.catch?.value ? `const ${node.catch.value} = __slateAwaitError;\n` : "";
+  const rethrow = `evaluateSlateExpression(() => { throw __slateAwaitError; }, ${sourceLocation(filename, node.expression.range, "template")});`;
+
+  return `try {\n  const __slateAwaitValue = await ${expression};\n${node.then ? indent(`{\n${indent(`${thenValue}${thenBody}`, 2)}\n}`, 2) : ""}\n} catch (__slateAwaitError) {\n${node.catch ? indent(`{\n${indent(`${catchValue}${catchBody}`, 2)}\n}`, 2) : indent(rethrow, 2)}\n}`;
+}
+
+function generateAwaitBlock(node: AwaitBlockCst, componentNames: Set<string>, filename: string, dev: boolean, sourceMapHints: SourceMapHint[]): string {
+  const body = generateAwaitStatement(node, componentNames, "__html", filename, dev, sourceMapHints);
+
+  return `await (async () => {\n        let __html = "";\n${indent(body, 8)}\n        return __html;\n      })()`;
+}
+
+function generateDebugStatement(node: DebugDirectiveCst, filename: string, dev: boolean, sourceMapHints: SourceMapHint[]): string {
+  if (!dev) {
+    return "";
+  }
+
+  return `console.log("[slate:debug]", ${wrapExpression(node.expression.text, filename, node.expression.range, "template", sourceMapHints)});`;
+}
+
+function generateDebugDirective(node: DebugDirectiveCst, filename: string, dev: boolean, sourceMapHints: SourceMapHint[]): string {
+  if (!dev) {
+    return "\"\"";
+  }
+
+  return `(() => { console.log("[slate:debug]", ${wrapExpression(node.expression.text, filename, node.expression.range, "template", sourceMapHints)}); return ""; })()`;
 }
 
 function generateIfBlock(node: IfBlockCst, componentNames: Set<string>, filename: string, dev: boolean, sourceMapHints: SourceMapHint[]): string {

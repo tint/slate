@@ -12,13 +12,13 @@ export async function render(__props = {}, slots = {}, context = {}) {
     "</h1>"
   ].join("");
   __html += "\n\n";
-  if (evaluateSlateExpression(() => (items.length), {"filename":"input.slate","range":{"start":97,"end":110},"kind":"template"})) {
+  if (evaluateSlateExpression(() => (items.length), {"filename":"input.slate","range":{"start":98,"end":110},"kind":"template"})) {
     __html += "\n  ";
     __html += [
       "<ul",
       ">",
       "\n    ",
-      (await Promise.all(Array.from(evaluateSlateExpression(() => (items), {"filename":"input.slate","range":{"start":129,"end":134},"kind":"template"})).map(async (item) => {
+      (await Promise.all(Array.from(evaluateSlateExpression(() => (items), {"filename":"input.slate","range":{"start":130,"end":135},"kind":"template"})).map(async (item) => {
               return [
                 "\n      ",
               [

@@ -20,6 +20,10 @@ for (const fixtureName of readdirSync(fixturesDir)) {
           filename: "input.slate",
           sourcemap: true,
         }
+      : fixtureName === "debug-dev"
+        ? {
+            dev: true,
+          }
       : {},
   );
 

@@ -1,0 +1,10 @@
+<script slate>
+const name = "Slate";
+const count = 2;
+</script>
+
+{const title = name.toUpperCase()}
+{let doubled = count * 2}
+
+<h1>{title}</h1>
+<p>{doubled}</p>

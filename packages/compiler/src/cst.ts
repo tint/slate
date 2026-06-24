@@ -25,6 +25,7 @@ export type TemplateCstNode =
   | LetTagCst
   | IfBlockCst
   | EachBlockCst
+  | AwaitBlockCst
   | ErrorCst;
 
 export type TextCst = CstNodeBase & {
@@ -172,6 +173,22 @@ export type EachBlockCst = CstNodeBase & {
   index?: string;
   children: TemplateCstNode[];
   else?: TemplateCstNode[];
+  close?: BlockTagCst;
+};
+
+export type AwaitBranchCst = {
+  tag: BlockTagCst;
+  value?: string;
+  children: TemplateCstNode[];
+};
+
+export type AwaitBlockCst = CstNodeBase & {
+  kind: "AwaitBlock";
+  open: BlockTagCst;
+  expression: TsIslandCst;
+  pending: TemplateCstNode[];
+  then?: AwaitBranchCst;
+  catch?: AwaitBranchCst;
   close?: BlockTagCst;
 };
 

@@ -1,0 +1,8 @@
+{
+  "name": "SlateRenderError",
+  "messageIncludes": "Broken await",
+  "filenameIncludes": "await-error-mapping/input.slate",
+  "rangeText": "post",
+  "kind": "template",
+  "causeName": "TypeError"
+}

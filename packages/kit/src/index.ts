@@ -154,12 +154,20 @@ export function evaluateSlateExpression<T>(fn: () => T, location: SlateSourceLoc
 
     if (isPromiseLike(value)) {
       return value.catch((cause: unknown) => {
+        if (cause instanceof SlateRenderError) {
+          throw cause;
+        }
+
         throw new SlateRenderError(cause, location);
       }) as T;
     }
 
     return value;
   } catch (cause) {
+    if (cause instanceof SlateRenderError) {
+      throw cause;
+    }
+
     throw new SlateRenderError(cause, location);
   }
 }

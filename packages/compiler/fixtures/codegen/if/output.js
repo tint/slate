@@ -4,7 +4,7 @@ export async function render(__props = {}, slots = {}, context = {}) {
   const user = { name: "Slate" };
   let __html = "";
   __html += "\n\n";
-  if (evaluateSlateExpression(() => (user), {"filename":"component.slate","range":{"start":89,"end":94},"kind":"template"})) {
+  if (evaluateSlateExpression(() => (user), {"filename":"component.slate","range":{"start":90,"end":94},"kind":"template"})) {
     __html += "\n  ";
     __html += [
       "<p",

@@ -1,0 +1,5 @@
+<script slate>
+const label = "Slate";
+</script>
+
+{<strong class="badge">{label}</strong>}

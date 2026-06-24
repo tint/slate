@@ -9,7 +9,7 @@ export async function render(__props = {}, slots = {}, context = {}) {
     ">",
     "\n  ",
     await (async () => {
-          const __items = Array.from(evaluateSlateExpression(() => (items), {"filename":"component.slate","range":{"start":77,"end":82},"kind":"template"}));
+          const __items = Array.from(evaluateSlateExpression(() => (items), {"filename":"component.slate","range":{"start":78,"end":83},"kind":"template"}));
           return __items.length ? (await Promise.all(__items.map(async (item, index) => {
             return [
               "\n    ",
