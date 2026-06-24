@@ -1,0 +1,5 @@
+<script slate>
+const label = <label htmlFor="name" className="field" customProp={{ value: 1 }}>Name</label>;
+</script>
+
+{label}

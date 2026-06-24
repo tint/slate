@@ -232,12 +232,15 @@ export type JsxGlobalAttributes = AriaAttributes & {
   virtualkeyboardpolicy?: "auto" | "manual" | null | undefined;
   writingsuggestions?: JsxBooleanish;
 
-  [name: string]: unknown;
   [name: `aria-${string}`]: JsxAriaValue;
   [name: `data-${string}`]: unknown;
   [name: `dev:${string}`]: unknown;
   [name: `is:${string}`]: unknown;
   [name: `slot:${string}`]: unknown;
+};
+
+export type JsxCustomAttributes = {
+  [name: string]: unknown;
 };
 
 export type JsxEventAttributes = {
@@ -343,7 +346,7 @@ export type JsxEventAttributes = {
   [name: `on${string}`]: JsxEventAttributeValue;
 };
 
-export type JsxHTMLAttributes = JsxGlobalAttributes & JsxEventAttributes & {
+export type JsxHTMLAttributes = JsxGlobalAttributes & JsxEventAttributes & JsxCustomAttributes & {
   accept?: string | null | undefined;
   acceptcharset?: string | null | undefined;
   action?: string | null | undefined;
@@ -456,7 +459,7 @@ export type JsxHTMLAttributes = JsxGlobalAttributes & JsxEventAttributes & {
   wrap?: string | null | undefined;
 };
 
-export type JsxSVGAttributes = JsxGlobalAttributes & JsxEventAttributes & {
+export type JsxSVGAttributes = JsxGlobalAttributes & JsxEventAttributes & JsxCustomAttributes & {
   accentHeight?: string | number | null | undefined;
   "accent-height"?: string | number | null | undefined;
   accumulate?: string | null | undefined;

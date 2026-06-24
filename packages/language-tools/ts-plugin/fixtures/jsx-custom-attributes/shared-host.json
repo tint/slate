@@ -1,0 +1,142 @@
+{
+  "languageService": [
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.slate' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.avif' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.bmp' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.gif' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.ico' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.jpeg' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.jpg' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.png' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.svg' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.webp' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.woff' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.woff2' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.ttf' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.otf' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.eot' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*?url' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*?raw' cannot be found."
+    }
+  ],
+  "compiler": [
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.slate' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.avif' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.bmp' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.gif' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.ico' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.jpeg' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.jpg' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.png' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.svg' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.webp' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.woff' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.woff2' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.ttf' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.otf' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*.eot' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*?url' cannot be found."
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Invalid module name in augmentation, module '*?raw' cannot be found."
+    }
+  ]
+}
