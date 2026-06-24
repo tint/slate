@@ -780,3 +780,250 @@ export type JsxSVGAttributes = JsxGlobalAttributes & JsxEventAttributes & {
 export type JsxProps = JsxHTMLAttributes & JsxSVGAttributes & {
   [name: string]: unknown;
 };
+
+export type JsxAnchorAttributes = JsxHTMLAttributes & {
+  download?: boolean | string | null | undefined;
+  href?: string | null | undefined;
+  hreflang?: string | null | undefined;
+  ping?: string | null | undefined;
+  referrerpolicy?: JsxReferrerPolicy;
+  rel?: string | null | undefined;
+  target?: string | null | undefined;
+  type?: string | null | undefined;
+};
+
+export type JsxButtonAttributes = JsxHTMLAttributes & {
+  command?: string | null | undefined;
+  commandfor?: string | null | undefined;
+  disabled?: boolean | null | undefined;
+  form?: string | null | undefined;
+  formaction?: string | null | undefined;
+  formenctype?: string | null | undefined;
+  formmethod?: string | null | undefined;
+  formnovalidate?: boolean | null | undefined;
+  formtarget?: string | null | undefined;
+  name?: string | null | undefined;
+  popovertarget?: string | null | undefined;
+  popovertargetaction?: "hide" | "show" | "toggle" | null | undefined;
+  type?: "button" | "submit" | "reset" | null | undefined;
+  value?: string | number | null | undefined;
+};
+
+export type JsxInputAttributes = JsxHTMLAttributes & {
+  accept?: string | null | undefined;
+  alt?: string | null | undefined;
+  autocomplete?: string | null | undefined;
+  capture?: boolean | "user" | "environment" | null | undefined;
+  checked?: boolean | null | undefined;
+  dirname?: string | null | undefined;
+  disabled?: boolean | null | undefined;
+  form?: string | null | undefined;
+  formaction?: string | null | undefined;
+  formenctype?: string | null | undefined;
+  formmethod?: string | null | undefined;
+  formnovalidate?: boolean | null | undefined;
+  formtarget?: string | null | undefined;
+  height?: string | number | null | undefined;
+  list?: string | null | undefined;
+  max?: string | number | null | undefined;
+  maxlength?: string | number | null | undefined;
+  min?: string | number | null | undefined;
+  minlength?: string | number | null | undefined;
+  multiple?: boolean | null | undefined;
+  name?: string | null | undefined;
+  pattern?: string | null | undefined;
+  placeholder?: string | null | undefined;
+  readonly?: boolean | null | undefined;
+  required?: boolean | null | undefined;
+  size?: string | number | null | undefined;
+  src?: string | null | undefined;
+  step?: string | number | null | undefined;
+  type?: string | null | undefined;
+  value?: string | number | readonly string[] | null | undefined;
+  width?: string | number | null | undefined;
+};
+
+export type JsxTextareaAttributes = JsxHTMLAttributes & {
+  autocomplete?: string | null | undefined;
+  cols?: string | number | null | undefined;
+  dirname?: string | null | undefined;
+  disabled?: boolean | null | undefined;
+  form?: string | null | undefined;
+  maxlength?: string | number | null | undefined;
+  minlength?: string | number | null | undefined;
+  name?: string | null | undefined;
+  placeholder?: string | null | undefined;
+  readonly?: boolean | null | undefined;
+  required?: boolean | null | undefined;
+  rows?: string | number | null | undefined;
+  value?: string | number | null | undefined;
+  wrap?: "hard" | "soft" | "off" | null | undefined;
+};
+
+export type JsxSelectAttributes = JsxHTMLAttributes & {
+  autocomplete?: string | null | undefined;
+  disabled?: boolean | null | undefined;
+  form?: string | null | undefined;
+  multiple?: boolean | null | undefined;
+  name?: string | null | undefined;
+  required?: boolean | null | undefined;
+  size?: string | number | null | undefined;
+  value?: string | number | readonly string[] | null | undefined;
+};
+
+export type JsxOptionAttributes = JsxHTMLAttributes & {
+  disabled?: boolean | null | undefined;
+  label?: string | null | undefined;
+  selected?: boolean | null | undefined;
+  value?: string | number | null | undefined;
+};
+
+export type JsxFormAttributes = JsxHTMLAttributes & {
+  acceptcharset?: string | null | undefined;
+  action?: string | null | undefined;
+  autocomplete?: "on" | "off" | null | undefined;
+  enctype?: string | null | undefined;
+  method?: "get" | "post" | "dialog" | null | undefined;
+  name?: string | null | undefined;
+  novalidate?: boolean | null | undefined;
+  target?: string | null | undefined;
+};
+
+export type JsxLabelAttributes = JsxHTMLAttributes & {
+  for?: string | null | undefined;
+  form?: string | null | undefined;
+};
+
+export type JsxImgAttributes = JsxHTMLAttributes & {
+  alt?: string | null | undefined;
+  crossorigin?: JsxCrossOrigin;
+  decoding?: "async" | "auto" | "sync" | null | undefined;
+  fetchpriority?: JsxFetchPriority;
+  height?: string | number | null | undefined;
+  loading?: "eager" | "lazy" | null | undefined;
+  referrerpolicy?: JsxReferrerPolicy;
+  sizes?: string | null | undefined;
+  src?: string | null | undefined;
+  srcset?: string | null | undefined;
+  usemap?: string | null | undefined;
+  width?: string | number | null | undefined;
+};
+
+export type JsxScriptAttributes = JsxHTMLAttributes & {
+  async?: boolean | null | undefined;
+  blocking?: string | null | undefined;
+  crossorigin?: JsxCrossOrigin;
+  defer?: boolean | null | undefined;
+  fetchpriority?: JsxFetchPriority;
+  integrity?: string | null | undefined;
+  nomodule?: boolean | null | undefined;
+  referrerpolicy?: JsxReferrerPolicy;
+  src?: string | null | undefined;
+  type?: string | null | undefined;
+};
+
+export type JsxLinkAttributes = JsxHTMLAttributes & {
+  as?: string | null | undefined;
+  crossorigin?: JsxCrossOrigin;
+  fetchpriority?: JsxFetchPriority;
+  href?: string | null | undefined;
+  hreflang?: string | null | undefined;
+  imagesizes?: string | null | undefined;
+  imagesrcset?: string | null | undefined;
+  integrity?: string | null | undefined;
+  media?: string | null | undefined;
+  referrerpolicy?: JsxReferrerPolicy;
+  rel?: string | null | undefined;
+  sizes?: string | null | undefined;
+  type?: string | null | undefined;
+};
+
+export type JsxMetaAttributes = JsxHTMLAttributes & {
+  charset?: string | null | undefined;
+  content?: string | null | undefined;
+  httpEquiv?: string | null | undefined;
+  httpequiv?: string | null | undefined;
+  media?: string | null | undefined;
+  name?: string | null | undefined;
+};
+
+export type JsxSourceAttributes = JsxHTMLAttributes & {
+  height?: string | number | null | undefined;
+  media?: string | null | undefined;
+  sizes?: string | null | undefined;
+  src?: string | null | undefined;
+  srcset?: string | null | undefined;
+  type?: string | null | undefined;
+  width?: string | number | null | undefined;
+};
+
+export type JsxTrackAttributes = JsxHTMLAttributes & {
+  default?: boolean | null | undefined;
+  kind?: "subtitles" | "captions" | "descriptions" | "chapters" | "metadata" | null | undefined;
+  label?: string | null | undefined;
+  src?: string | null | undefined;
+  srclang?: string | null | undefined;
+};
+
+export type JsxMediaAttributes = JsxHTMLAttributes & {
+  autoplay?: boolean | null | undefined;
+  controls?: boolean | null | undefined;
+  controlslist?: string | null | undefined;
+  crossorigin?: JsxCrossOrigin;
+  disableremoteplayback?: boolean | null | undefined;
+  loop?: boolean | null | undefined;
+  muted?: boolean | null | undefined;
+  playsinline?: boolean | null | undefined;
+  poster?: string | null | undefined;
+  preload?: "none" | "metadata" | "auto" | "" | null | undefined;
+  src?: string | null | undefined;
+};
+
+export type JsxIframeAttributes = JsxHTMLAttributes & {
+  allow?: string | null | undefined;
+  allowfullscreen?: boolean | null | undefined;
+  height?: string | number | null | undefined;
+  loading?: "eager" | "lazy" | null | undefined;
+  name?: string | null | undefined;
+  referrerpolicy?: JsxReferrerPolicy;
+  sandbox?: string | null | undefined;
+  src?: string | null | undefined;
+  srcdoc?: string | null | undefined;
+  width?: string | number | null | undefined;
+};
+
+export type JsxSlotAttributes = JsxHTMLAttributes & {
+  name?: string | null | undefined;
+};
+
+export type JsxIntrinsicElements = {
+  a: JsxAnchorAttributes;
+  audio: JsxMediaAttributes;
+  button: JsxButtonAttributes;
+  form: JsxFormAttributes;
+  iframe: JsxIframeAttributes;
+  img: JsxImgAttributes;
+  input: JsxInputAttributes;
+  label: JsxLabelAttributes;
+  link: JsxLinkAttributes;
+  meta: JsxMetaAttributes;
+  option: JsxOptionAttributes;
+  script: JsxScriptAttributes;
+  select: JsxSelectAttributes;
+  slot: JsxSlotAttributes;
+  source: JsxSourceAttributes;
+  textarea: JsxTextareaAttributes;
+  track: JsxTrackAttributes;
+  video: JsxMediaAttributes;
+
+  circle: JsxSVGAttributes;
+  g: JsxSVGAttributes;
+  line: JsxSVGAttributes;
+  path: JsxSVGAttributes;
+  polygon: JsxSVGAttributes;
+  polyline: JsxSVGAttributes;
+  rect: JsxSVGAttributes;
+  svg: JsxSVGAttributes;
+
+  [name: string]: JsxProps;
+};

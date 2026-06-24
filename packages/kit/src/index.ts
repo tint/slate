@@ -1,4 +1,4 @@
-import type { ClassValue, JsxProps, StyleValue } from "./jsx-types";
+import type { ClassValue, JsxIntrinsicElements, JsxProps, StyleValue } from "./jsx-types";
 
 export type {
   AriaAttributes,
@@ -23,9 +23,27 @@ export type {
   JsxFetchPriority,
   JsxGlobalAttributes,
   JsxHTMLAttributes,
+  JsxAnchorAttributes,
+  JsxButtonAttributes,
+  JsxFormAttributes,
+  JsxIframeAttributes,
+  JsxImgAttributes,
+  JsxInputAttributes,
+  JsxIntrinsicElements,
+  JsxLabelAttributes,
+  JsxLinkAttributes,
+  JsxMediaAttributes,
+  JsxMetaAttributes,
+  JsxOptionAttributes,
   JsxProps,
   JsxReferrerPolicy,
+  JsxScriptAttributes,
+  JsxSelectAttributes,
+  JsxSlotAttributes,
+  JsxSourceAttributes,
   JsxSVGAttributes,
+  JsxTextareaAttributes,
+  JsxTrackAttributes,
   StyleValue,
 } from "./jsx-types";
 
@@ -70,9 +88,7 @@ declare global {
       children: {};
     }
 
-    interface IntrinsicElements {
-      [name: string]: JsxProps;
-    }
+    interface IntrinsicElements extends JsxIntrinsicElements {}
   }
 }
 
