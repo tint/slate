@@ -7,6 +7,10 @@ const attributes = (
     class={["card", { active: true }]}
     style={[{ color: "red" }, "margin: 0"]}
     aria-hidden={true}
+    aria-current="page"
+    aria-live="polite"
+    aria-sort="ascending"
+    role="button"
     data-id={123}
     popover="auto"
     popovertarget="menu"
@@ -18,6 +22,7 @@ const attributes = (
     </svg>
   </div>
 );
+const invalidAria = <div aria-live="loud" aria-sort="up" />;
 const invalidCamel = <button onClick={handleClick}>Save</button>;
 const invalidLower = <button onclick={handleClick}>Save</button>;
 </script>

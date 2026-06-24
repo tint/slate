@@ -2,18 +2,26 @@
   "languageService": [
     {
       "file": "entry.slate.tsx",
-      "message": "Type '() => string' is not assignable to type '__SlateEventAttributeValue'.",
+      "message": "Type '{ \"aria-live\": \"loud\"; \"aria-sort\": \"up\"; }' is not assignable to type '__SlateJsxIntrinsicProps'.\n  Type '{ \"aria-live\": \"loud\"; \"aria-sort\": \"up\"; }' is not assignable to type '__SlateAriaAttributes'.\n    Types of property '\"aria-live\"' are incompatible.\n      Type '\"loud\"' is not assignable to type '__SlateAriaLive'.",
       "range": {
-        "start": 612,
-        "end": 625
+        "start": 687,
+        "end": 690
       }
     },
     {
       "file": "entry.slate.tsx",
       "message": "Type '() => string' is not assignable to type '__SlateEventAttributeValue'.",
       "range": {
-        "start": 678,
-        "end": 691
+        "start": 764,
+        "end": 777
+      }
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Type '() => string' is not assignable to type '__SlateEventAttributeValue'.",
+      "range": {
+        "start": 830,
+        "end": 843
       }
     },
     {
@@ -88,18 +96,26 @@
   "compiler": [
     {
       "file": "entry.slate.tsx",
-      "message": "Type '() => string' is not assignable to type '__SlateEventAttributeValue'.",
+      "message": "Type '{ \"aria-live\": \"loud\"; \"aria-sort\": \"up\"; }' is not assignable to type '__SlateJsxIntrinsicProps'.\n  Type '{ \"aria-live\": \"loud\"; \"aria-sort\": \"up\"; }' is not assignable to type '__SlateAriaAttributes'.\n    Types of property '\"aria-live\"' are incompatible.\n      Type '\"loud\"' is not assignable to type '__SlateAriaLive'.",
       "range": {
-        "start": 612,
-        "end": 625
+        "start": 687,
+        "end": 690
       }
     },
     {
       "file": "entry.slate.tsx",
       "message": "Type '() => string' is not assignable to type '__SlateEventAttributeValue'.",
       "range": {
-        "start": 678,
-        "end": 691
+        "start": 764,
+        "end": 777
+      }
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Type '() => string' is not assignable to type '__SlateEventAttributeValue'.",
+      "range": {
+        "start": 830,
+        "end": 843
       }
     },
     {
