@@ -1,0 +1,19 @@
+{
+  "attributeDiagnostics": [
+    {
+      "pattern": "data-*",
+      "severity": "warning",
+      "message": "Wildcard prefix matched data-* attribute."
+    },
+    {
+      "pattern": "*Name",
+      "severity": "error",
+      "message": "Wildcard suffix matched *Name attribute."
+    },
+    {
+      "pattern": "ariaLabel",
+      "severity": "warning",
+      "message": "Exact match should not run after suffix match."
+    }
+  ]
+}

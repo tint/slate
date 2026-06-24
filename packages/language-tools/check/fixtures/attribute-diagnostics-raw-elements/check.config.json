@@ -1,0 +1,14 @@
+{
+  "attributeDiagnostics": [
+    {
+      "pattern": "className",
+      "severity": "warning",
+      "message": "Raw script attribute matched."
+    },
+    {
+      "pattern": "htmlFor",
+      "severity": "error",
+      "message": "Raw style attribute matched."
+    }
+  ]
+}

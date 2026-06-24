@@ -1,0 +1,29 @@
+[
+  {
+    "filename": "entry.slate",
+    "range": {
+      "start": 5,
+      "end": 23
+    },
+    "severity": "warning",
+    "message": "Wildcard prefix matched data-* attribute."
+  },
+  {
+    "filename": "entry.slate",
+    "range": {
+      "start": 24,
+      "end": 41
+    },
+    "severity": "error",
+    "message": "Wildcard suffix matched *Name attribute."
+  },
+  {
+    "filename": "entry.slate",
+    "range": {
+      "start": 42,
+      "end": 59
+    },
+    "severity": "warning",
+    "message": "Exact match should not run after suffix match."
+  }
+]

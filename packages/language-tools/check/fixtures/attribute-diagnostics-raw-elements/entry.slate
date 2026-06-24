@@ -1,0 +1,7 @@
+<script className="boot">
+  window.__boot = true;
+</script>
+
+<style htmlFor="theme">
+  body { margin: 0; }
+</style>

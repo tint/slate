@@ -13,7 +13,7 @@ for (const fixtureName of readdirSync(fixturesDir).sort()) {
   const outputPath = join(fixtureDir, "diagnostics.json");
   const config = existsSync(configPath)
     ? JSON.parse(readFileSync(configPath, "utf8")) as Record<string, unknown>
-    : {};
+    : await readModuleConfig(join(fixtureDir, "check.config.mjs"));
   const result = await checkFiles({
     entry,
     attributeDiagnostics: Array.isArray(config.attributeDiagnostics) ? config.attributeDiagnostics : undefined,
@@ -27,4 +27,17 @@ for (const fixtureName of readdirSync(fixturesDir).sort()) {
     recursive: true,
   });
   writeFileSync(outputPath, `${JSON.stringify(diagnostics, null, 2)}\n`);
+}
+
+async function readModuleConfig(path: string): Promise<Record<string, unknown>> {
+  if (!existsSync(path)) {
+    return {};
+  }
+
+  const mod = await import(path);
+  return isRecord(mod.default) ? mod.default : {};
+}
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return typeof value === "object" && value !== null && !Array.isArray(value);
 }

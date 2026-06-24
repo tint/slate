@@ -1,0 +1,11 @@
+[
+  {
+    "filename": "entry.slate",
+    "range": {
+      "start": 5,
+      "end": 22
+    },
+    "severity": "error",
+    "message": "RegExp matched camel-case aria attribute."
+  }
+]
