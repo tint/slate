@@ -63,6 +63,10 @@ if (isCliEntryPoint()) {
 }
 
 async function loadTsx(): Promise<void> {
+  if ("Bun" in globalThis) {
+    return;
+  }
+
   await import("tsx");
 }
 

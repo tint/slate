@@ -1,6 +1,8 @@
 #!/usr/bin/env node
 
-import "tsx";
+if (!("Bun" in globalThis)) {
+  await import("tsx");
+}
 
 const { run } = await import("./index.ts");
 

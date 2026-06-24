@@ -72,7 +72,7 @@ async function assertCheckError(): Promise<void> {
 async function assertDev(): Promise<void> {
   const input = join(packageRoot, "fixtures/basic.slate");
   const expected = await readFile(join(packageRoot, "fixtures/basic.expected.html"), "utf8");
-  const child = spawn("bun", [cliPath, "dev", input, "--port", "0", "--tmpDir", join(tmpDir, "dev-modules"), "--no-reload"], {
+  const child = spawn("bun", [cliPath, "dev", input, "--port", "0", "--no-reload"], {
     cwd: packageRoot,
     stdio: ["ignore", "pipe", "pipe"],
   });
@@ -246,13 +246,15 @@ async function assertProgrammaticApi(): Promise<void> {
 
   const html = await readFile(output, "utf8");
 
-  if (!html.includes("<h1>Slate</h1>")) {
+  if (!html.includes("<h1>Hello Slate</h1>")) {
     throw new Error(`Unexpected programmatic build output.\n${html}`);
   }
 }
 
 function stripReloadScript(html: string): string {
-  return html.replace(/<script type="module" src="\/@vite\/client"><\/script>\n?/g, "");
+  return html
+    .replace(/<script data-slate-dev-client>[\s\S]*?<\/script>\n?/g, "")
+    .replace(/<script type="module" src="\/@vite\/client"><\/script>\n?/g, "");
 }
 
 function waitForDevUrl(
