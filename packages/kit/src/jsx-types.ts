@@ -232,6 +232,7 @@ export type JsxGlobalAttributes = AriaAttributes & {
   virtualkeyboardpolicy?: "auto" | "manual" | null | undefined;
   writingsuggestions?: JsxBooleanish;
 
+  [name: string]: unknown;
   [name: `aria-${string}`]: JsxAriaValue;
   [name: `data-${string}`]: unknown;
   [name: `dev:${string}`]: unknown;
