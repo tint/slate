@@ -15,7 +15,7 @@
   },
   {
     "filename": "entry.ts",
-    "message": "Property 'toFixed' does not exist on type '\"Hello\"'. Did you mean 'fixed'?",
+    "message": "Property 'toFixed' does not exist on type 'string'. Did you mean 'fixed'?",
     "range": {
       "start": {
         "line": 6,
@@ -29,7 +29,7 @@
   },
   {
     "filename": "entry.ts",
-    "message": "Property 'toUpperCase' does not exist on type '1'.",
+    "message": "Property 'toUpperCase' does not exist on type 'number'.",
     "range": {
       "start": {
         "line": 7,
