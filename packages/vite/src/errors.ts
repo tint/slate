@@ -12,12 +12,14 @@ export function sendHtml(response: import("node:http").ServerResponse, status: n
 }
 
 export function injectViteClient(html: string, preserveScroll = true): string {
+  const viteClient = "<script type=\"module\" src=\"/@vite/client\"></script>";
+  const scrollClient = preserveScroll ? slateScrollClientScript() : "";
   const script = [
-    "<script type=\"module\" src=\"/@vite/client\"></script>",
-    preserveScroll ? slateScrollClientScript() : "",
+    html.includes(viteClient) ? "" : viteClient,
+    scrollClient && html.includes("data-slate-dev-client") ? "" : scrollClient,
   ].filter(Boolean).join("");
 
-  if (html.includes(script)) {
+  if (!script) {
     return html;
   }
 
@@ -34,8 +36,8 @@ export function injectViteClient(html: string, preserveScroll = true): string {
 
 export function stripViteClient(html: string): string {
   return html
-    .replace(/<script type="module" src="\/@vite\/client"><\/script>\n?/g, "")
-    .replace(/<script data-slate-dev-client>[\s\S]*?<\/script>\n?/g, "");
+    .replace(/<script data-slate-dev-client>[\s\S]*?<\/script>\n?/g, "")
+    .replace(/<script type="module" src="\/@vite\/client"><\/script>\n?/g, "");
 }
 
 function slateScrollClientScript(): string {
