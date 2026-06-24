@@ -22,6 +22,36 @@ const attributes = (
     </svg>
   </div>
 );
+const tagSpecific = (
+  <>
+    <a href="/docs" target="_blank" rel="noreferrer">Docs</a>
+    <button type="button" popovertarget="menu" popovertargetaction="toggle" disabled>Open</button>
+    <input type="checkbox" checked value="yes" />
+    <textarea rows={3} wrap="soft" />
+    <select multiple value={["a"]}>
+      <option selected value="a">A</option>
+    </select>
+    <form method="post" autocomplete="off" />
+    <label for="email">Email</label>
+    <img src="/logo.png" alt="Logo" loading="lazy" decoding="async" />
+    <script src="/app.js" async defer />
+    <link rel="stylesheet" href="/style.css" />
+    <meta name="viewport" content="width=device-width" />
+    <video controls preload="metadata">
+      <source src="/movie.mp4" type="video/mp4" />
+      <track kind="captions" src="/captions.vtt" srclang="en" default />
+    </video>
+    <iframe src="/frame" loading="lazy" />
+    <slot name="header" />
+  </>
+);
+const invalidTagSpecific = (
+  <>
+    <button type="menu">Bad</button>
+    <img loading="fast" />
+    <track kind="lyrics" />
+  </>
+);
 const invalidAria = <div aria-live="loud" aria-sort="up" />;
 const invalidCamel = <button onClick={handleClick}>Save</button>;
 const invalidLower = <button onclick={handleClick}>Save</button>;

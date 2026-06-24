@@ -2,26 +2,50 @@
   "languageService": [
     {
       "file": "entry.slate.tsx",
+      "message": "Type '\"menu\"' is not assignable to type '\"button\" | \"reset\" | \"submit\" | null | undefined'.",
+      "range": {
+        "start": 1639,
+        "end": 1643
+      }
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Type '\"fast\"' is not assignable to type '\"eager\" | \"lazy\" | null | undefined'.",
+      "range": {
+        "start": 1673,
+        "end": 1680
+      }
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Type '\"lyrics\"' is not assignable to type '\"subtitles\" | \"captions\" | \"descriptions\" | \"chapters\" | \"metadata\" | null | undefined'.",
+      "range": {
+        "start": 1702,
+        "end": 1706
+      }
+    },
+    {
+      "file": "entry.slate.tsx",
       "message": "Type '{ \"aria-live\": \"loud\"; \"aria-sort\": \"up\"; }' is not assignable to type '__SlateJsxIntrinsicProps'.\n  Type '{ \"aria-live\": \"loud\"; \"aria-sort\": \"up\"; }' is not assignable to type '__SlateAriaAttributes'.\n    Types of property '\"aria-live\"' are incompatible.\n      Type '\"loud\"' is not assignable to type '__SlateAriaLive'.",
       "range": {
-        "start": 687,
-        "end": 690
+        "start": 1749,
+        "end": 1752
       }
     },
     {
       "file": "entry.slate.tsx",
       "message": "Type '() => string' is not assignable to type '__SlateEventAttributeValue'.",
       "range": {
-        "start": 764,
-        "end": 777
+        "start": 1826,
+        "end": 1839
       }
     },
     {
       "file": "entry.slate.tsx",
       "message": "Type '() => string' is not assignable to type '__SlateEventAttributeValue'.",
       "range": {
-        "start": 830,
-        "end": 843
+        "start": 1892,
+        "end": 1905
       }
     },
     {
@@ -96,26 +120,50 @@
   "compiler": [
     {
       "file": "entry.slate.tsx",
+      "message": "Type '\"menu\"' is not assignable to type '\"button\" | \"reset\" | \"submit\" | null | undefined'.",
+      "range": {
+        "start": 1639,
+        "end": 1643
+      }
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Type '\"fast\"' is not assignable to type '\"eager\" | \"lazy\" | null | undefined'.",
+      "range": {
+        "start": 1673,
+        "end": 1680
+      }
+    },
+    {
+      "file": "entry.slate.tsx",
+      "message": "Type '\"lyrics\"' is not assignable to type '\"subtitles\" | \"captions\" | \"descriptions\" | \"chapters\" | \"metadata\" | null | undefined'.",
+      "range": {
+        "start": 1702,
+        "end": 1706
+      }
+    },
+    {
+      "file": "entry.slate.tsx",
       "message": "Type '{ \"aria-live\": \"loud\"; \"aria-sort\": \"up\"; }' is not assignable to type '__SlateJsxIntrinsicProps'.\n  Type '{ \"aria-live\": \"loud\"; \"aria-sort\": \"up\"; }' is not assignable to type '__SlateAriaAttributes'.\n    Types of property '\"aria-live\"' are incompatible.\n      Type '\"loud\"' is not assignable to type '__SlateAriaLive'.",
       "range": {
-        "start": 687,
-        "end": 690
+        "start": 1749,
+        "end": 1752
       }
     },
     {
       "file": "entry.slate.tsx",
       "message": "Type '() => string' is not assignable to type '__SlateEventAttributeValue'.",
       "range": {
-        "start": 764,
-        "end": 777
+        "start": 1826,
+        "end": 1839
       }
     },
     {
       "file": "entry.slate.tsx",
       "message": "Type '() => string' is not assignable to type '__SlateEventAttributeValue'.",
       "range": {
-        "start": 830,
-        "end": 843
+        "start": 1892,
+        "end": 1905
       }
     },
     {
