@@ -179,6 +179,7 @@ export default defineConfig({
   publicDir: "public",
   html: {
     format: "preserve",
+    attributeDiagnostics: [],
   },
   dev: {
     host: "127.0.0.1",
@@ -201,7 +202,7 @@ Top-level options:
 - `input`: Slate entry file or a named input map.
 - `plugins`: Vite-compatible plugins used by Slate dev/build.
 - `publicDir`: Static assets directory.
-- `html`: Final HTML postprocess options.
+- `html`: Final HTML postprocess and template attribute diagnostic options.
 - `dev`: Development server options.
 - `build`: Static build options.
 - `preview`: Preview server options.
@@ -288,6 +289,34 @@ export default defineConfig({
 - `"minify"`: Minify final HTML whitespace through rehype.
 
 `html.rehypePlugins` accepts rehype plugins that run before the selected formatter/minifier.
+
+`html.attributeDiagnostics` lets projects add opt-in diagnostics for template
+attribute names. Slate does not hard-code React compatibility warnings such as
+`className` or `htmlFor`; configure them when your project wants that policy:
+
+```ts
+import { defineConfig } from "@slate/cli";
+
+export default defineConfig({
+  html: {
+    attributeDiagnostics: [
+      {
+        pattern: "className",
+        severity: "warning",
+        message: "Slate emits `className` literally. Use `class` for CSS classes.",
+      },
+      {
+        pattern: "htmlFor",
+        severity: "warning",
+        message: "Slate emits `htmlFor` literally. Use `for` for native label binding.",
+      },
+    ],
+  },
+});
+```
+
+Patterns may be exact strings, prefix/suffix wildcard strings such as `on*`, or
+regular expressions. `severity` accepts `"warning"`, `"error"`, or `"off"`.
 
 ## Multiple inputs
 

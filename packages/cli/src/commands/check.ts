@@ -25,6 +25,7 @@ export async function runCheck(options: CheckOptions = {}): Promise<void> {
   for (const item of input) {
     const result = await checkFiles({
       entry: item.path,
+      attributeDiagnostics: config.html.attributeDiagnostics,
     });
 
     if (!result.diagnostics.length) {
