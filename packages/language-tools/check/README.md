@@ -12,6 +12,7 @@ Static checker for Slate files.
 - Validate imported component props when the component exports a `Props` type.
 - Validate rune usage.
 - Validate compiler directives.
+- Validate project-configured template attribute diagnostics.
 
 ## Status
 
@@ -24,7 +25,16 @@ Implemented. Reused by CLI `slate check` and `@slate/language-server`.
 ## API
 
 ```ts
-export type CheckFilesOptions = { entry: string };
+export type AttributeDiagnosticRule = {
+  pattern: string | RegExp;
+  severity?: "warning" | "error" | "off";
+  message?: string;
+};
+
+export type CheckFilesOptions = {
+  entry: string;
+  attributeDiagnostics?: AttributeDiagnosticRule[];
+};
 export type CheckFilesResult = {
   diagnostics: Diagnostic[];
   sources: Record<string, string>;
@@ -35,6 +45,7 @@ export function checkFiles(options: CheckFilesOptions): Promise<CheckFilesResult
 export type CheckSourceOptions = {
   source: string;
   filename: string;
+  attributeDiagnostics?: AttributeDiagnosticRule[];
 };
 
 export type CheckSourceResult = {
@@ -51,3 +62,4 @@ export function checkSource(options: CheckSourceOptions): CheckSourceResult;
 - `<script slate>` and template expression diagnostics use `@slate/ts-plugin` virtual documents so CLI and editor tooling share the same TypeScript view.
 - Slot checks currently cover deprecated `slot="name"`, malformed `slot:name`, `<slot>` outlet `name`/`data` attribute forms, and accidental `slot:*` use on `<slot>` outlets.
 - Component prop checks read imported `.slate` modules, preserve their type declarations, and type-check component attributes against an exported `Props` type when present.
+- Attribute diagnostics are opt-in and match ordinary template attributes by raw source name, so rules can distinguish `className` from `class`.

@@ -1,0 +1,3 @@
+<label htmlFor="name" className="field">
+  <input id="name" />
+</label>

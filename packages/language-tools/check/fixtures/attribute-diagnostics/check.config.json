@@ -1,0 +1,14 @@
+{
+  "attributeDiagnostics": [
+    {
+      "pattern": "className",
+      "severity": "warning",
+      "message": "Slate emits `className` literally. Use `class` for CSS classes."
+    },
+    {
+      "pattern": "htmlFor",
+      "severity": "warning",
+      "message": "Slate emits `htmlFor` literally. Use `for` for native label binding."
+    }
+  ]
+}

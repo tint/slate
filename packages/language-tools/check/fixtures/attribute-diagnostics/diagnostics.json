@@ -1,0 +1,20 @@
+[
+  {
+    "filename": "entry.slate",
+    "range": {
+      "start": 7,
+      "end": 21
+    },
+    "severity": "warning",
+    "message": "Slate emits `htmlFor` literally. Use `for` for native label binding."
+  },
+  {
+    "filename": "entry.slate",
+    "range": {
+      "start": 22,
+      "end": 39
+    },
+    "severity": "warning",
+    "message": "Slate emits `className` literally. Use `class` for CSS classes."
+  }
+]

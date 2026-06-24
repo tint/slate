@@ -6,7 +6,11 @@ import type { Diagnostic } from "@slate/compiler";
 import {
   compile,
   compileFiles,
+  parse,
+  type AttributeCst,
   type Diagnostic as CompilerDiagnostic,
+  type SlateFileCst,
+  type TemplateCstNode,
 } from "@slate/compiler";
 import {
   createSlateCompilerHost,
@@ -19,6 +23,7 @@ import ts from "typescript";
 
 export type CheckFilesOptions = {
   entry: string;
+  attributeDiagnostics?: AttributeDiagnosticRule[];
 };
 
 export type CheckFilesResult = {
@@ -29,11 +34,21 @@ export type CheckFilesResult = {
 export type CheckSourceOptions = {
   source: string;
   filename: string;
+  attributeDiagnostics?: AttributeDiagnosticRule[];
 };
 
 export type CheckSourceResult = {
   diagnostics: Diagnostic[];
   sources: Record<string, string>;
+};
+
+export type AttributeDiagnosticSeverity = Diagnostic["severity"] | "off";
+
+export type AttributeDiagnosticRule = {
+  /** String patterns match exactly, except `*` may be used as a prefix/suffix wildcard. */
+  pattern: string | RegExp;
+  severity?: AttributeDiagnosticSeverity;
+  message?: string;
 };
 
 export function checkSource(options: CheckSourceOptions): CheckSourceResult {
@@ -43,6 +58,11 @@ export function checkSource(options: CheckSourceOptions): CheckSourceResult {
     source: options.source,
     filename,
   });
+  const attributeDiagnostics = checkAttributeDiagnostics({
+    source: options.source,
+    filename,
+    rules: options.attributeDiagnostics,
+  });
 
   return {
     diagnostics: [
@@ -51,6 +71,7 @@ export function checkSource(options: CheckSourceOptions): CheckSourceResult {
         filename,
       })),
       ...typeDiagnostics,
+      ...attributeDiagnostics,
     ],
     sources: {
       [filename]: options.source,
@@ -69,14 +90,136 @@ export async function checkFiles(options: CheckFilesOptions): Promise<CheckFiles
     source: entrySource,
     filename: options.entry,
   });
+  const attributeDiagnostics = Object.entries(result.sources).flatMap(([filename, source]) =>
+    checkAttributeDiagnostics({
+      source,
+      filename,
+      rules: options.attributeDiagnostics,
+    })
+  );
 
   return {
-    diagnostics: [...result.diagnostics, ...typeDiagnostics],
+    diagnostics: [...result.diagnostics, ...typeDiagnostics, ...attributeDiagnostics],
     sources: {
       ...result.sources,
       [options.entry]: entrySource,
     },
   };
+}
+
+function checkAttributeDiagnostics(options: {
+  source: string;
+  filename: string;
+  rules?: AttributeDiagnosticRule[];
+}): Diagnostic[] {
+  const rules = options.rules?.filter((rule) => (rule.severity ?? "warning") !== "off") ?? [];
+
+  if (!rules.length) {
+    return [];
+  }
+
+  const parsed = parse(options.source);
+  const diagnostics: Diagnostic[] = [];
+
+  for (const child of (parsed.cst as SlateFileCst).children) {
+    collectAttributeDiagnosticsFromNode(child, options.filename, rules, diagnostics);
+  }
+
+  return diagnostics;
+}
+
+function collectAttributeDiagnosticsFromNode(
+  node: TemplateCstNode,
+  filename: string,
+  rules: AttributeDiagnosticRule[],
+  diagnostics: Diagnostic[],
+): void {
+  if (node.kind === "Element") {
+    collectAttributeDiagnosticsFromAttributes(node.openTag.attributes, filename, rules, diagnostics);
+
+    for (const child of node.children) {
+      collectAttributeDiagnosticsFromNode(child, filename, rules, diagnostics);
+    }
+
+    return;
+  }
+
+  if (node.kind === "RawTextElement" || node.kind === "SlateScriptElement") {
+    collectAttributeDiagnosticsFromAttributes(node.openTag.attributes, filename, rules, diagnostics);
+    return;
+  }
+
+  if (node.kind === "IfBlock") {
+    for (const child of node.then) {
+      collectAttributeDiagnosticsFromNode(child, filename, rules, diagnostics);
+    }
+
+    for (const child of node.else ?? []) {
+      collectAttributeDiagnosticsFromNode(child, filename, rules, diagnostics);
+    }
+
+    return;
+  }
+
+  if (node.kind === "EachBlock") {
+    for (const child of node.children) {
+      collectAttributeDiagnosticsFromNode(child, filename, rules, diagnostics);
+    }
+
+    for (const child of node.else ?? []) {
+      collectAttributeDiagnosticsFromNode(child, filename, rules, diagnostics);
+    }
+
+    return;
+  }
+
+}
+
+function collectAttributeDiagnosticsFromAttributes(
+  attributes: AttributeCst[],
+  filename: string,
+  rules: AttributeDiagnosticRule[],
+  diagnostics: Diagnostic[],
+): void {
+  for (const attribute of attributes) {
+    for (const rule of rules) {
+      if (!matchesAttributePattern(rule.pattern, attribute.rawName)) {
+        continue;
+      }
+
+      diagnostics.push({
+        filename,
+        range: attribute.range,
+        severity: rule.severity === "error" ? "error" : "warning",
+        message: rule.message ?? `Attribute \`${attribute.rawName}\` matched Slate diagnostic rule.`,
+      });
+      break;
+    }
+  }
+}
+
+function matchesAttributePattern(pattern: AttributeDiagnosticRule["pattern"], rawName: string): boolean {
+  if (pattern instanceof RegExp) {
+    return pattern.test(rawName);
+  }
+
+  if (pattern === rawName || pattern === "*") {
+    return true;
+  }
+
+  if (pattern.startsWith("*") && pattern.endsWith("*") && pattern.length > 2) {
+    return rawName.includes(pattern.slice(1, -1));
+  }
+
+  if (pattern.startsWith("*")) {
+    return rawName.endsWith(pattern.slice(1));
+  }
+
+  if (pattern.endsWith("*")) {
+    return rawName.startsWith(pattern.slice(0, -1));
+  }
+
+  return false;
 }
 
 function checkVirtualDocument(options: CheckSourceOptions): Diagnostic[] {
