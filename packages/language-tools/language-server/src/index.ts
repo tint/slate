@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-import { access } from "node:fs/promises";
+import { access, stat } from "node:fs/promises";
 import { dirname, extname, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
 import {
@@ -47,7 +47,10 @@ const typeScriptContextCache = new Map<string, {
   version: number;
   context: TypeScriptContext;
 }>();
-const checkConfigCache = new Map<string, Promise<CheckConfig>>();
+const checkConfigCache = new Map<string, {
+  mtimeMs: number;
+  config: Promise<CheckConfig>;
+}>();
 
 type CheckConfig = {
   attributeDiagnostics?: AttributeDiagnosticRule[];
@@ -160,14 +163,19 @@ async function loadCheckConfig(filename: string): Promise<CheckConfig> {
     return {};
   }
 
-  let cached = checkConfigCache.get(configPath);
+  const mtimeMs = await stat(configPath).then((value) => value.mtimeMs, () => 0);
+  const cached = checkConfigCache.get(configPath);
 
-  if (!cached) {
-    cached = readCheckConfig(configPath).catch(() => ({}));
-    checkConfigCache.set(configPath, cached);
+  if (cached?.mtimeMs === mtimeMs) {
+    return cached.config;
   }
 
-  return cached;
+  const config = readCheckConfig(configPath, mtimeMs).catch(() => ({}));
+  checkConfigCache.set(configPath, {
+    mtimeMs,
+    config,
+  });
+  return config;
 }
 
 async function findNearestConfig(filename: string): Promise<string | undefined> {
@@ -192,8 +200,8 @@ async function findNearestConfig(filename: string): Promise<string | undefined> 
   }
 }
 
-async function readCheckConfig(configPath: string): Promise<CheckConfig> {
-  const mod = await importConfigModule(configPath);
+async function readCheckConfig(configPath: string, mtimeMs: number): Promise<CheckConfig> {
+  const mod = await importConfigModule(configPath, mtimeMs);
   const configExport = mod.default ?? mod.config ?? {};
   const config = await (typeof configExport === "function"
     ? configExport({
@@ -214,8 +222,8 @@ async function readCheckConfig(configPath: string): Promise<CheckConfig> {
   };
 }
 
-async function importConfigModule(configPath: string): Promise<Record<string, unknown>> {
-  const url = pathToFileURL(configPath).href;
+async function importConfigModule(configPath: string, mtimeMs: number): Promise<Record<string, unknown>> {
+  const url = `${pathToFileURL(configPath).href}?t=${mtimeMs}`;
   const extension = extname(configPath);
 
   if (extension === ".ts" || extension === ".tsx" || extension === ".mts" || extension === ".cts") {
@@ -227,7 +235,7 @@ async function importConfigModule(configPath: string): Promise<Record<string, un
     return await tsImport(url, import.meta.url);
   }
 
-  return await import(`${url}?t=${Date.now()}`);
+  return await import(url);
 }
 
 async function exists(path: string): Promise<boolean> {
