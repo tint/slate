@@ -57,6 +57,7 @@ export function checkSource(options: CheckSourceOptions): CheckSourceResult {
   const typeDiagnostics = checkVirtualDocument({
     source: options.source,
     filename,
+    attributeDiagnostics: options.attributeDiagnostics,
   });
   const attributeDiagnostics = checkAttributeDiagnostics({
     source: options.source,
@@ -89,6 +90,7 @@ export async function checkFiles(options: CheckFilesOptions): Promise<CheckFiles
   const typeDiagnostics = checkVirtualDocument({
     source: entrySource,
     filename: options.entry,
+    attributeDiagnostics: options.attributeDiagnostics,
   });
   const attributeDiagnostics = Object.entries(result.sources).flatMap(([filename, source]) =>
     checkAttributeDiagnostics({
@@ -247,7 +249,54 @@ function checkVirtualDocument(options: CheckSourceOptions): Diagnostic[] {
     ...program.getSemanticDiagnostics(sourceFile),
   ];
 
-  return diagnostics.flatMap((diagnostic) => toSlateDiagnostic(diagnostic, virtualDocument));
+  return [
+    ...diagnostics.flatMap((diagnostic) => toSlateDiagnostic(diagnostic, virtualDocument)),
+    ...checkJsxAttributeDiagnostics(sourceFile, virtualDocument, options.attributeDiagnostics),
+  ];
+}
+
+function checkJsxAttributeDiagnostics(
+  sourceFile: ts.SourceFile,
+  virtualDocument: SlateVirtualDocument,
+  rules?: AttributeDiagnosticRule[],
+): Diagnostic[] {
+  const activeRules = rules?.filter((rule) => (rule.severity ?? "warning") !== "off") ?? [];
+
+  if (!activeRules.length) {
+    return [];
+  }
+
+  const diagnostics: Diagnostic[] = [];
+
+  visit(sourceFile);
+  return diagnostics;
+
+  function visit(node: ts.Node): void {
+    if (ts.isJsxAttribute(node)) {
+      const rawName = node.name.getText(sourceFile);
+
+      for (const rule of activeRules) {
+        if (!matchesAttributePattern(rule.pattern, rawName)) {
+          continue;
+        }
+
+        const originalRange = toOriginalRange(virtualDocument, node.name.getStart(sourceFile), node.name.getEnd());
+
+        if (originalRange) {
+          diagnostics.push({
+            filename: virtualDocument.filename,
+            range: originalRange,
+            severity: rule.severity === "error" ? "error" : "warning",
+            message: rule.message ?? `Attribute \`${rawName}\` matched Slate diagnostic rule.`,
+          });
+        }
+
+        break;
+      }
+    }
+
+    ts.forEachChild(node, visit);
+  }
 }
 
 function toSlateDiagnostic(diagnostic: ts.Diagnostic, virtualDocument: SlateVirtualDocument): Diagnostic[] {

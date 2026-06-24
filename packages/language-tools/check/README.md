@@ -62,4 +62,4 @@ export function checkSource(options: CheckSourceOptions): CheckSourceResult;
 - `<script slate>` and template expression diagnostics use `@slate/ts-plugin` virtual documents so CLI and editor tooling share the same TypeScript view.
 - Slot checks currently cover deprecated `slot="name"`, malformed `slot:name`, `<slot>` outlet `name`/`data` attribute forms, and accidental `slot:*` use on `<slot>` outlets.
 - Component prop checks read imported `.slate` modules, preserve their type declarations, and type-check component attributes against an exported `Props` type when present.
-- Attribute diagnostics are opt-in and match ordinary template attributes by raw source name, so rules can distinguish `className` from `class`.
+- Attribute diagnostics are opt-in and match ordinary template attributes and JSX attributes by raw source name, so rules can distinguish `className` from `class`.

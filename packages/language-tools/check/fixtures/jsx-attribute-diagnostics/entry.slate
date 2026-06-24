@@ -1,0 +1,6 @@
+<script slate>
+const field = <label htmlFor="name">Name</label>;
+</script>
+
+{field}
+{<div className="box" />}
