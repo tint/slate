@@ -88,7 +88,7 @@ export function completionFromTypeScriptContext(
     isIncomplete: false,
     items: [
       ...slateItems,
-      ...completions.entries.map((entry): CompletionItem => ({
+      ...completions.entries.map((entry: ts.CompletionEntry): CompletionItem => ({
         label: entry.name,
         kind: completionItemKindFromScriptElementKind(entry.kind),
         detail: entry.sourceDisplay ? ts.displayPartsToString(entry.sourceDisplay) : undefined,
@@ -999,7 +999,7 @@ export function definitionFromTypeScriptContext(
   }
 
   const definitions = context.service.getDefinitionAtPosition(context.virtualDocument.virtualFilename, offset) ?? [];
-  const locations = definitions.flatMap((definition) => locationFromDefinition(context, document, definition));
+  const locations = definitions.flatMap((definition: ts.DefinitionInfo) => locationFromDefinition(context, document, definition));
 
   return locations.length > 0 ? locations : definitionFromSlateComponentTag(document, position);
 }

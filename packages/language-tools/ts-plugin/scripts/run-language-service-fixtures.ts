@@ -34,7 +34,7 @@ for (const fixtureName of readdirSync(fixturesDir).sort()) {
     },
   } as unknown as ts.server.PluginCreateInfo);
   const source = files.get(entryPath) ?? "";
-  const diagnostics = patchedService.getSemanticDiagnostics(entryPath).map((diagnostic) => {
+  const diagnostics = patchedService.getSemanticDiagnostics(entryPath).map((diagnostic: ts.Diagnostic) => {
     const start = diagnostic.start ?? 0;
     const end = start + (diagnostic.length ?? 1);
     const startPosition = positionAt(source, start);
@@ -88,28 +88,28 @@ function createHost(
   return {
     getCompilationSettings: () => compilerOptions,
     getCurrentDirectory: () => currentDirectory,
-    getDefaultLibFileName: (options) => ts.getDefaultLibFilePath(options),
+    getDefaultLibFileName: (options: ts.CompilerOptions) => ts.getDefaultLibFilePath(options),
     getScriptFileNames: () => [entryPath],
-    getScriptSnapshot: (filename) => {
+    getScriptSnapshot: (filename: string) => {
       const source = files.get(filename) ?? ts.sys.readFile(filename);
       return source === undefined ? undefined : ts.ScriptSnapshot.fromString(source);
     },
     getScriptVersion: () => "0",
-    fileExists: (filename) => files.has(filename) || ts.sys.fileExists(filename),
-    readFile: (filename) => files.get(filename) ?? ts.sys.readFile(filename),
+    fileExists: (filename: string) => files.has(filename) || ts.sys.fileExists(filename),
+    readFile: (filename: string) => files.get(filename) ?? ts.sys.readFile(filename),
     readDirectory: ts.sys.readDirectory,
     directoryExists: ts.sys.directoryExists,
     getDirectories: ts.sys.getDirectories,
     useCaseSensitiveFileNames: () => ts.sys.useCaseSensitiveFileNames,
-    resolveModuleNameLiterals: (moduleLiterals, containingFile, redirectedReference, options) =>
-      moduleLiterals.map((moduleLiteral) =>
+    resolveModuleNameLiterals: (moduleLiterals: readonly ts.StringLiteralLike[], containingFile: string, redirectedReference: ts.ResolvedProjectReference | undefined, options: ts.CompilerOptions) =>
+      moduleLiterals.map((moduleLiteral: ts.StringLiteralLike) =>
         ts.resolveModuleName(
           moduleLiteral.text,
           containingFile,
           options,
           {
-            fileExists: (filename) => files.has(filename) || ts.sys.fileExists(filename),
-            readFile: (filename) => files.get(filename) ?? ts.sys.readFile(filename),
+            fileExists: (filename: string) => files.has(filename) || ts.sys.fileExists(filename),
+            readFile: (filename: string) => files.get(filename) ?? ts.sys.readFile(filename),
           },
           undefined,
           redirectedReference,

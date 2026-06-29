@@ -530,7 +530,7 @@ function absoluteRange(bodyStart: number, node: ts.Node, sourceFile: ts.SourceFi
 function hasExportModifier(statement: ts.Statement): boolean {
   return Boolean(
     ts.canHaveModifiers(statement) &&
-      ts.getModifiers(statement)?.some((modifier) => modifier.kind === ts.SyntaxKind.ExportKeyword),
+      ts.getModifiers(statement)?.some((modifier: ts.ModifierLike) => modifier.kind === ts.SyntaxKind.ExportKeyword),
   );
 }
 

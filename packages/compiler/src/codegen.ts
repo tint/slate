@@ -760,8 +760,8 @@ function runtimeNamedBindingsText(bindings: ts.NamedImportBindings): string | un
   }
 
   const elements = bindings.elements
-    .filter((element) => !element.isTypeOnly)
-    .map((element) => {
+    .filter((element: ts.ImportSpecifier) => !element.isTypeOnly)
+    .map((element: ts.ImportSpecifier) => {
       if (element.propertyName) {
         return `${element.propertyName.text} as ${element.name.text}`;
       }

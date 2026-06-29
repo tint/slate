@@ -304,20 +304,20 @@ export function createSlateLanguageServiceHost(options: SlateTypeScriptHostOptio
   const host: ts.LanguageServiceHost = {
     getCompilationSettings: () => compilerOptions,
     getCurrentDirectory: () => options.currentDirectory ?? dirname(options.virtualDocument.filename),
-    getDefaultLibFileName: (hostOptions) => ts.getDefaultLibFilePath(hostOptions),
+    getDefaultLibFileName: (hostOptions: ts.CompilerOptions) => ts.getDefaultLibFilePath(hostOptions),
     getScriptFileNames: () => [options.virtualDocument.virtualFilename],
-    getScriptKind: (filename) => sources.getScriptKind(filename),
-    getScriptSnapshot: (filename) => {
+    getScriptKind: (filename: string) => sources.getScriptKind(filename),
+    getScriptSnapshot: (filename: string) => {
       const source = sources.readFile(filename);
       return source === undefined ? undefined : ts.ScriptSnapshot.fromString(source);
     },
-    getScriptVersion: (filename) => options.getScriptVersion?.(filename) ?? "0",
-    fileExists: (filename) => sources.fileExists(filename),
-    readFile: (filename) => sources.readFile(filename),
+    getScriptVersion: (filename: string) => options.getScriptVersion?.(filename) ?? "0",
+    fileExists: (filename: string) => sources.fileExists(filename),
+    readFile: (filename: string) => sources.readFile(filename),
     readDirectory: ts.sys.readDirectory,
     directoryExists: ts.sys.directoryExists,
     getDirectories: ts.sys.getDirectories,
-    resolveModuleNames: (moduleNames, containingFile) =>
+    resolveModuleNames: (moduleNames: string[], containingFile: string) =>
       sources.resolveModuleNames(moduleNames, containingFile, compilerOptions),
   };
 
@@ -334,7 +334,7 @@ export function createSlateCompilerHost(options: SlateCompilerHostOptions): ts.C
     fileExists: options.fileExists ?? baseHost.fileExists.bind(baseHost),
   });
 
-  baseHost.getSourceFile = (filename, languageVersion, onError, shouldCreateNewSourceFile) => {
+  baseHost.getSourceFile = (filename: string, languageVersion: ts.ScriptTarget, onError: ((message: string) => void) | undefined, shouldCreateNewSourceFile: boolean | undefined) => {
     if (filename === options.virtualDocument.virtualFilename) {
       return options.sourceFile;
     }
@@ -347,9 +347,9 @@ export function createSlateCompilerHost(options: SlateCompilerHostOptions): ts.C
 
     return baseGetSourceFile(filename, languageVersion, onError, shouldCreateNewSourceFile);
   };
-  baseHost.fileExists = (filename) => sources.fileExists(filename);
-  baseHost.readFile = (filename) => sources.readFile(filename);
-  baseHost.resolveModuleNames = (moduleNames, containingFile) =>
+  baseHost.fileExists = (filename: string) => sources.fileExists(filename);
+  baseHost.readFile = (filename: string) => sources.readFile(filename);
+  baseHost.resolveModuleNames = (moduleNames: string[], containingFile: string) =>
     sources.resolveModuleNames(moduleNames, containingFile, compilerOptions);
 
   return baseHost;
@@ -426,7 +426,7 @@ function createSlateTypeScriptSourceHost(options: SlateTypeScriptHostOptions): {
       return readFile(filename);
     },
     resolveModuleNames(moduleNames, containingFile, compilerOptions) {
-      return moduleNames.map((moduleName) => {
+      return moduleNames.map((moduleName: string) => {
         const resolvedSlateModule = resolveSlateImport(moduleName, containingFile, readSlateSource);
 
         if (resolvedSlateModule) {
@@ -945,7 +945,7 @@ function patchLanguageServiceHost(tsModule: typeof ts, info: ts.server.PluginCre
   const readSlateSourceFromHost = (filename: string): string | undefined =>
     readSlateSourceFromPluginHost(filename, getScriptSnapshot, tsModule);
 
-  host.getScriptSnapshot = (filename) => {
+  host.getScriptSnapshot = (filename: string) => {
     if (isSlateModuleVirtualFile(filename)) {
       const source = readSlateSourceFromHost(toOriginalSlateModuleFilename(filename));
 
@@ -971,7 +971,7 @@ function patchLanguageServiceHost(tsModule: typeof ts, info: ts.server.PluginCre
     return tsModule.ScriptSnapshot.fromString(virtualDocument.text);
   };
 
-  host.getScriptKind = (filename) => {
+  host.getScriptKind = (filename: string) => {
     if (isSlateFile(filename) || isSlateModuleVirtualFile(filename)) {
       return tsModule.ScriptKind.TSX;
     }
@@ -990,7 +990,7 @@ function patchLanguageServiceHost(tsModule: typeof ts, info: ts.server.PluginCre
     };
   };
 
-  hostWithFileSystem.fileExists = (filename) => {
+  hostWithFileSystem.fileExists = (filename: string) => {
     if (isSlateModuleVirtualFile(filename)) {
       const originalFilename = toOriginalSlateModuleFilename(filename);
       return readSlateSourceFromHost(originalFilename) !== undefined;
@@ -999,7 +999,7 @@ function patchLanguageServiceHost(tsModule: typeof ts, info: ts.server.PluginCre
     return fileExists?.(filename) ?? tsModule.sys.fileExists(filename);
   };
 
-  hostWithFileSystem.readFile = (filename) => {
+  hostWithFileSystem.readFile = (filename: string) => {
     if (isSlateModuleVirtualFile(filename)) {
       const originalFilename = toOriginalSlateModuleFilename(filename);
       const source = readSlateSourceFromHost(originalFilename);
@@ -1009,7 +1009,7 @@ function patchLanguageServiceHost(tsModule: typeof ts, info: ts.server.PluginCre
     return readFile?.(filename) ?? tsModule.sys.readFile(filename);
   };
 
-  host.resolveModuleNames = (moduleNames, containingFile, reusedNames, redirectedReference, options) =>
+  host.resolveModuleNames = (moduleNames: string[], containingFile: string, reusedNames: string[] | undefined, redirectedReference: ts.ResolvedProjectReference | undefined, options: ts.CompilerOptions | undefined) =>
     moduleNames.map((moduleName) => {
       const resolvedSlateModule = resolveSlateImport(moduleName, containingFile, readSlateSourceFromHost);
 
@@ -1018,7 +1018,7 @@ function patchLanguageServiceHost(tsModule: typeof ts, info: ts.server.PluginCre
       }
 
       if (resolveModuleNames) {
-        return resolveModuleNames([moduleName], containingFile, reusedNames, redirectedReference, options)[0];
+        return resolveModuleNames([moduleName], containingFile, reusedNames, redirectedReference, options ?? getCompilationSettings?.() ?? {})[0];
       }
 
       return tsModule.resolveModuleName(
@@ -1029,8 +1029,8 @@ function patchLanguageServiceHost(tsModule: typeof ts, info: ts.server.PluginCre
       ).resolvedModule;
     });
 
-  host.resolveModuleNameLiterals = (moduleLiterals, containingFile, redirectedReference, options, containingSourceFile, reusedNames) =>
-    moduleLiterals.map((moduleLiteral) => {
+  host.resolveModuleNameLiterals = (moduleLiterals: readonly ts.StringLiteralLike[], containingFile: string, redirectedReference: ts.ResolvedProjectReference | undefined, options: ts.CompilerOptions, containingSourceFile: ts.SourceFile, reusedNames: readonly ts.StringLiteralLike[] | undefined) =>
+    moduleLiterals.map((moduleLiteral: ts.StringLiteralLike) => {
       const resolvedSlateModule = resolveSlateImport(moduleLiteral.text, containingFile, readSlateSourceFromHost);
 
       if (resolvedSlateModule) {
