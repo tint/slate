@@ -18,6 +18,7 @@ internal/**/.tmp/
 internal/**/.tmp-*/
 .cache/
 .vite/
+demo/
 
 # Editor and OS files
 .DS_Store
