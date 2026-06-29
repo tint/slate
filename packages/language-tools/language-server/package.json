@@ -1,6 +1,6 @@
 {
   "name": "@slate/language-server",
-  "version": "0.0.1-alpha.4",
+  "version": "0.0.1-alpha.5",
   "type": "module",
   "private": true,
   "bin": {
@@ -15,9 +15,9 @@
   },
   "types": "./src/index.ts",
   "dependencies": {
-    "@slate/check": "^0.0.1-alpha.4",
+    "@slate/check": "^0.0.1-alpha.5",
     "@slate/compiler": "^0.0.1-alpha.4",
-    "@slate/ts-plugin": "^0.0.1-alpha.4",
+    "@slate/ts-plugin": "^0.0.1-alpha.5",
     "tsx": "^4.20.0",
     "typescript": "^5.8.0",
     "vscode-languageserver": "^9.0.1",
