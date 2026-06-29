@@ -107,6 +107,9 @@ export const RUNE_DECLARATIONS: string = [
   "type __SlatePropsOf<T> = T extends { render: (...args: any[]) => unknown } ? NonNullable<Parameters<T[\"render\"]>[0]> : Record<string, unknown>;",
   "type __SlateSlotsOf<T> = T extends { render: (...args: any[]) => unknown } ? NonNullable<Parameters<T[\"render\"]>[1]> : Record<string, unknown>;",
   "type __SlatePropValue<T, K extends PropertyKey> = K extends keyof __SlatePropsOf<T> ? __SlatePropsOf<T>[K] : unknown;",
+  "type __SlateUndefinedKeys<T> = { [K in keyof T]-?: undefined extends T[K] ? K : never }[keyof T];",
+  "type __SlateDefinedKeys<T> = Exclude<keyof T, __SlateUndefinedKeys<T>>;",
+  "type __SlateNormalizeProps<T> = Pick<T, __SlateDefinedKeys<T>> & Partial<Pick<T, __SlateUndefinedKeys<T>>>;",
   "type __SlateDefaultedProps<T, K extends keyof T> = Omit<T, K> & Partial<Pick<T, K>>;",
   "type __SlateUnionToIntersection<T> = (T extends unknown ? (value: T) => void : never) extends (value: infer I) => void ? I : never;",
   "type __SlatePropEntry<K extends PropertyKey, T, HasDefault extends boolean> = HasDefault extends true ? { [P in K]?: T } : undefined extends T ? { [P in K]?: T } : { [P in K]: T };",
@@ -521,7 +524,7 @@ function createInferredPropsSource(runtimeSource: string): string {
   const spreads: string[] = [];
 
   const visit = (node: ts.Node): void => {
-    if (!ts.isVariableDeclaration(node) || !ts.isIdentifier(node.name) || !node.initializer) {
+    if (!ts.isVariableDeclaration(node) || !node.initializer) {
       ts.forEachChild(node, visit);
       return;
     }
@@ -546,7 +549,12 @@ function createInferredPropsSource(runtimeSource: string): string {
     }
 
     if (ts.isIdentifier(initializer.expression) && initializer.expression.text === "$props") {
-      spreads.push(propsTypeFromCall(initializer, node.name.text, runtimeSource, sourceFile));
+      spreads.push(propsTypeFromCall(
+        initializer,
+        ts.isIdentifier(node.name) ? node.name.text : undefined,
+        runtimeSource,
+        sourceFile,
+      ));
       return;
     }
 
@@ -565,28 +573,32 @@ function propCallHasDefault(call: ts.CallExpression): boolean {
   return call.arguments.length >= 2;
 }
 
-function propsTypeFromCall(call: ts.CallExpression, localName: string, source: string, sourceFile: ts.SourceFile): string {
+function propsTypeFromCall(
+  call: ts.CallExpression,
+  localName: string | undefined,
+  source: string,
+  sourceFile: ts.SourceFile,
+): string {
   const typeArgument = call.typeArguments?.[0];
   const defaults = call.arguments[0];
+  const baseType = typeArgument
+    ? `__SlateNormalizeProps<${source.slice(typeArgument.getStart(sourceFile), typeArgument.getEnd())}>`
+    : localName
+      ? `__SlateNormalizeProps<typeof ${localName}>`
+      : "Record<string, unknown>";
 
   if (!defaults) {
-    return `typeof ${localName}`;
+    return baseType;
   }
 
   const defaultKeys = staticObjectKeys(defaults);
 
   if (!defaultKeys.length) {
-    return `typeof ${localName}`;
+    return baseType;
   }
 
   const keyUnion = defaultKeys.map((key) => JSON.stringify(key)).join(" | ");
-
-  if (typeArgument) {
-    const typeText = source.slice(typeArgument.getStart(sourceFile), typeArgument.getEnd());
-    return `__SlateDefaultedProps<${typeText}, Extract<${keyUnion}, keyof ${typeText}>>`;
-  }
-
-  return `__SlateDefaultedProps<typeof ${localName}, ${keyUnion}>`;
+  return `__SlateDefaultedProps<${baseType}, Extract<${keyUnion}, keyof ${baseType}>>`;
 }
 
 function staticObjectKeys(node: ts.Expression): string[] {

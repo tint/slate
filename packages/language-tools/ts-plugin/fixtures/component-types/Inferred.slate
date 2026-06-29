@@ -2,7 +2,17 @@
 const title = $prop("title", "Untitled");
 const count = $prop<number>("count");
 const optional = $prop<string | undefined>("optional");
-const props = $props<{ tone: "primary" | "secondary" }>();
+const {
+  tone,
+  align,
+  "menu-class": menuClass,
+} = $props<{
+  tone: "primary" | "secondary";
+  align: "start" | "end";
+  "menu-class": string | undefined;
+}>({
+  align: "start",
+});
 const action = $slot<{ label: string }>("action");
 const footer = $slot("footer", { text: "Footer" });
 const tail = 1;
