@@ -24,3 +24,9 @@ features and TypeScript integration stay aligned.
 
 Protocol framing, request dispatch, incremental text synchronization, and diagnostics
 publishing should stay delegated to the `vscode-languageserver` package family.
+
+The language server searches upward from each `.slate` document for
+`slate.config.ts`, `slate.config.mjs`, or `slate.config.js`. It currently uses
+the config's `html.attributeDiagnostics` and
+`html.attributeDiagnosticsDefaultSeverity` fields so editor diagnostics match
+`slate check` for project-specific attribute policies.

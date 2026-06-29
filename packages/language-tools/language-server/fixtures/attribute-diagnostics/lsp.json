@@ -1,29 +1,44 @@
 {
   "diagnostics": [
     {
-      "message": "LSP className diagnostic.",
+      "message": "Attribute `onClick` matched Slate diagnostic rule.",
       "range": {
         "start": {
-          "line": 0,
-          "character": 7
+          "line": 1,
+          "character": 23
         },
         "end": {
-          "line": 0,
-          "character": 24
+          "line": 1,
+          "character": 30
         }
       },
       "severity": 2,
       "source": "slate"
     },
     {
-      "message": "LSP htmlFor diagnostic.",
+      "message": "Attribute `className` matched Slate diagnostic rule.",
       "range": {
         "start": {
-          "line": 0,
+          "line": 4,
+          "character": 7
+        },
+        "end": {
+          "line": 4,
+          "character": 24
+        }
+      },
+      "severity": 1,
+      "source": "slate"
+    },
+    {
+      "message": "Attribute `htmlFor` matched Slate diagnostic rule.",
+      "range": {
+        "start": {
+          "line": 4,
           "character": 25
         },
         "end": {
-          "line": 0,
+          "line": 4,
           "character": 39
         }
       },

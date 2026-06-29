@@ -1,16 +1,13 @@
 export default {
   html: {
+    attributeDiagnosticsDefaultSeverity: {
+      error: ["htmlFor", "className"],
+      warning: [/^on[A-Z]/],
+    },
     attributeDiagnostics: [
-      {
-        pattern: "className",
-        severity: "warning",
-        message: "LSP className diagnostic."
-      },
-      {
-        pattern: "htmlFor",
-        severity: "error",
-        message: "LSP htmlFor diagnostic."
-      }
+      "className",
+      "htmlFor",
+      /^on[A-Z]/,
     ]
   }
 };

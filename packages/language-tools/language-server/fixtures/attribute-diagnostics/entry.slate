@@ -1,1 +1,7 @@
+<script slate>
+const button = <button onClick="submit">Submit</button>;
+</script>
+
 <label className="field" htmlFor="name">Name</label>
+
+{button}

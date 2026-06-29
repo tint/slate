@@ -33,6 +33,7 @@ import { parse } from "@slate/compiler";
 import {
   checkSource,
   normalizeAttributeDiagnosticRules,
+  type AttributeDiagnosticsDefaultSeverity,
   type AttributeDiagnosticRule,
 } from "@slate/check";
 import {
@@ -60,6 +61,7 @@ const checkConfigCache = new Map<string, {
 
 type CheckConfig = {
   attributeDiagnostics?: AttributeDiagnosticRule[];
+  attributeDiagnosticsDefaultSeverity?: AttributeDiagnosticsDefaultSeverity;
 };
 
 connection.onInitialize((): InitializeResult => ({
@@ -154,6 +156,7 @@ async function validateDocument(document: TextDocument): Promise<void> {
     source,
     filename,
     attributeDiagnostics: config.attributeDiagnostics,
+    attributeDiagnosticsDefaultSeverity: config.attributeDiagnosticsDefaultSeverity,
   });
 
   connection.sendDiagnostics({
@@ -222,7 +225,11 @@ async function readCheckConfig(configPath: string, mtimeMs: number): Promise<Che
   }
 
   return {
-    attributeDiagnostics: normalizeAttributeDiagnosticRules(config.html.attributeDiagnostics),
+    attributeDiagnostics: normalizeAttributeDiagnosticRules(
+      config.html.attributeDiagnostics,
+      config.html.attributeDiagnosticsDefaultSeverity as AttributeDiagnosticsDefaultSeverity | undefined,
+    ),
+    attributeDiagnosticsDefaultSeverity: config.html.attributeDiagnosticsDefaultSeverity as AttributeDiagnosticsDefaultSeverity | undefined,
   };
 }
 
