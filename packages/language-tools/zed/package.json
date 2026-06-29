@@ -17,5 +17,8 @@
   "scripts": {
     "build": "tsdown src/index.ts --format esm --dts --out-dir dist --clean",
     "check": "tsc --noEmit"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3"
   }
 }

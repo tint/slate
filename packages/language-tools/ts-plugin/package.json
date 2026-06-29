@@ -15,10 +15,10 @@
     "@slate/compiler": "^0.0.1-alpha.4"
   },
   "devDependencies": {
-    "typescript": "^5.8.0"
+    "typescript": "^6.0.3"
   },
   "peerDependencies": {
-    "typescript": ">=5.0.0"
+    "typescript": ">=5.0.0 <7.0.0"
   },
   "scripts": {
     "check": "tsc --noEmit",

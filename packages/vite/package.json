@@ -24,5 +24,8 @@
   "scripts": {
     "check": "tsc --noEmit",
     "test": "tsx scripts/run-fixtures.ts"
+  },
+  "devDependencies": {
+    "typescript": "^6.0.3"
   }
 }

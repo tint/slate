@@ -42,22 +42,25 @@
       "name": "@slate/cli",
       "version": "0.0.1-alpha.7",
       "bin": {
-        "slate": "./src/index.ts",
+        "slate": "./src/bin.mjs",
       },
       "dependencies": {
-        "@slate/check": "^0.0.1-alpha.4",
+        "@slate/check": "^0.0.1-alpha.5",
         "@slate/compiler": "^0.0.1-alpha.4",
         "@slate/kit": "^0.0.1-alpha.4",
         "@slate/vite": "^0.0.1-alpha.4",
         "cac": "^7.0.0",
         "tsx": "^4.20.0",
       },
+      "devDependencies": {
+        "typescript": "^6.0.3",
+      },
     },
     "packages/compiler": {
       "name": "@slate/compiler",
       "version": "0.0.1-alpha.4",
       "dependencies": {
-        "typescript": "^5.8.0",
+        "typescript": "^6.0.3",
       },
     },
     "packages/create-slate": {
@@ -74,6 +77,9 @@
     "packages/kit": {
       "name": "@slate/kit",
       "version": "0.0.1-alpha.4",
+      "devDependencies": {
+        "typescript": "^6.0.3",
+      },
     },
     "packages/language-tools/check": {
       "name": "@slate/check",
@@ -81,7 +87,7 @@
       "dependencies": {
         "@slate/compiler": "^0.0.1-alpha.4",
         "@slate/ts-plugin": "^0.0.1-alpha.5",
-        "typescript": "^5.8.0",
+        "typescript": "^6.0.3",
       },
     },
     "packages/language-tools/language-server": {
@@ -95,7 +101,7 @@
         "@slate/compiler": "^0.0.1-alpha.4",
         "@slate/ts-plugin": "^0.0.1-alpha.5",
         "tsx": "^4.20.0",
-        "typescript": "^5.8.0",
+        "typescript": "^6.0.3",
         "vscode-languageserver": "^9.0.1",
         "vscode-languageserver-textdocument": "^1.0.12",
         "vscode-uri": "^3.0.8",
@@ -108,17 +114,17 @@
         "@slate/compiler": "^0.0.1-alpha.4",
       },
       "devDependencies": {
-        "typescript": "^5.8.0",
+        "typescript": "^6.0.3",
       },
       "peerDependencies": {
-        "typescript": ">=5.0.0",
+        "typescript": ">=5.0.0 <7.0.0",
       },
     },
     "packages/language-tools/vscode": {
       "name": "slate-vscode",
-      "version": "0.0.3",
+      "version": "0.0.4",
       "dependencies": {
-        "typescript": "^5.8.0",
+        "typescript": "^6.0.3",
       },
       "devDependencies": {
         "@types/vscode": "^1.100.0",
@@ -132,16 +138,20 @@
       "dependencies": {
         "@slate/language-server": "workspace:*",
       },
+      "devDependencies": {
+        "typescript": "^6.0.3",
+      },
     },
     "packages/test": {
       "name": "@slate/test",
       "version": "0.0.1-alpha.4",
       "dependencies": {
-        "@slate/kit": "^0.0.1-alpha.3",
-        "@slate/vite": "^0.0.1-alpha.3",
+        "@slate/kit": "^0.0.1-alpha.4",
+        "@slate/vite": "^0.0.1-alpha.4",
         "vite": "^8.0.16",
       },
       "devDependencies": {
+        "typescript": "^6.0.3",
         "vitest": "^4.1.9",
       },
     },
@@ -158,6 +168,9 @@
         "unified": "^11.0.5",
         "vite": "^8.0.16",
       },
+      "devDependencies": {
+        "typescript": "^6.0.3",
+      },
     },
   },
   "catalog": {
@@ -166,7 +179,7 @@
     "@vscode/vsce": "^3.9.2",
     "tsdown": "^0.22.3",
     "tsx": "^4.20.0",
-    "typescript": "^5.8.0",
+    "typescript": "^6.0.3",
     "vite": "^8.0.16",
     "vitest": "^4.1.9",
     "vscode-languageserver": "^9.0.1",
@@ -1106,7 +1119,7 @@
 
     "typed-rest-client": ["typed-rest-client@1.8.11", "", { "dependencies": { "qs": "^6.9.1", "tunnel": "0.0.6", "underscore": "^1.12.1" } }, "sha512-5UvfMpd1oelmUPRbbaVnq+rHP7ng2cE4qoQkQeAqxRL6PklkxsM0g32/HL0yfvruK6ojQ5x8EE+HF4YV6DtuCA=="],
 
-    "typescript": ["typescript@5.9.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-jl1vZzPDinLr9eUt3J/t7V6FgNEw9QjvBPdysz9KfQDD41fQrC2Y4vKQdiaUpFT4bXlb1RHhLpp8wtm6M5TgSw=="],
+    "typescript": ["typescript@6.0.3", "", { "bin": { "tsc": "bin/tsc", "tsserver": "bin/tsserver" } }, "sha512-y2TvuxSZPDyQakkFRPZHKFm+KKVqIisdg9/CZwm9ftvKXLP8NRWj38/ODjNbr43SsoXqNuAisEf1GdCxqWcdBw=="],
 
     "uc.micro": ["uc.micro@2.1.0", "", {}, "sha512-ARDJmphmdvUk6Glw7y9DQ2bFkKBHwQHLi2lsaH6PPmz/Ka9sFOBsBluozhDltWmnv9u/cF6Rt87znRTPV+yp/A=="],
 
