@@ -1,0 +1,11 @@
+[
+  {
+    "filename": "entry.slate",
+    "range": {
+      "start": 115,
+      "end": 120
+    },
+    "severity": "error",
+    "message": "Local TSX components are not supported in Slate JSX. Use an intrinsic HTML/SVG element or an imported `.slate` component."
+  }
+]

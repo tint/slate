@@ -13,6 +13,7 @@ Static checker for Slate files.
 - Validate rune usage.
 - Validate compiler directives.
 - Validate project-configured template attribute diagnostics.
+- Reject local TSX components in Slate JSX.
 
 ## Status
 
@@ -89,5 +90,6 @@ export function checkSource(options: CheckSourceOptions): CheckSourceResult;
 - Slot checks currently cover deprecated `slot="name"`, malformed `slot:name`, `<slot>` outlet `name`/`data` attribute forms, and accidental `slot:*` use on `<slot>` outlets.
 - Component prop checks read imported `.slate` modules, preserve their type declarations, and type-check component attributes against an exported `Props` type when present.
 - Attribute diagnostics are opt-in and match ordinary template attributes and JSX attributes by raw source name, so rules can distinguish `className` from `class`.
+- Slate JSX accepts intrinsic HTML/SVG elements and imported `.slate` components. Local TSX function components are reported as errors.
 - Attribute diagnostics accept strings, regular expressions, or full rule objects.
 - Attribute diagnostic rules are normalized at runtime. Invalid entries are ignored, missing severity uses `attributeDiagnosticsDefaultSeverity`, and `"off"` keeps a rule disabled.

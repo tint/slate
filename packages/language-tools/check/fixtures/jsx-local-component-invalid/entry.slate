@@ -1,0 +1,6 @@
+<script slate>
+const Local = ({ title }: { title: string }) => <p>{title}</p>;
+const title = "Hello";
+</script>
+
+{<Local title={title} />}

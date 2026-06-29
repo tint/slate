@@ -1,0 +1,7 @@
+<script slate>
+import Card from "./Card.slate";
+const title = "Hello";
+const element = <Card title={title} />;
+</script>
+
+{element}

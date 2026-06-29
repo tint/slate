@@ -9,6 +9,7 @@ import {
   parse,
   type AttributeCst,
   type Diagnostic as CompilerDiagnostic,
+  type SlateScriptElementCst,
   type SlateFileCst,
   type TemplateCstNode,
 } from "@slate/compiler";
@@ -398,6 +399,7 @@ function isRecord(value: unknown): value is Record<string, unknown> {
 
 function checkVirtualDocument(options: NormalizedCheckSourceOptions): Diagnostic[] {
   const virtualDocument = createSlateVirtualDocument(options.source, options.filename);
+  const importedComponents = collectImportedSlateComponentNames(virtualDocument.script);
 
   const sourceFile = ts.createSourceFile(
     virtualDocument.virtualFilename,
@@ -424,7 +426,84 @@ function checkVirtualDocument(options: NormalizedCheckSourceOptions): Diagnostic
   return [
     ...diagnostics.flatMap((diagnostic) => toSlateDiagnostic(diagnostic, virtualDocument)),
     ...checkJsxAttributeDiagnostics(sourceFile, virtualDocument, options.attributeDiagnostics),
+    ...checkLocalJsxComponentDiagnostics(sourceFile, virtualDocument, importedComponents),
   ];
+}
+
+function collectImportedSlateComponentNames(script: SlateScriptElementCst | undefined): Set<string> {
+  const names = new Set<string>();
+
+  if (!script) {
+    return names;
+  }
+
+  const sourceFile = ts.createSourceFile(
+    "component.slate.tsx",
+    script.body.text,
+    ts.ScriptTarget.Latest,
+    true,
+    ts.ScriptKind.TSX,
+  );
+
+  for (const statement of sourceFile.statements) {
+    if (!ts.isImportDeclaration(statement) || !ts.isStringLiteral(statement.moduleSpecifier)) {
+      continue;
+    }
+
+    if (!statement.moduleSpecifier.text.endsWith(".slate")) {
+      continue;
+    }
+
+    const defaultImport = statement.importClause?.name;
+
+    if (defaultImport) {
+      names.add(defaultImport.text);
+    }
+  }
+
+  return names;
+}
+
+function checkLocalJsxComponentDiagnostics(
+  sourceFile: ts.SourceFile,
+  virtualDocument: SlateVirtualDocument,
+  importedComponents: Set<string>,
+): Diagnostic[] {
+  const diagnostics: Diagnostic[] = [];
+
+  visit(sourceFile);
+  return diagnostics;
+
+  function visit(node: ts.Node): void {
+    const tagName = jsxElementTagName(node);
+
+    if (tagName && isComponentLikeJsxTag(tagName.text) && !importedComponents.has(tagName.text)) {
+      const originalRange = toOriginalRange(virtualDocument, tagName.getStart(sourceFile), tagName.getEnd());
+
+      if (originalRange) {
+        diagnostics.push({
+          filename: virtualDocument.filename,
+          range: originalRange,
+          severity: "error",
+          message: "Local TSX components are not supported in Slate JSX. Use an intrinsic HTML/SVG element or an imported `.slate` component.",
+        });
+      }
+    }
+
+    ts.forEachChild(node, visit);
+  }
+}
+
+function jsxElementTagName(node: ts.Node): ts.Identifier | undefined {
+  if (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) {
+    return ts.isIdentifier(node.tagName) ? node.tagName : undefined;
+  }
+
+  return undefined;
+}
+
+function isComponentLikeJsxTag(value: string): boolean {
+  return /^[A-Z]/.test(value);
 }
 
 function checkJsxAttributeDiagnostics(

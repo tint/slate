@@ -1,0 +1,5 @@
+<script slate>
+const title = $prop("title", "Untitled");
+</script>
+
+<section>{title}</section>
