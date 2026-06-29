@@ -1,0 +1,15 @@
+<script slate>
+import Card from "./Card.slate";
+
+const jsxElement = <div className="bad" />;
+const jsxComponent = <Card className="allowed" htmlFor="allowed" onClick="allowed" />;
+</script>
+
+<Card className="allowed" htmlFor="allowed">
+  <span className="bad-child">Child</span>
+</Card>
+
+<my-element className="bad-custom"></my-element>
+
+{jsxElement}
+{jsxComponent}

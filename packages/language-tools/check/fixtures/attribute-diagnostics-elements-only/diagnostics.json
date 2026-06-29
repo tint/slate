@@ -1,0 +1,29 @@
+[
+  {
+    "filename": "entry.slate",
+    "range": {
+      "start": 73,
+      "end": 82
+    },
+    "severity": "error",
+    "message": "Attribute `className` matched Slate diagnostic rule."
+  },
+  {
+    "filename": "entry.slate",
+    "range": {
+      "start": 244,
+      "end": 265
+    },
+    "severity": "error",
+    "message": "Attribute `className` matched Slate diagnostic rule."
+  },
+  {
+    "filename": "entry.slate",
+    "range": {
+      "start": 300,
+      "end": 322
+    },
+    "severity": "error",
+    "message": "Attribute `className` matched Slate diagnostic rule."
+  }
+]

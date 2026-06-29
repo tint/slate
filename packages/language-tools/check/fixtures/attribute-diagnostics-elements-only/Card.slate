@@ -1,0 +1,12 @@
+<script slate>
+export type Props = {
+  title?: string;
+  className?: string;
+  htmlFor?: string;
+  onClick?: string;
+};
+
+const title = $prop("title", "Card");
+</script>
+
+<section>{title}<slot /></section>

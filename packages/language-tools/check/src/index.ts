@@ -208,10 +208,13 @@ function checkAttributeDiagnostics(options: {
   }
 
   const parsed = parse(options.source);
+  const importedComponents = collectImportedSlateComponentNames(
+    parsed.cst.children.find((node): node is SlateScriptElementCst => node.kind === "SlateScriptElement"),
+  );
   const diagnostics: Diagnostic[] = [];
 
   for (const child of (parsed.cst as SlateFileCst).children) {
-    collectAttributeDiagnosticsFromNode(child, options.filename, rules, diagnostics);
+    collectAttributeDiagnosticsFromNode(child, options.filename, rules, importedComponents, diagnostics);
   }
 
   return diagnostics;
@@ -221,13 +224,16 @@ function collectAttributeDiagnosticsFromNode(
   node: TemplateCstNode,
   filename: string,
   rules: AttributeDiagnosticRule[],
+  importedComponents: Set<string>,
   diagnostics: Diagnostic[],
 ): void {
   if (node.kind === "Element") {
-    collectAttributeDiagnosticsFromAttributes(node.openTag.attributes, filename, rules, diagnostics);
+    if (!importedComponents.has(node.rawTagName)) {
+      collectAttributeDiagnosticsFromAttributes(node.openTag.attributes, filename, rules, diagnostics);
+    }
 
     for (const child of node.children) {
-      collectAttributeDiagnosticsFromNode(child, filename, rules, diagnostics);
+      collectAttributeDiagnosticsFromNode(child, filename, rules, importedComponents, diagnostics);
     }
 
     return;
@@ -240,11 +246,11 @@ function collectAttributeDiagnosticsFromNode(
 
   if (node.kind === "IfBlock") {
     for (const child of node.then) {
-      collectAttributeDiagnosticsFromNode(child, filename, rules, diagnostics);
+      collectAttributeDiagnosticsFromNode(child, filename, rules, importedComponents, diagnostics);
     }
 
     for (const child of node.else ?? []) {
-      collectAttributeDiagnosticsFromNode(child, filename, rules, diagnostics);
+      collectAttributeDiagnosticsFromNode(child, filename, rules, importedComponents, diagnostics);
     }
 
     return;
@@ -252,11 +258,11 @@ function collectAttributeDiagnosticsFromNode(
 
   if (node.kind === "EachBlock") {
     for (const child of node.children) {
-      collectAttributeDiagnosticsFromNode(child, filename, rules, diagnostics);
+      collectAttributeDiagnosticsFromNode(child, filename, rules, importedComponents, diagnostics);
     }
 
     for (const child of node.else ?? []) {
-      collectAttributeDiagnosticsFromNode(child, filename, rules, diagnostics);
+      collectAttributeDiagnosticsFromNode(child, filename, rules, importedComponents, diagnostics);
     }
 
     return;
@@ -264,15 +270,15 @@ function collectAttributeDiagnosticsFromNode(
 
   if (node.kind === "AwaitBlock") {
     for (const child of node.pending) {
-      collectAttributeDiagnosticsFromNode(child, filename, rules, diagnostics);
+      collectAttributeDiagnosticsFromNode(child, filename, rules, importedComponents, diagnostics);
     }
 
     for (const child of node.then?.children ?? []) {
-      collectAttributeDiagnosticsFromNode(child, filename, rules, diagnostics);
+      collectAttributeDiagnosticsFromNode(child, filename, rules, importedComponents, diagnostics);
     }
 
     for (const child of node.catch?.children ?? []) {
-      collectAttributeDiagnosticsFromNode(child, filename, rules, diagnostics);
+      collectAttributeDiagnosticsFromNode(child, filename, rules, importedComponents, diagnostics);
     }
 
     return;
@@ -425,7 +431,7 @@ function checkVirtualDocument(options: NormalizedCheckSourceOptions): Diagnostic
 
   return [
     ...diagnostics.flatMap((diagnostic) => toSlateDiagnostic(diagnostic, virtualDocument)),
-    ...checkJsxAttributeDiagnostics(sourceFile, virtualDocument, options.attributeDiagnostics),
+    ...checkJsxAttributeDiagnostics(sourceFile, virtualDocument, options.attributeDiagnostics, importedComponents),
     ...checkLocalJsxComponentDiagnostics(sourceFile, virtualDocument, importedComponents),
   ];
 }
@@ -510,6 +516,7 @@ function checkJsxAttributeDiagnostics(
   sourceFile: ts.SourceFile,
   virtualDocument: SlateVirtualDocument,
   rules?: AttributeDiagnosticRule[],
+  importedComponents: Set<string> = new Set(),
 ): Diagnostic[] {
   const activeRules = rules?.filter((rule) => (rule.severity ?? "warning") !== "off") ?? [];
 
@@ -523,30 +530,47 @@ function checkJsxAttributeDiagnostics(
   return diagnostics;
 
   function visit(node: ts.Node): void {
-    if (ts.isJsxAttribute(node)) {
-      const rawName = node.name.getText(sourceFile);
+    const tagName = jsxElementTagName(node);
 
-      for (const rule of activeRules) {
-        if (!matchesAttributePattern(rule.pattern, rawName)) {
+    if (tagName && importedComponents.has(tagName.text)) {
+      ts.forEachChild(node, visit);
+      return;
+    }
+
+    if (ts.isJsxOpeningElement(node) || ts.isJsxSelfClosingElement(node)) {
+      for (const attribute of node.attributes.properties) {
+        if (!ts.isJsxAttribute(attribute)) {
           continue;
         }
 
-        const originalRange = toOriginalRange(virtualDocument, node.name.getStart(sourceFile), node.name.getEnd());
-
-        if (originalRange) {
-          diagnostics.push({
-            filename: virtualDocument.filename,
-            range: originalRange,
-            severity: rule.severity === "error" ? "error" : "warning",
-            message: rule.message ?? `Attribute \`${rawName}\` matched Slate diagnostic rule.`,
-          });
-        }
-
-        break;
+        collectJsxAttributeDiagnostic(attribute);
       }
     }
 
     ts.forEachChild(node, visit);
+  }
+
+  function collectJsxAttributeDiagnostic(node: ts.JsxAttribute): void {
+    const rawName = node.name.getText(sourceFile);
+
+    for (const rule of activeRules) {
+      if (!matchesAttributePattern(rule.pattern, rawName)) {
+        continue;
+      }
+
+      const originalRange = toOriginalRange(virtualDocument, node.name.getStart(sourceFile), node.name.getEnd());
+
+      if (originalRange) {
+        diagnostics.push({
+          filename: virtualDocument.filename,
+          range: originalRange,
+          severity: rule.severity === "error" ? "error" : "warning",
+          message: rule.message ?? `Attribute \`${rawName}\` matched Slate diagnostic rule.`,
+        });
+      }
+
+      break;
+    }
   }
 }
 

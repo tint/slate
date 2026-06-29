@@ -290,9 +290,11 @@ export default defineConfig({
 
 `html.rehypePlugins` accepts rehype plugins that run before the selected formatter/minifier.
 
-`html.attributeDiagnostics` lets projects add opt-in diagnostics for template
-attribute names. Slate does not hard-code React compatibility warnings such as
-`className` or `htmlFor`; configure them when your project wants that policy:
+`html.attributeDiagnostics` lets projects add opt-in diagnostics for element
+attribute names. It applies to standard HTML elements and custom elements,
+including JSX intrinsic elements. It does not check props passed to imported
+`.slate` components. Slate does not hard-code React compatibility warnings such
+as `className` or `htmlFor`; configure them when your project wants that policy:
 
 ```ts
 import { defineConfig } from "@slate/cli";

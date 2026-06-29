@@ -552,8 +552,9 @@ export default defineConfig({
 ```
 
 Attribute diagnostics are matched against the raw attribute name. They cover
-normal template attributes and JSX attributes inside `<script slate>` or
-template expressions.
+standard HTML elements and custom elements in templates, plus JSX intrinsic
+elements inside `<script slate>` or template expressions. Props passed to
+imported `.slate` components are not checked by attribute diagnostics.
 
 Rule matching:
 
