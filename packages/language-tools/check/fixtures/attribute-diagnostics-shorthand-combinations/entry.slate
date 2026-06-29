@@ -1,0 +1,5 @@
+<script slate>
+const button = <button onClick="submit" className="button">Submit</button>;
+</script>
+
+{button}

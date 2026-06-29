@@ -299,16 +299,15 @@ import { defineConfig } from "@slate/cli";
 
 export default defineConfig({
   html: {
+    attributeDiagnosticsDefaultSeverity: "warning",
     attributeDiagnostics: [
+      "className",
+      "htmlFor",
+      /^on[A-Z]/,
       {
-        pattern: "className",
-        severity: "warning",
-        message: "Slate emits `className` literally. Use `class` for CSS classes.",
-      },
-      {
-        pattern: "htmlFor",
-        severity: "warning",
-        message: "Slate emits `htmlFor` literally. Use `for` for native label binding.",
+        pattern: "on*",
+        severity: "error",
+        message: "Slate does not support runtime event handlers.",
       },
     ],
   },
@@ -317,6 +316,27 @@ export default defineConfig({
 
 Patterns may be exact strings, prefix/suffix wildcard strings such as `on*`, or
 regular expressions. `severity` accepts `"warning"`, `"error"`, or `"off"`.
+String and regular expression shorthand rules use
+`html.attributeDiagnosticsDefaultSeverity` when no per-rule severity is present.
+
+`attributeDiagnosticsDefaultSeverity` supports:
+
+```ts
+// Uniform default.
+attributeDiagnosticsDefaultSeverity: "error",
+
+// Severity groups for shorthand patterns.
+attributeDiagnosticsDefaultSeverity: {
+  error: ["className", "htmlFor"],
+  warning: [/^on[A-Z]/],
+},
+
+// Multiple explicit combinations.
+attributeDiagnosticsDefaultSeverity: [
+  { severity: "error", patterns: ["className", "htmlFor"] },
+  { severity: "warning", patterns: [/^on[A-Z]/] },
+],
+```
 
 ## Multiple inputs
 

@@ -1,0 +1,7 @@
+{
+  "attributeDiagnosticsDefaultSeverity": "error",
+  "attributeDiagnostics": [
+    "className",
+    "htmlFor"
+  ]
+}

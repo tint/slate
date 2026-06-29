@@ -1,7 +1,7 @@
 import { existsSync, mkdirSync, readFileSync, readdirSync, writeFileSync } from "node:fs";
 import { dirname, join, relative } from "node:path";
 import { fileURLToPath } from "node:url";
-import { checkFiles } from "../src/index";
+import { checkFiles, type AttributeDiagnosticsDefaultSeverity } from "../src/index";
 
 const root = dirname(fileURLToPath(import.meta.url));
 const fixturesDir = join(root, "../fixtures");
@@ -17,6 +17,7 @@ for (const fixtureName of readdirSync(fixturesDir).sort()) {
   const result = await checkFiles({
     entry,
     attributeDiagnostics: Array.isArray(config.attributeDiagnostics) ? config.attributeDiagnostics : undefined,
+    attributeDiagnosticsDefaultSeverity: config.attributeDiagnosticsDefaultSeverity as AttributeDiagnosticsDefaultSeverity | undefined,
   });
   const diagnostics = result.diagnostics.map((diagnostic) => ({
     ...diagnostic,

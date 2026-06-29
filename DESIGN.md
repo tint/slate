@@ -536,16 +536,15 @@ import { defineConfig } from "@slate/cli";
 
 export default defineConfig({
   html: {
+    attributeDiagnosticsDefaultSeverity: "warning",
     attributeDiagnostics: [
+      "className",
+      "htmlFor",
+      /^on[A-Z]/,
       {
-        pattern: "className",
-        severity: "warning",
-        message: "Slate emits `className` literally. Use `class` for CSS classes.",
-      },
-      {
-        pattern: "htmlFor",
-        severity: "warning",
-        message: "Slate emits `htmlFor` literally. Use `for` for native label binding.",
+        pattern: "on*",
+        severity: "error",
+        message: "Slate does not support runtime event handlers.",
       },
     ],
   },
@@ -565,7 +564,11 @@ Rule matching:
 - `pattern: "*"` matches every attribute.
 - `pattern: /regex/` can be used for custom matching.
 - `severity` may be `"warning"`, `"error"`, or `"off"`.
-- If `severity` is omitted, Slate treats the rule as a warning.
+- String and regular expression shorthand rules are allowed.
+- If `severity` is omitted, Slate uses `attributeDiagnosticsDefaultSeverity`.
+- `attributeDiagnosticsDefaultSeverity: "error"` sets one default for all shorthand rules.
+- `attributeDiagnosticsDefaultSeverity: { error: ["className"], warning: [/^on[A-Z]/] }` groups shorthand rules by severity.
+- `attributeDiagnosticsDefaultSeverity: [{ severity: "error", patterns: ["className"] }]` supports multiple explicit combinations.
 - The first matching enabled rule wins.
 - Invalid diagnostic rules are ignored.
 

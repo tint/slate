@@ -23,7 +23,8 @@ import ts from "typescript";
 
 export type CheckFilesOptions = {
   entry: string;
-  attributeDiagnostics?: AttributeDiagnosticRule[];
+  attributeDiagnostics?: AttributeDiagnosticInput[];
+  attributeDiagnosticsDefaultSeverity?: AttributeDiagnosticsDefaultSeverity;
 };
 
 export type CheckFilesResult = {
@@ -34,7 +35,8 @@ export type CheckFilesResult = {
 export type CheckSourceOptions = {
   source: string;
   filename: string;
-  attributeDiagnostics?: AttributeDiagnosticRule[];
+  attributeDiagnostics?: AttributeDiagnosticInput[];
+  attributeDiagnosticsDefaultSeverity?: AttributeDiagnosticsDefaultSeverity;
 };
 
 export type CheckSourceResult = {
@@ -42,16 +44,45 @@ export type CheckSourceResult = {
   sources: Record<string, string>;
 };
 
+type NormalizedCheckSourceOptions = Omit<
+  CheckSourceOptions,
+  "attributeDiagnostics" | "attributeDiagnosticsDefaultSeverity"
+> & {
+  attributeDiagnostics?: AttributeDiagnosticRule[];
+};
+
 export type AttributeDiagnosticSeverity = Diagnostic["severity"] | "off";
+
+export type AttributeDiagnosticPattern = string | RegExp;
 
 export type AttributeDiagnosticRule = {
   /** String patterns match exactly, except `*` may be used as a prefix/suffix wildcard. */
-  pattern: string | RegExp;
+  pattern: AttributeDiagnosticPattern;
   severity?: AttributeDiagnosticSeverity;
   message?: string;
 };
 
-export function normalizeAttributeDiagnosticRules(value: unknown): AttributeDiagnosticRule[] {
+export type AttributeDiagnosticInput = AttributeDiagnosticPattern | AttributeDiagnosticRule;
+
+export type AttributeDiagnosticsDefaultSeverity =
+  | AttributeDiagnosticSeverity
+  | {
+    default?: AttributeDiagnosticSeverity;
+    string?: AttributeDiagnosticSeverity;
+    regexp?: AttributeDiagnosticSeverity;
+    error?: AttributeDiagnosticPattern[];
+    warning?: AttributeDiagnosticPattern[];
+    off?: AttributeDiagnosticPattern[];
+  }
+  | Array<{
+    patterns: AttributeDiagnosticPattern[];
+    severity: AttributeDiagnosticSeverity;
+  }>;
+
+export function normalizeAttributeDiagnosticRules(
+  value: unknown,
+  defaultSeverity?: AttributeDiagnosticsDefaultSeverity,
+): AttributeDiagnosticRule[] {
   if (!Array.isArray(value)) {
     return [];
   }
@@ -59,30 +90,50 @@ export function normalizeAttributeDiagnosticRules(value: unknown): AttributeDiag
   const rules: AttributeDiagnosticRule[] = [];
 
   for (const item of value) {
-    if (!isRecord(item)) {
+    const rule = normalizeAttributeDiagnosticRule(item, defaultSeverity);
+
+    if (!rule) {
       continue;
     }
 
-    const pattern = item.pattern;
-
-    if (!(typeof pattern === "string" && pattern.length > 0) && !(pattern instanceof RegExp)) {
-      continue;
-    }
-
-    const severity = normalizeAttributeDiagnosticSeverity(item.severity);
-
-    rules.push({
-      pattern,
-      severity,
-      message: typeof item.message === "string" ? item.message : undefined,
-    });
+    rules.push(rule);
   }
 
   return rules;
 }
 
+function normalizeAttributeDiagnosticRule(
+  value: unknown,
+  defaultSeverity: AttributeDiagnosticsDefaultSeverity | undefined,
+): AttributeDiagnosticRule | undefined {
+  if (isAttributeDiagnosticPattern(value)) {
+    return {
+      pattern: value,
+      severity: resolveAttributeDiagnosticDefaultSeverity(value, defaultSeverity),
+    };
+  }
+
+  if (!isRecord(value) || !isAttributeDiagnosticPattern(value.pattern)) {
+    return undefined;
+  }
+
+  return {
+    pattern: value.pattern,
+    severity: normalizeAttributeDiagnosticSeverityOption(value.severity)
+      ?? resolveAttributeDiagnosticDefaultSeverity(value.pattern, defaultSeverity),
+    message: typeof value.message === "string" ? value.message : undefined,
+  };
+}
+
+function isAttributeDiagnosticPattern(value: unknown): value is AttributeDiagnosticPattern {
+  return (typeof value === "string" && value.length > 0) || value instanceof RegExp;
+}
+
 export function checkSource(options: CheckSourceOptions): CheckSourceResult {
-  const attributeDiagnosticRules = normalizeAttributeDiagnosticRules(options.attributeDiagnostics);
+  const attributeDiagnosticRules = normalizeAttributeDiagnosticRules(
+    options.attributeDiagnostics,
+    options.attributeDiagnosticsDefaultSeverity,
+  );
   const result = compile(options.source);
   const filename = options.filename;
   const typeDiagnostics = checkVirtualDocument({
@@ -112,7 +163,10 @@ export function checkSource(options: CheckSourceOptions): CheckSourceResult {
 }
 
 export async function checkFiles(options: CheckFilesOptions): Promise<CheckFilesResult> {
-  const attributeDiagnosticRules = normalizeAttributeDiagnosticRules(options.attributeDiagnostics);
+  const attributeDiagnosticRules = normalizeAttributeDiagnosticRules(
+    options.attributeDiagnostics,
+    options.attributeDiagnosticsDefaultSeverity,
+  );
   const outDir = await mkdtemp(join(tmpdir(), `slate-check-${randomBytes(6).toString("hex")}-`));
   const result = await compileFiles({
     entry: options.entry,
@@ -248,7 +302,7 @@ function collectAttributeDiagnosticsFromAttributes(
   }
 }
 
-function matchesAttributePattern(pattern: AttributeDiagnosticRule["pattern"], rawName: string): boolean {
+function matchesAttributePattern(pattern: AttributeDiagnosticPattern, rawName: string): boolean {
   if (pattern instanceof RegExp) {
     pattern.lastIndex = 0;
     return pattern.test(rawName);
@@ -277,11 +331,72 @@ function normalizeAttributeDiagnosticSeverity(value: unknown): AttributeDiagnost
   return value === "error" || value === "warning" || value === "off" ? value : "warning";
 }
 
+function normalizeAttributeDiagnosticSeverityOption(value: unknown): AttributeDiagnosticSeverity | undefined {
+  return value === "error" || value === "warning" || value === "off" ? value : undefined;
+}
+
+function resolveAttributeDiagnosticDefaultSeverity(
+  pattern: AttributeDiagnosticPattern,
+  value: AttributeDiagnosticsDefaultSeverity | undefined,
+): AttributeDiagnosticSeverity {
+  const severity = normalizeAttributeDiagnosticSeverityOption(value);
+
+  if (severity) {
+    return severity;
+  }
+
+  if (Array.isArray(value)) {
+    for (const group of value) {
+      if (!isRecord(group)) {
+        continue;
+      }
+
+      const groupSeverity = normalizeAttributeDiagnosticSeverityOption(group.severity);
+      const patterns = Array.isArray(group.patterns) ? group.patterns : [];
+
+      if (groupSeverity && patterns.some((item) => isAttributeDiagnosticPattern(item) && sameAttributeDiagnosticPattern(item, pattern))) {
+        return groupSeverity;
+      }
+    }
+
+    return "warning";
+  }
+
+  if (!isRecord(value)) {
+    return "warning";
+  }
+
+  for (const severityName of ["error", "warning", "off"] as const) {
+    const patterns = value[severityName];
+
+    if (
+      Array.isArray(patterns) &&
+      patterns.some((item) => isAttributeDiagnosticPattern(item) && sameAttributeDiagnosticPattern(item, pattern))
+    ) {
+      return severityName;
+    }
+  }
+
+  const byPatternKind = pattern instanceof RegExp
+    ? normalizeAttributeDiagnosticSeverityOption(value.regexp)
+    : normalizeAttributeDiagnosticSeverityOption(value.string);
+
+  return byPatternKind ?? normalizeAttributeDiagnosticSeverity(value.default);
+}
+
+function sameAttributeDiagnosticPattern(a: AttributeDiagnosticPattern, b: AttributeDiagnosticPattern): boolean {
+  if (typeof a === "string" || typeof b === "string") {
+    return a === b;
+  }
+
+  return a.source === b.source && a.flags === b.flags;
+}
+
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function checkVirtualDocument(options: CheckSourceOptions): Diagnostic[] {
+function checkVirtualDocument(options: NormalizedCheckSourceOptions): Diagnostic[] {
   const virtualDocument = createSlateVirtualDocument(options.source, options.filename);
 
   const sourceFile = ts.createSourceFile(

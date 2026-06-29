@@ -31,11 +31,34 @@ export type AttributeDiagnosticRule = {
   message?: string;
 };
 
-export function normalizeAttributeDiagnosticRules(value: unknown): AttributeDiagnosticRule[];
+export type AttributeDiagnosticInput = string | RegExp | AttributeDiagnosticRule;
+
+export type AttributeDiagnosticsDefaultSeverity =
+  | "warning"
+  | "error"
+  | "off"
+  | {
+      default?: "warning" | "error" | "off";
+      string?: "warning" | "error" | "off";
+      regexp?: "warning" | "error" | "off";
+      error?: Array<string | RegExp>;
+      warning?: Array<string | RegExp>;
+      off?: Array<string | RegExp>;
+    }
+  | Array<{
+      patterns: Array<string | RegExp>;
+      severity: "warning" | "error" | "off";
+    }>;
+
+export function normalizeAttributeDiagnosticRules(
+  value: unknown,
+  defaultSeverity?: AttributeDiagnosticsDefaultSeverity,
+): AttributeDiagnosticRule[];
 
 export type CheckFilesOptions = {
   entry: string;
-  attributeDiagnostics?: AttributeDiagnosticRule[];
+  attributeDiagnostics?: AttributeDiagnosticInput[];
+  attributeDiagnosticsDefaultSeverity?: AttributeDiagnosticsDefaultSeverity;
 };
 export type CheckFilesResult = {
   diagnostics: Diagnostic[];
@@ -47,7 +70,8 @@ export function checkFiles(options: CheckFilesOptions): Promise<CheckFilesResult
 export type CheckSourceOptions = {
   source: string;
   filename: string;
-  attributeDiagnostics?: AttributeDiagnosticRule[];
+  attributeDiagnostics?: AttributeDiagnosticInput[];
+  attributeDiagnosticsDefaultSeverity?: AttributeDiagnosticsDefaultSeverity;
 };
 
 export type CheckSourceResult = {
@@ -65,4 +89,5 @@ export function checkSource(options: CheckSourceOptions): CheckSourceResult;
 - Slot checks currently cover deprecated `slot="name"`, malformed `slot:name`, `<slot>` outlet `name`/`data` attribute forms, and accidental `slot:*` use on `<slot>` outlets.
 - Component prop checks read imported `.slate` modules, preserve their type declarations, and type-check component attributes against an exported `Props` type when present.
 - Attribute diagnostics are opt-in and match ordinary template attributes and JSX attributes by raw source name, so rules can distinguish `className` from `class`.
-- Attribute diagnostic rules are normalized at runtime. Invalid entries are ignored, missing severity defaults to `"warning"`, and `"off"` keeps a rule disabled.
+- Attribute diagnostics accept strings, regular expressions, or full rule objects.
+- Attribute diagnostic rules are normalized at runtime. Invalid entries are ignored, missing severity uses `attributeDiagnosticsDefaultSeverity`, and `"off"` keeps a rule disabled.

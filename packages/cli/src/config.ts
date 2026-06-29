@@ -1,7 +1,10 @@
 import { access } from "node:fs/promises";
 import { dirname, extname, isAbsolute, resolve } from "node:path";
 import { pathToFileURL } from "node:url";
-import type { AttributeDiagnosticRule } from "@slate/check";
+import type {
+  AttributeDiagnosticInput,
+  AttributeDiagnosticsDefaultSeverity,
+} from "@slate/check";
 import type { SlateHtmlOptions as SlateViteHtmlOptions, SlatePlugin, SlateViteUserConfig } from "@slate/vite";
 
 export type SlateConfigCommand = "serve" | "build";
@@ -18,7 +21,9 @@ export type SlateConfigContext = {
 
 export type SlateHtmlOptions = SlateViteHtmlOptions & {
   /** User-configured template attribute diagnostics consumed by `slate check` and editor tooling. */
-  attributeDiagnostics?: AttributeDiagnosticRule[];
+  attributeDiagnostics?: AttributeDiagnosticInput[];
+  /** Default severity for attribute diagnostic shorthand rules. */
+  attributeDiagnosticsDefaultSeverity?: AttributeDiagnosticsDefaultSeverity;
 };
 
 /** User-authored Slate config object shape. */
@@ -90,6 +95,7 @@ const DEFAULT_CONFIG: Omit<ResolvedSlateConfig, "configPath" | "input"> = {
   html: {
     format: "preserve",
     attributeDiagnostics: [],
+    attributeDiagnosticsDefaultSeverity: "warning",
   },
   dev: {
     host: "127.0.0.1",

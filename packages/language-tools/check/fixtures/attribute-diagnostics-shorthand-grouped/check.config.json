@@ -1,0 +1,10 @@
+{
+  "attributeDiagnosticsDefaultSeverity": {
+    "error": ["className"],
+    "warning": ["htmlFor"]
+  },
+  "attributeDiagnostics": [
+    "className",
+    "htmlFor"
+  ]
+}
