@@ -3,6 +3,19 @@
   "version": "0.0.1-alpha.7",
   "type": "module",
   "private": true,
+  "preparePublishConfig": {
+    "package": {
+      "private": "allow"
+    },
+    "metadata": {
+      "remove": [
+        "private",
+        "scripts",
+        "devDependencies",
+        "preparePublishConfig"
+      ]
+    }
+  },
   "bin": {
     "slate": "./src/bin.mjs"
   },
@@ -20,12 +33,12 @@
   },
   "types": "./src/index.ts",
   "dependencies": {
-    "@slate/check": "^0.0.1-alpha.5",
-    "@slate/compiler": "^0.0.1-alpha.4",
-    "@slate/kit": "^0.0.1-alpha.4",
-    "@slate/vite": "^0.0.1-alpha.4",
+    "@slate/check": "workspace:^",
+    "@slate/compiler": "workspace:^",
+    "@slate/kit": "workspace:^",
+    "@slate/vite": "workspace:^",
     "cac": "^7.0.0",
-    "tsx": "^4.20.0"
+    "tsx": "catalog:"
   },
   "scripts": {
     "check": "tsc --noEmit",
@@ -35,6 +48,6 @@
     "node": ">=22.18"
   },
   "devDependencies": {
-    "typescript": "^6.0.3"
+    "typescript": "catalog:"
   }
 }

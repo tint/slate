@@ -3,6 +3,19 @@
   "version": "0.0.1-alpha.5",
   "type": "module",
   "private": true,
+  "preparePublishConfig": {
+    "package": {
+      "private": "allow"
+    },
+    "metadata": {
+      "remove": [
+        "private",
+        "scripts",
+        "devDependencies",
+        "preparePublishConfig"
+      ]
+    }
+  },
   "exports": {
     ".": {
       "types": "./src/index.ts",
@@ -12,10 +25,10 @@
   },
   "types": "./src/index.ts",
   "dependencies": {
-    "@slate/compiler": "^0.0.1-alpha.4"
+    "@slate/compiler": "workspace:^"
   },
   "devDependencies": {
-    "typescript": "^6.0.3"
+    "typescript": "catalog:"
   },
   "peerDependencies": {
     "typescript": ">=5.0.0 <7.0.0"

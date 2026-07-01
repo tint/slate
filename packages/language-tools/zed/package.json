@@ -3,6 +3,17 @@
   "version": "0.0.1-alpha.1",
   "type": "module",
   "private": true,
+  "preparePublishConfig": {
+    "publish": false,
+    "metadata": {
+      "remove": [
+        "private",
+        "scripts",
+        "devDependencies",
+        "preparePublishConfig"
+      ]
+    }
+  },
   "exports": {
     ".": {
       "types": "./dist/index.d.mts",
@@ -19,6 +30,6 @@
     "check": "tsc --noEmit"
   },
   "devDependencies": {
-    "typescript": "^6.0.3"
+    "typescript": "catalog:"
   }
 }

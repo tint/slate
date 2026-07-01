@@ -2,6 +2,17 @@
   "name": "@internal/bump",
   "version": "0.0.1-alpha.1",
   "private": true,
+  "preparePublishConfig": {
+    "publish": false,
+    "metadata": {
+      "remove": [
+        "private",
+        "scripts",
+        "devDependencies",
+        "preparePublishConfig"
+      ]
+    }
+  },
   "type": "module",
   "scripts": {
     "bump": "tsx src/index.ts",

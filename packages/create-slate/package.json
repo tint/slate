@@ -2,6 +2,20 @@
   "name": "create-slate",
   "version": "0.0.1-alpha.3",
   "type": "module",
+  "preparePublishConfig": {
+    "target": "npm",
+    "package": {
+      "private": "allow"
+    },
+    "metadata": {
+      "remove": [
+        "private",
+        "scripts",
+        "devDependencies",
+        "preparePublishConfig"
+      ]
+    }
+  },
   "bin": {
     "create-slate": "src/index.mjs"
   },
@@ -13,8 +27,8 @@
     "check": "node --check src/index.mjs"
   },
   "devDependencies": {
-    "@slate/cli": "^0.0.1-alpha.5",
-    "@slate/kit": "^0.0.1-alpha.4"
+    "@slate/cli": "workspace:^",
+    "@slate/kit": "workspace:^"
   },
   "engines": {
     "node": ">=18"

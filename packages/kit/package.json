@@ -3,6 +3,19 @@
   "version": "0.0.1-alpha.4",
   "type": "module",
   "private": true,
+  "preparePublishConfig": {
+    "package": {
+      "private": "allow"
+    },
+    "metadata": {
+      "remove": [
+        "private",
+        "scripts",
+        "devDependencies",
+        "preparePublishConfig"
+      ]
+    }
+  },
   "exports": {
     ".": {
       "types": "./src/index.ts",
@@ -15,6 +28,6 @@
     "check": "tsc --noEmit"
   },
   "devDependencies": {
-    "typescript": "^6.0.3"
+    "typescript": "catalog:"
   }
 }

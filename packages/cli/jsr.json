@@ -10,6 +10,7 @@
     "include": [
       "README.md",
       "package.json",
+      "src/**/*.mjs",
       "src/**/*.ts"
     ]
   }

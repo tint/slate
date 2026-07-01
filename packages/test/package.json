@@ -3,6 +3,19 @@
   "version": "0.0.1-alpha.4",
   "type": "module",
   "private": true,
+  "preparePublishConfig": {
+    "package": {
+      "private": "allow"
+    },
+    "metadata": {
+      "remove": [
+        "private",
+        "scripts",
+        "devDependencies",
+        "preparePublishConfig"
+      ]
+    }
+  },
   "exports": {
     ".": {
       "types": "./src/index.ts",
@@ -12,13 +25,13 @@
   },
   "types": "./src/index.ts",
   "dependencies": {
-    "@slate/kit": "^0.0.1-alpha.4",
-    "@slate/vite": "^0.0.1-alpha.4",
-    "vite": "^8.0.16"
+    "@slate/kit": "workspace:^",
+    "@slate/vite": "workspace:^",
+    "vite": "catalog:"
   },
   "devDependencies": {
-    "vitest": "^4.1.9",
-    "typescript": "^6.0.3"
+    "vitest": "catalog:",
+    "typescript": "catalog:"
   },
   "scripts": {
     "check": "tsc --noEmit",

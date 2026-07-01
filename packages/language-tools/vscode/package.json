@@ -7,6 +7,17 @@
   "license": "MIT",
   "type": "module",
   "private": true,
+  "preparePublishConfig": {
+    "publish": false,
+    "metadata": {
+      "remove": [
+        "private",
+        "scripts",
+        "devDependencies",
+        "preparePublishConfig"
+      ]
+    }
+  },
   "main": "./dist/index.mjs",
   "engines": {
     "vscode": "^1.100.0"
@@ -68,11 +79,11 @@
   },
   "types": "./dist/index.d.mts",
   "dependencies": {
-    "typescript": "^6.0.3"
+    "typescript": "catalog:"
   },
   "devDependencies": {
-    "@types/vscode": "^1.100.0",
-    "@vscode/vsce": "^3.9.2",
+    "@types/vscode": "catalog:",
+    "@vscode/vsce": "catalog:",
     "vscode-languageclient": "^9.0.1"
   },
   "scripts": {

@@ -3,6 +3,19 @@
   "version": "0.0.1-alpha.4",
   "type": "module",
   "private": true,
+  "preparePublishConfig": {
+    "package": {
+      "private": "allow"
+    },
+    "metadata": {
+      "remove": [
+        "private",
+        "scripts",
+        "devDependencies",
+        "preparePublishConfig"
+      ]
+    }
+  },
   "exports": {
     ".": {
       "types": "./src/index.ts",
@@ -12,20 +25,20 @@
   },
   "types": "./src/index.ts",
   "dependencies": {
-    "@slate/compiler": "^0.0.1-alpha.4",
-    "@slate/kit": "^0.0.1-alpha.4",
+    "@slate/compiler": "workspace:^",
+    "@slate/kit": "workspace:^",
     "rehype-format": "^5.0.1",
     "rehype-minify-whitespace": "^6.0.2",
     "rehype-parse": "^9.0.1",
     "rehype-stringify": "^10.0.1",
     "unified": "^11.0.5",
-    "vite": "^8.0.16"
+    "vite": "catalog:"
   },
   "scripts": {
     "check": "tsc --noEmit",
     "test": "tsx scripts/run-fixtures.ts"
   },
   "devDependencies": {
-    "typescript": "^6.0.3"
+    "typescript": "catalog:"
   }
 }
