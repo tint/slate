@@ -3,6 +3,12 @@
   "version": "0.0.1-alpha.1",
   "private": true,
   "type": "module",
+  "preparePublishConfig": {
+    "publish": false,
+    "workspace": {
+      "root": "exclude"
+    }
+  },
   "workspaces": [
     "demo",
     "internal/*",
@@ -23,7 +29,8 @@
     "bump": "bun run --cwd internal/bump bump",
     "vscode:dev": "bun run build && open -a \"Visual Studio Code\" packages/language-tools/vscode",
     "vscode:build": "bun run build",
-    "vscode:package": "bun run vscode:build && bun run --cwd packages/language-tools/vscode package"
+    "vscode:package": "bun run vscode:build && bun run --cwd packages/language-tools/vscode package",
+    "prepare-publish": "prepare-publish --all"
   },
   "catalog": {
     "@types/node": "^24.0.0",
@@ -39,6 +46,7 @@
     "vscode-uri": "^3.0.8"
   },
   "devDependencies": {
+    "@internal/prepare-publish": "workspace:*",
     "@types/node": "catalog:",
     "tsdown": "catalog:",
     "tsx": "catalog:",

@@ -1,0 +1,39 @@
+{
+  "name": "@internal/prepare-publish",
+  "version": "0.0.0",
+  "private": true,
+  "preparePublishConfig": {
+    "publish": false,
+    "metadata": {
+      "remove": [
+        "private",
+        "scripts",
+        "devDependencies",
+        "preparePublishConfig"
+      ]
+    }
+  },
+  "type": "module",
+  "bin": {
+    "prepare-publish": "./src/bin.mjs"
+  },
+  "scripts": {
+    "prepare-publish": "tsx src/index.ts",
+    "check": "tsc --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "@npmcli/arborist": "^9.9.0",
+    "@npmcli/map-workspaces": "^6.0.0",
+    "logtra": "^0.0.5",
+    "minimatch": "^10.2.5",
+    "npm-packlist": "^11.3.0",
+    "tsx": "catalog:",
+    "yaml": "^2.9.0"
+  },
+  "devDependencies": {
+    "@types/node": "catalog:",
+    "typescript": "catalog:",
+    "vitest": "catalog:"
+  }
+}

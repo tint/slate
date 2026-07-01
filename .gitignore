@@ -41,3 +41,4 @@ pnpm-debug.log*
 *.tgz
 *.vsix
 packages/language-tools/vscode/.tmp-vsix/
+.prepare-publish/
